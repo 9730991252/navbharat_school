@@ -140,7 +140,7 @@ height: 70vh;
 }
 .about_us_heading{
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 10px;
     font-size: 20px;
     font-weight: bold;
 }
@@ -173,6 +173,6 @@ box-shadow: inset 0px -1px 18px -11px rgba(0,0,0,0.75);
 /* features_heading end */
 /* contact_us start */
 .contact_us{
-  height: 70vh;
+  height: 50vh;
 }
 /* contact_us end */

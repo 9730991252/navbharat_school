@@ -38,7 +38,6 @@ source venv/bin/activate
 ************************************
 
 pip install django
-pip install num2words
 pip install pillow
 pip install gunicorn
 
