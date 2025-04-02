@@ -1,0 +1,87 @@
+<style>
+    .contact-section {
+        width: 100%;
+        height: 40vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 50px 20px;
+    }
+    
+    .contact-container {
+        width: 50%;
+        padding: 30px;
+        border: 2px solid #888;
+        border-radius: 10px;
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .contact-container:hover {
+        box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.2);
+        transform: scale(1.02);
+    }
+    
+    .contact-info p {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+    
+    .contact-info a {
+        text-decoration: none;
+        color: #007BFF;
+        font-weight: bold;
+        transition: color 0.3s ease;
+    }
+    
+    .contact-info a:hover {
+        color: #0056b3;
+    }
+    /* Responsive Design */
+@media (max-width: 768px) {
+    .contact-container {
+        width: 90%;
+        padding: 20px;
+    }
+
+    .contact-container h2,
+    .contact-container h3 {
+        font-size: 1.5em;
+    }
+
+    .contact-info p {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .contact-container h2,
+    .contact-container h3 {
+        font-size: 1.3em;
+    }
+
+    .contact-info p {
+        font-size: 14px;
+    }
+}
+
+        </style>
+    
+        <section class="contact-section">
+            <div class="contact-container">
+                <h2 style="color: #333;">Contact Us</h2>
+                <p>Feel free to reach out to us for any inquiries or assistance.</p>
+                <div class="contact-info">
+                    <p>Email: <a href="mailto:sunilkale101@gmail.com">navbharat@gmail.com</a></p>
+                    <p>Mobile: <a href="tel:+919730991252">9730991252</a></p>
+                    <p>Address: Karmala Pune-Rode</p>
+                </div>
+            </div>
+        </section>
+    

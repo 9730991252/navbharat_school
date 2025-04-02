@@ -1,0 +1,55 @@
+{% load static %}
+<style>
+    .About_us_container{
+        width: 90%;
+        margin: 0 auto;
+        height: 50vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+        padding: 10px;
+        border-radius: 10px;
+        justify-content: space-evenly;
+        flex-wrap: wrap;
+    }
+    .about_img_box{
+        width: 30%;
+        height: 100%;
+        img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+    .about_containt_box{
+        width: 60%;
+    }
+    @media screen and (max-width: 500px) {
+        .about_us{
+            height: 200vh;
+        }
+        .About_us_container{
+            display: grid;
+            grid-template-columns: 1fr;
+            height: 180vh;
+        }
+        .about_img_box{
+            width: 60%;
+            margin: 0 auto;
+        }
+        .about_containt_box{
+            width: 100%;
+            margin: 0 auto;
+        }   
+    }
+</style>
+<div class="About_us_container">
+    <div class="about_img_box">
+        <img src="{% static 'img/school_image.jpg' %}" alt="">
+    </div>
+    <div class="about_containt_box">
+        <p>NAVBHARAT ENGLISH SCHOOL was established in 1997 and it is managed by the Pvt. Unaided. It is located in Rural area. It is located in KARMALA block of SOLAPUR district of Maharashtra. The school consists of Grades from 1 to 10. The school is Co-educational and it have an attached pre-primary section. The school is N/A in nature and is not using school building as a shift-school. English is the medium of instructions in this school. This school is approachable by all weather road. In this school academic session starts in April.</p>
+        <p>&nbsp;The school has Private building. It has got 10 classrooms for instructional purposes. All the classrooms are in good condition. It has 2 other rooms for non-teaching activities. The school has a separate room for Head master/Teacher. The school has Barbed Wire Fencing boundary wall. The school has have electric connection. The source of Drinking Water in the school is Tap Water and it is functional. The school has 3 boys toilet and it is functional. and 3 girls toilet and it is functional. The school has a playground. The school has a library and has 350 books in its library. The school does not need ramp for disabled children to access classrooms. The school has 4 computers for teaching and learning purposes and all are functional. The school is not having a computer aided learning lab. The school is Not Applicable providing mid-day meal.</p>
+    </div>
+</div>

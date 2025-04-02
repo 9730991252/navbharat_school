@@ -1,0 +1,101 @@
+<style>
+    .feacture_container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        text-align: center;
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    h2 {
+        width: 100%;
+        font-size: 36px;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+    .feature {
+        width: 220px;
+        background: linear-gradient(135deg, #007bff, #00c6ff);
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .feature:hover {
+        transform: translateY(-8px);
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.3);
+    }
+    .feature i {
+        font-size: 50px;
+        margin-bottom: 15px;
+        color: #fff;
+    }
+    .feature p {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+    }
+    @media (max-width: 600px) {
+        .feacture_container {
+            width: 100%;
+        }
+        .feature {
+            width: 180px;
+            padding: 20px;
+        }
+        .feature i {
+            font-size: 40px;
+        }
+        .feature p {
+            font-size: 16px;
+        }
+        .features{
+        height: 120vh;
+    }
+}
+@media (max-width: 400px) {
+    .features{
+        height: 200vh;
+    }
+}
+</style>
+</head>
+<body>
+<div class="feacture_container">
+    <h2>Our School Features</h2>
+    <div class="feature">
+        <i class="fas fa-chalkboard-teacher"></i>
+        <p>Experienced Staff</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-user-graduate"></i>
+        <p>Expert Teachers</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-futbol"></i>
+        <p>Large Playground</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-desktop"></i>
+        <p>Computer & Science Lab</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-user-check"></i>
+        <p>Individual Attention</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-shield-alt"></i>
+        <p>Safe Environment</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-paint-brush"></i>
+        <p>Art & Craft Classes</p>
+    </div>
+</div>

@@ -1,0 +1,214 @@
+103.150.136.82
+  
+_______________________________________
+
+root
+cd navbharat_school
+git pull
+source venv/bin/activate
+python3 manage.py makemigrations
+python3 manage.py migrate
+systemctl daemon-reload
+systemctl restart navbharat_school.com.gunicorn
+exit
+
+root
+cd navbharat_school
+git pull
+systemctl daemon-reload
+systemctl restart navbharat_school.com.gunicorn
+exit
+
+ 
+                                                                                                                                                           
+_______________________________________
+
+
+git clone https://github.com/9730991252/navbharat_school.git
+
+_______________________________________
+********** Create Virtual env *****
+
+virtualenv venv
+
+********** Activate Virtual env ****
+
+source venv/bin/activate
+
+************************************
+
+pip install django
+pip install num2words
+pip install pillow
+pip install gunicorn
+
+****************migrations******
+python3 manage.py makemigrations
+
+*********** migrate ********
+
+python3 manage.py migrate
+ 
+
+*********** Deactivate Virtualenv *****
+
+deactivate
+
+************ Create System Socket File for Gunicorn *******
+
+Example:-  nano /etc/systemd/system/crenta.in.gunicorn.socket
+
+cd  /etc/systemd/system/
+
+ nano navbharat_school.com.gunicorn.socket
+
+
+
+[Unit]
+Description=navbharat_school.com.gunicorn socket
+
+[Socket]
+ListenStream=/run/navbharat_school.com.gunicorn.sock
+
+[Install]
+WantedBy=sockets.target
+
+
+************** Create System Service File for Gunicorn ******
+Syntax:-  nano /etc/systemd/system/your_domain.gunicorn.service
+Example:-  nano /etc/systemd/system/narayaniorder.com.gunicorn.service
+
+cd  /etc/systemd/system/
+
+ nano navbharat_school.com.gunicorn.service
+
+
+[Unit]
+Description=navbharat_school.com.gunicorn daemon
+Requires=navbharat_school.com.gunicorn.socket
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/root/navbharat_school
+ExecStart=/root/navbharat_school/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/navbharat_school.com.gunicorn.sock \
+          navbharat_school.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+----------------------------------------------------------------
+ systemctl start navbharat_school.com.gunicorn.socket
+
+ systemctl start navbharat_school.com.gunicorn.service
+
+
+-----------------------------------------------------------------
+
+ systemctl enable navbharat_school.com.gunicorn.socket
+
+ systemctl enable navbharat_school.com.gunicorn.service
+
+
+-----------------------------------------------------------------------
+
+ systemctl status navbharat_school.com.gunicorn.socket
+
+ systemctl status navbharat_school.com.gunicorn.service
+
+-------------------------------------------
+
+ systemctl daemon-reload
+ systemctl restart navbharat_school.com.gunicorn
+
+
+
+--------------------------------
+
+
+
+****************** Create Virtual Host File ******
+Syntax:-  nano /etc/nginx/sites-available/your_domain
+Example:-  nano /etc/nginx/sites-available/crenta.in
+
+
+cd /etc/nginx/sites-available
+
+ nano navbharat_school.com
+
+
+
+server{
+    listen 80;
+    listen [::]:80;
+
+    server_name 103.150.136.82 nes.digitalkarmala.com www.nes.digitalkarmala.com;
+    client_max_body_size 500M;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location / {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_pass http://unix:/run/navbharat_school.com.gunicorn.sock;
+    }    
+}
+
+-----------------------------------------------------
+
+
+########## Enable Virtual Host or Create Symbolic Link of Virtual Host File ########
+
+ ln -s /etc/nginx/sites-available/navbharat_school.com /etc/nginx/sites-enabled/navbharat_school.com
+
+
+%%%%%%%%%%%%%%%%%%%%% Check Configuration is Correct or Not %%%%%
+
+ nginx -t
+
+%%%%%%%%%%%% Restart Nginx %%%%%%%%%
+
+ service nginx restart
+
+
+********** restart ******
+
+ systemctl daemon-reload
+ systemctl restart navbharat_school.com.gunicorn
+
+
+--------------------------------------- ssl ------------------
+
+ certbot --nginx
+                                                                                                                    
+ certbot --nginx -d janmanasnews.com -d www.janmanasnews.com                                                                                                                                          
+
+
+
+
+
+
+
+
+-----------------------------------------------अटी व शर्ती  -----------------------------
+1. आर्थिक वर्ष १ एप्रिल ते ३१ मार्च असल्याने, ३१ मार्च रोजी मागील वर्षाची सर्व माहिती डिलिट (काढून टाकली) जाईल. याची सर्वांनी नोंद घ्यावी. डिलिट होण्यापूर्वी आपली महत्त्वाची माहिती आपण स्वतः बॅकअप घ्यावी. आम्ही कोणत्याही माहितीच्या नुकसानासाठी जबाबदार नाही.
+
+2. १ एप्रिल पासून नव्याने बिल क्रमांक १ पासून सुरु होईल मागील डाटा उपलब्ध नसल्याने, सुरुवातीला सर्व पुरेशी माहिती नव्याने भरावी लागेल.
+
+3. ही वेबसाइट अनेक व्यापाऱ्यांद्वारे बिलिंगसाठी वापरली जात असल्याने, त्यामुळे वैयक्तिक वापरकर्त्याच्या गरजेनुसार ती बदलली जाणार नाही.
+
+4.वापरकर्ता स्वतःच्या वापरकर्तानाव, पासवर्ड आणि इतर संवेदनशील माहितीची गोपनीयता राखण्यासाठी जबाबदार आहे. त्याच्या/तिच्या वापरकर्ता खात्यात होणाऱ्या सर्व क्रियाकलापांसाठी तो/ती जबाबदार आहे आणि तो/ती sunilkale101@gmail.com या ईमेलद्वारे किंवा https://banana.tejorder.com/#contact वर सूचीबद्ध केलेल्या कोणत्याही क्रमांकावर कॉल करून त्यांच्या वापरकर्ता खात्याच्या कोणत्याही अनधिकृत वापराबद्दल आम्हाला तात्काळ कळवण्यास सहमत आहे. त्याच्या/तिच्या वापरकर्ता खात्याच्या कोणत्याही अनधिकृत प्रवेशामुळे आणि/किंवा वापरामुळे किंवा अन्यथा त्याच्या/तिच्या किंवा कोणत्याही तृतीय पक्षाच्या कोणत्याही नुकसानासाठी आम्ही जबाबदार नाही. डेटाचे आवश्यक बॅकअप घेणे ही केवळ वापरकर्त्याची जबाबदारी असल्याने कोणत्याही प्रकारच्या डेटा विसंगतीसाठी किंवा डेटा विसंगती/सॉफ्टवेअर समस्येमुळे झालेल्या कोणत्याही प्रकारच्या नुकसानासाठी आम्ही जबाबदार नाही. 
+
+5. वापरकर्त्याने बनवलेला किंवा साठवलेला कंटेंट (माहिती, चित्रे, फायली इ.) त्यांच्या मालकीचा असतो. आम्ही त्यांच्या मालकीचा आदर करतो. पण जेव्हा वापरकर्ते आमच्या सेवा वापरतात, तेव्हा ते आम्हाला त्यांच्या कंटेंटचा वापर करण्याची, त्याची प्रत बनवण्याची, त्या कंटेंटमध्ये बदल करण्याची, सुधारणा करण्याची, प्रकाशित करण्याची किंवा इतरांना दाखवण्याची परवानगी देतात. हे सगळे आम्ही फक्त आमच्या कामासाठी करतो.
+आम्ही वापरकर्त्यांचा डेटा सुरक्षित ठेवण्याचा प्रयत्न करतो, पण जर कधी डेटा लीक झाला किंवा सुरक्षित राहिला नाही, तर त्यासाठी आम्ही जबाबदार नाही.
+
+6.सदर बिलिंग सर्व्हिसेस वापरण्यासाठी भरलेली अतिरिक्त रक्कम प्रत्येक वित्तीय वर्षाच्या मार्च महिन्याच्या शेवटच्या तारखेपर्यंत वैध असेल.
+
+7.भविष्यात या अटी वेळोवेळी अपडेट केल्या जाऊ शकतात. वापरकर्त्याने या पृष्ठाला भेट देऊन आमच्या अटी आणि शर्तींचे नियमितपणे पुनरावलोकन करण्यास सहमती दर्शविली पाहिजे. सेवेचा सतत प्रवेश किंवा वापर याचा अर्थ असा होईल की वापरकर्ता बदलास सहमत आहे.
+जेव्हा हे गोपनीयता विधान लागू होते
