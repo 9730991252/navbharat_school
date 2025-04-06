@@ -8,7 +8,9 @@ root
 cd navbharat_school
 git pull
 source venv/bin/activate
-python3 manage.py makemigrations
+python3 manage.py makemigrations sunil
+python3 manage.py makemigrations school
+python3 manage.py makemigrations student
 python3 manage.py migrate
 systemctl daemon-reload
 systemctl restart navbharat_school.com.gunicorn

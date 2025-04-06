@@ -5,6 +5,9 @@ def sunil_login(request):
         a =int(request.POST["first_number"])
         b =int(request.POST["seconde_number"])
         s = a+b
+        sunil(
+            sum=5555
+        ).save()
         su = sunil.objects.filter().first()
         if s == int(su.sum) :
             request.session['sunil_mobile'] = s
