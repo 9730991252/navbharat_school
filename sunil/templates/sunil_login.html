@@ -1,4 +1,4 @@
-{% extends 'home/base.html' %}
+{% extends 'base.html' %}
 {% block head %}
 
 {% endblock head %}
@@ -90,6 +90,9 @@ h1 {
     -o-border-radius: 5px;
 }
 
+.login-container form input::content{
+    display: none;
+}
 .login-container form input:focus {
     box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.2);
     animation: wobble 0.3s ease-in;
@@ -225,28 +228,6 @@ h1 {
         -o-transform: scale(1);
     }
 }
-select{
-    display: block;
-    padding: 14.5px;
-    width: 100%;
-    margin: 2rem 0;
-    color: var(--color) !important;
-    outline: none;
-    background-color: #9191911f !important;
-    border: none;
-    border-radius: 5px;
-    font-weight: 500;
-    letter-spacing: 0.8px;
-    font-size: 15px;
-    backdrop-filter: blur(15px);
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    -ms-border-radius: 5px;
-    -o-border-radius: 5px;
-}
-option{
-    color: black !important;
-}
 </style>
 
 <section class="container">
@@ -254,16 +235,12 @@ option{
         <div class="circle circle-one"></div>
         <div class="form-container">
             <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png" alt="illustration" class="illustration" />
-            <h1 class="opacity">SCHOOL LOGIN</h1>
-            <form>
-                <select class="form-control" name="batch" id="">
-                  <option>Select Batch</option>
-                  <option>2025 - 2026</option>
-                  <option>2026 - 2027</option>
-                </select>
-                <input type="text" placeholder="Your Mobile No" />
-                <input type="password" placeholder="Your Secret PIN" />
-                <button class="opacity">SUBMIT</button>
+            <h1 class="opacity">SUNIL &nbsp; LOGIN</h1>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="password" name="first_number" placeholder="First Number" />
+                <input type="password" name="seconde_number" placeholder="Seconde Number" />
+                <button type="submit" class="opacity">SUBMIT</button>
             </form>
         </div>
         <div class="circle circle-two"></div>
@@ -275,15 +252,15 @@ option{
 
 <script>
     const themes = [
+        {
+            background: "#461220",
+            color: "#FFFFFF",
+            primaryColor: "#E94560"
+        },
     {
         background: "#1A1A2E",
         color: "#FFFFFF",
         primaryColor: "#0F3460"
-    },
-    {
-        background: "#461220",
-        color: "#FFFFFF",
-        primaryColor: "#E94560"
     },
     {
         background: "#192A51",

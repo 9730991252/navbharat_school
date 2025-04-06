@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'include/school/school_navbar.html' %}
+{% include 'include/alert.html' %}
+<br>
+<style>
+  .modal{
+    margin-top: 50px;
+  }
+</style>
+<div class="container">
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Add_teacher">Add Teacher</button>  
+  <!-- Modal -->
+  <div class="modal fade" id="Add_teacher" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Teacher</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <!-- <marquee> Add Correct Teacher Information Don't Forgot To Fill any Information.  </marquee> -->
+          <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="name">Name</label>
+              <input type="text" name="name" value="{{return_name}}" id="name" class="form-control" placeholder="Enter Teacher name Here" >
+            </div>
+            <div class="mb-3">
+              <label for="mobile">mobile</label>
+              <input type="number" name="mobile" value="{{return_mobile}}" id="mobile" class="form-control" placeholder="Enter Teacher Mobile Here" >
+            </div>
+            <div class="mb-3">
+              <label for="pin">Secret pin</label>
+              <input type="password" name="pin" value="{{return_pin}}" id="pin" class="form-control" placeholder="Enter Teacher pin Here" >
+            </div>
+            
+            <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
+            <button type="submit" name="Add_Teacher" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Add</button>
+          </form>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+table { 
+	width: 70%; 
+	border-collapse: collapse; 
+	margin:50px auto;
+	}
+
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+	background: #eee; 
+	}
+
+th { 
+	background: #3498db; 
+	color: white; 
+	font-weight: bold; 
+	}
+
+td, th { 
+	padding: 10px; 
+	border: 1px solid #ccc; 
+	text-align: left; 
+	font-size: 18px;
+	}
+
+  </style>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Teacher Name</th>
+      <th>Mobile</th>
+      <th>Pin</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in teachers %}
+    <tr>
+      <td data-column="ID">{{ forloop.counter }}</td>
+      <td data-column="Name">{{ t.name }}</td>
+      <td data-column="Mobile">{{ t.mobile }}</td>
+      <td data-column="Pin">{{ t.pin }}</td>
+      <td data-column="Action" style="display: flex;">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Edit_teacher{{t.id}}">Edit</button>  
+        &nbsp;
+        <form method="POST">
+          {% csrf_token %}
+          {% if t.status == 1 %}
+            <button class="btn btn-success" type="submit" name="active">Active
+              <input type="hidden" name="id" value="{{ t.id }}">
+            </button>
+          {% else %}
+            <button class="btn btn-danger" type="submit" name="deactive">Deactive
+              <input type="hidden" name="id" value="{{ t.id }}">
+            </button>
+          {% endif %}
+        </form>
+      </td>
+    </tr>
+    <!-- Modal -->
+    <div class="modal fade" id="Edit_teacher{{t.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Teacher</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+  
+            <!-- <marquee> Add Correct Teacher Information Don't Forgot To Fill any Information.  </marquee> -->
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="teacher_id" value="{{t.id}}">
+
+              <div class="mb-3">
+                <label for="name">Name</label>
+                <input type="text" name="name" value="{{t.name}}" id="name" class="form-control" placeholder="Enter Teacher name Here" >
+              </div>
+              <div class="mb-3">
+                <label for="mobile">mobile</label>
+                <input type="number" name="mobile" value="{{t.mobile}}" id="mobile" class="form-control" placeholder="Enter Teacher Mobile Here" >
+              </div>
+              <div class="mb-3">
+                <label for="pin">Secret pin</label>
+                <input type="password" name="pin" value="{{t.pin}}" id="pin" class="form-control" placeholder="Enter Teacher pin Here" >
+              </div>
+              
+              <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
+              <button type="submit" name="edit_teacher" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Add</button>
+            </form>
+  
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+
+</div>
+{% endblock content %}

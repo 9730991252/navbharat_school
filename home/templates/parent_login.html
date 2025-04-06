@@ -1,4 +1,4 @@
-{% extends 'home/base.html' %}
+{% extends 'base.html' %}
 {% block head %}
 
 {% endblock head %}
@@ -70,6 +70,12 @@ h1 {
     -o-border-radius: 10px;
 }
 
+p{
+    font-size: 0.8rem;
+    margin-top: -30px;
+    margin-bottom: 20px;
+    color: var(--color) !important;
+}
 .login-container form input {
     display: block;
     padding: 14.5px;
@@ -254,16 +260,13 @@ option{
         <div class="circle circle-one"></div>
         <div class="form-container">
             <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png" alt="illustration" class="illustration" />
-            <h1 class="opacity">TEACHER LOGIN</h1>
-            <form>
-                <select class="form-control" name="batch" id="">
-                  <option>Select Batch</option>
-                  <option>2025 - 2026</option>
-                  <option>2026 - 2027</option>
-                </select>
-                <input type="text" placeholder="Your Mobile No" />
-                <input type="password" placeholder="Your Secret PIN" />
-                <button class="opacity">SUBMIT</button>
+            <h1 class="opacity">PARENT &nbsp; LOGIN</h1>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" name="mobile" placeholder="Your Mobile No" required />
+                <input type="password" name="pin" placeholder="Your Secret PIN" required />
+                <p>Default secret pin 0000</p>
+                <button type="submit" class="opacity">SUBMIT</button>
             </form>
         </div>
         <div class="circle circle-two"></div>
@@ -275,15 +278,15 @@ option{
 
 <script>
     const themes = [
+        {
+            background: "#461220",
+            color: "#FFFFFF",
+            primaryColor: "#E94560"
+        },
     {
         background: "#1A1A2E",
         color: "#FFFFFF",
         primaryColor: "#0F3460"
-    },
-    {
-        background: "#461220",
-        color: "#FFFFFF",
-        primaryColor: "#E94560"
     },
     {
         background: "#192A51",

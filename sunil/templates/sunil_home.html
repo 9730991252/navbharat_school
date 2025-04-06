@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'include/home/index_navbar.html' %}
+<style>
+    .flex{
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    .modal{
+        margin-top: 100px;
+    }
+</style>
+<br>
+<div class="flex">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_batch">
+      Add Batch
+    </button>
+</div>
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="add_batch" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Batch</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="">Name</label>
+              <input type="text" class="form-control" name="name" placeholder="Enter Batch Name">
+            </div>
+            <div class="mb-3">
+              <label for="">Start Date</label>
+              <input type="date" class="form-control" name="start_date" placeholder="Enter Batch Name">
+            </div>
+            <div class="mb-3">
+              <label for="">End Date</label>
+              <input type="date" class="form-control" name="end_date" placeholder="Enter Batch Name">
+            </div>
+            <button type="submit" name="Add_batch" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">start</th>
+          <th scope="col">end</th>
+          <th scope="col">status</th>
+          <th scope="col">edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in batches %}
+        <tr>
+          <th scope="row">{{b.name}}</th>
+          <td>{{b.start_date}}</td>
+          <td>{{b.end_date}}</td>
+          <td><form class="" method="POST">{% csrf_token %}{% if b.status == 1 %}<button class="btn btn-success" type="submit" name="batch_active">Active<input type="hidden" name="id" value="{{b.id}}"></button>{% else %}<button class="btn btn-danger" type="submit" name="batch_deactive">Deactive<input type="hidden" name="id" value="{{b.id}}"></button>{% endif %}</form></td>
+          <td><button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#edit_batch{{b.id}}">
+            Edit
+            </button></td>
+
+        </tr>
+          <!-- Modal -->
+  <div class="modal fade" id="edit_batch{{b.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Batch</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="id" value="{{b.id}}" hidden>
+            <div class="mb-3">
+              <label for="">Name</label>
+              <input type="text" class="form-control" name="name" value="{{b.name}}" placeholder="Enter Batch Name">
+            </div>
+            <div class="mb-3">
+              <label for="">Start Date</label>
+              <input type="date" class="form-control" name="start_date" value="{{b.start_date|date:'Y-m-d'}}" placeholder="Enter Batch Name">
+            </div>
+            <div class="mb-3">
+              <label for="">End Date</label>
+              <input type="date" class="form-control" name="end_date" value="{{b.end_date|date:'Y-m-d'}}" placeholder="Enter Batch Name">
+            </div>
+            <button type="submit" name="edit_batch" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+<br><br>
+  <!--////////////////////////////////////////////////////////////////////////////////-->
+  <div class="flex">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_clerk">
+      Add clerk
+    </button>
+  </div>
+    <!-- Modal -->
+    <div class="modal fade" id="add_clerk" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Add Clerk</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST">
+              {% csrf_token %}
+
+              <div class="mb-3">
+                <select class="form-control" name="batch_id" required>
+                  <option value="">Select Batch</option>
+                  
+                  {% for b in batches %}
+                    {% if b.status == 1 %}
+                      <option value="{{b.id}}">{{b.name}}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="">Name</label>
+                <input type="text" class="form-control" name="name" placeholder="Enter Clerk Name" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="">Mobile</label>
+                <input type="text" class="form-control" name="mobile" placeholder="Enter Mobile Number" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="">Secret Pin</label>
+                <input type="password" class="form-control" name="secret_pin" placeholder="Enter Secret Pin" required>
+              </div>
+              <button type="submit" name="Add_clerk" class="btn btn-primary">Submit</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Mobile</th>
+            <th scope="col">Pin</th>
+            <th scope="col">Batch</th>
+            <th scope="col">Status</th>
+            <th scope="col">Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in clerks %}
+          <tr>
+            <th scope="row">{{ c.name }}</th>
+            <td>{{ c.mobile }}</td>
+            <td>{{ c.secret_pin }}</td>
+            <td>{{ c.batch.name }}</td>
+            <td>
+              <form method="POST">
+                {% csrf_token %}
+                {% if c.status == 1 %}
+                  <button class="btn btn-success" type="submit" name="clerk_active">Active
+                    <input type="hidden" name="id" value="{{ c.id }}">
+                  </button>
+                {% else %}
+                  <button class="btn btn-danger" type="submit" name="clerk_deactive">Deactive
+                    <input type="hidden" name="id" value="{{ c.id }}">
+                  </button>
+                {% endif %}
+              </form>
+            </td>
+            <td>
+              <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#edit_clerk{{ c.id }}">
+                Edit
+              </button>
+            </td>
+          </tr>
+          <!-- Modal -->
+          <div class="modal fade" id="edit_clerk{{ c.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Clerk</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" value="{{ c.id }}">
+                    <div class="mb-3">
+                      <select class="form-control" name="batch_id" required>
+                        <option value="">Select Batch</option>
+                        {% for b in batches %}
+                          <option value="{{ b.id }}" {% if b.id == c.batch.id %}selected{% endif %}>{{ b.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label for="">Name</label>
+                      <input type="text" class="form-control" name="name" value="{{ c.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="">Mobile</label>
+                      <input type="text" class="form-control" name="mobile" value="{{ c.mobile }}" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="">Secret Pin</label>
+                      <input type="password" class="form-control" value="{{ c.secret_pin }}" name="secret_pin" placeholder="Enter New Secret Pin">
+                    </div>
+                    <button type="submit" name="edit_clerk" class="btn btn-primary">Submit</button>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock content %}

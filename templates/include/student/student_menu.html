@@ -1,0 +1,32 @@
+<style>
+    .menu{
+        display: flex;
+        width: 100%;
+        overflow: scroll;
+        gap: 10px;
+    }
+</style>
+<div class="menu">
+   <a  href="/student/student_home/{{current_batch.id}}" class="btn btn-primary my-1 home">Home</a>
+   <a  href="/student/notice/{{current_batch.id}}" class="btn btn-primary my-1 notice">Notice</a>
+   <a  href="/student/exam/{{current_batch.id}}" class="btn btn-primary my-1 exam">Exam</a>
+   <a  href="/student/teachers/{{current_batch.id}}" class="btn btn-primary my-1 teachers">Teachers</a>
+   <a  href="/student/fee/{{current_batch.id}}" class="btn btn-primary my-1 fee">Fee</a>
+   <script>
+    if('{{request.path}}' == '/student/student_home/{{current_batch.id}}'){
+        document.querySelector('.home').classList.add('btn-warning');
+    }
+    if('{{request.path}}' == '/student/notice/{{current_batch.id}}'){
+        document.querySelector('.notice').classList.add('btn-warning');
+    }
+    if('{{request.path}}' == '/student/exam/{{current_batch.id}}'){
+        document.querySelector('.exam').classList.add('btn-warning');
+    }
+    if('{{request.path}}' == '/student/teachers/{{current_batch.id}}'){
+        document.querySelector('.teachers').classList.add('btn-warning');
+    }
+    if('{{request.path}}' == '/student/fee/{{current_batch.id}}'){
+        document.querySelector('.teachers').classList.add('btn-warning');
+    }
+   </script>
+</div>

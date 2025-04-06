@@ -1,0 +1,27 @@
+{% load static %}
+<style>
+/* NavBar Start */
+    .navbar{
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: rgb(255, 255, 255) !important;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        z-index: +645456132496;
+    }
+/* NavBar End */
+</style>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <img src="{% static 'img/logo.jpg' %}" width="40px" style="border-radius: 50%;" alt="">
+      <a class="navbar-brand" style="font-weight: 700;" href="/#home"> &nbsp; NavBharat</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+        </ul>
+      </div>
+    </div>
+  </nav>
