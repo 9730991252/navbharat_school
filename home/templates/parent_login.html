@@ -263,7 +263,7 @@ option{
             <h1 class="opacity">PARENT &nbsp; LOGIN</h1>
             <form method="POST">
                 {% csrf_token %}
-                <input type="text" name="mobile" placeholder="Your Mobile No" required />
+                <input type="number" name="mobile" placeholder="Your Mobile No" required />
                 <input type="password" name="pin" placeholder="Your Secret PIN" required />
                 <p>Default secret pin 0000</p>
                 <button type="submit" class="opacity">SUBMIT</button>

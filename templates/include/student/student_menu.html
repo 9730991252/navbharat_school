@@ -11,6 +11,7 @@
    <a  href="/student/notice/{{current_batch.id}}" class="btn btn-primary my-1 notice">Notice</a>
    <a  href="/student/exam/{{current_batch.id}}" class="btn btn-primary my-1 exam">Exam</a>
    <a  href="/student/teachers/{{current_batch.id}}" class="btn btn-primary my-1 teachers">Teachers</a>
+   <a  href="/student/videos/{{current_batch.id}}" class="btn btn-primary my-1 videos">Videos</a>
    <a  href="/student/fee/{{current_batch.id}}" class="btn btn-primary my-1 fee">Fee</a>
    <script>
     if('{{request.path}}' == '/student/student_home/{{current_batch.id}}'){
@@ -26,7 +27,10 @@
         document.querySelector('.teachers').classList.add('btn-warning');
     }
     if('{{request.path}}' == '/student/fee/{{current_batch.id}}'){
-        document.querySelector('.teachers').classList.add('btn-warning');
+        document.querySelector('.fee').classList.add('btn-warning');
+    }
+    if('{{request.path}}' == '/videos/fee/{{current_batch.id}}'){
+        document.querySelector('.videos').classList.add('btn-warning');
     }
    </script>
 </div>

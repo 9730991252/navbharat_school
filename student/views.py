@@ -30,3 +30,18 @@ def notice(request, batch_id):
     else:
         return redirect('login')
     
+def videos(request, batch_id):
+    if request.session.has_key('parent_mobile'):
+        mobile = request.session['parent_mobile']
+        student = Student.objects.filter(mobile=mobile).first()
+        current_batch = Batch.objects.get(id=batch_id)
+        
+        context={
+            'student':student,
+            'batches':Batch.objects.filter(status=1),
+            'current_batch':Batch.objects.get(id=batch_id),
+        }
+        return render(request, 'videos.html', context)
+    else:
+        return redirect('login')
+    
