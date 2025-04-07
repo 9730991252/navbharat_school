@@ -149,7 +149,7 @@ server{
     listen 80;
     listen [::]:80;
 
-    server_name 103.150.136.82 nes.digitalkarmala.com www.nes.digitalkarmala.com;
+    server_name 103.150.136.82 navbharatkarmala.com www.navbharatkarmala.com;
     client_max_body_size 500M;
 
     location = /favicon.ico { access_log off; log_not_found off; }
