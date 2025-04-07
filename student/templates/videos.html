@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'include/alert.html' %}
+{% include 'include/student/student_navbar.html' %}
+{% load static %}
+<div class="text-center">
+    <select class="form-select" onchange="location.href = '/student/student_home/'+ this.value" style="width: 350px; margin: 0 auto; margin-top: 10px;" aria-label="Default select example">
+        {% for b in batches %}
+        <option {% if b.id == current_batch.id %} selected {% endif %} value="{{b.id}}">{{b.name}}</option>
+        {% endfor %}
+    </select>
+</div>
+{% include 'include/student/student_menu.html' %}
+
+<style>
+    .video_box{
+        width: 370px;
+        margin: 0 auto;
+        div{
+            border-radius: 10px;
+            overflow: hidden;
+            width: 360px;
+            height: 215px;
+        }
+    }
+</style>
+
+<div class="video_box">
+    <div>
+        <iframe width="360" height="225" src="https://www.youtube.com/embed/Yexo3oHlNvY?si=U9V9ya5u6tQhmhw9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div></div>
+    <div></div>
+</div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+{% include 'include/home/index_footer.html' %}
+{% endblock content %}
