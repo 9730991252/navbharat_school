@@ -190,7 +190,7 @@ server{
 
  certbot --nginx
                                                                                                                     
- certbot --nginx -d janmanasnews.com -d www.janmanasnews.com                                                                                                                                          
+ certbot --nginx -d navbharatkarmala.com -d www.navbharatkarmala.com                                                                                                                                          
 
 
 
