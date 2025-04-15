@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
+
+<style>
+    .form-box{
+        box-shadow: 1px 0px 44px -7px rgba(145,145,145,1);
+        border-radius: 8px;
+        margin-top: 50px;
+        border: 2px solid rgb(196, 196, 196);
+        text-align: center;
+        padding: 10px;
+        form{
+            display: flex;
+            justify-content: space-evenly;
+            gap: 10px;
+            div{
+                font-weight: 500;
+                width: 28%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    }
+</style>
+<div class="container  form-box">
+    <b>Select Subject Class Teacher</b>
+    <br>
+    <br>
+
+    <form method="POST">
+        <div>
+            <label for="">Select Subject</label>
+            <select class="form-select" name="subject_id" aria-label="Default select example" required>
+                <option selected value="">...</option>
+                {% for s in subjects %}
+                    <option value="{{s.id}}">{{s.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="">Select Class</label>
+            <select class="form-select" name="class_id" aria-label="Default select example" required>
+                <option selected value="">...</option>
+                {% for c in classes %}
+                    <option value="{{c.id}}">{{c.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="">Select Teacher</label>
+            <select class="form-select" name="teacher_id" aria-label="Default select example" required>
+                <option selected value="">...</option>
+                {% for t in teachers %}
+                    <option value="{{t.id}}">{{t.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="width: 3%; justify-content:end;">
+            <button type="submit" name="select" class="btn btn-danger">Submit</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    table { 
+        width: 70%; 
+        border-collapse: collapse; 
+        margin: 50px auto;
+    }
+
+    /* Zebra striping */
+    tr:nth-of-type(odd) { 
+        background: #eee; 
+    }
+
+    th { 
+        background: #3498db; 
+        color: white; 
+        font-weight: bold; 
+    }
+
+    td, th { 
+        padding: 10px; 
+        border: 1px solid #ccc; 
+        text-align: left; 
+        font-size: 18px;
+    }
+</style>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Subject</th>
+            <th>Class</th>
+            <th>Teacher</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for t in selected_subject_class_teacher %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{t.subject.name}}</td>
+                <td>{{t.school_class.name}}</td>
+                <td>{{t.teacher.name}}</td>
+                <td>
+                    <form method="POST">
+                        <input type="hidden" value="{{t.id}}" name="id">
+                        <button type="submit" name="remove" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock content %}

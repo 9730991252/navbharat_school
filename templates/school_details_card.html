@@ -1,0 +1,48 @@
+<style>
+    .card_main_box{
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .detail_cards{
+        border: 1px solid #bbb;
+        width: 180px;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #ddd;
+        box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;    
+        text-align: center;
+        i{
+            font-size: 30px;
+            border-radius: 50%;
+            background-color: rgb(255, 255, 255);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: fit-content;
+            height: fit-content;
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+        p{
+            margin-bottom: -0px;
+            font-weight: 700;
+        }
+    }
+</style>
+<div class="container card_main_box">
+    <div class="detail_cards">
+        <i class="fa-solid fa-user-tie"></i>
+        <p>Students {{total_students}}</p>
+        <h>Male {{male_students}} <br></h>
+        <h>FeMale {{female_students}}</h>
+    </div>
+    <div class="detail_cards">
+        <i class="fa-solid fa-chalkboard-user"></i>
+        <p>Teacher {{total_teacher}}</p>
+        <h>Male {{male_teacher}} &nbsp;</h>
+        <h>FeMale {{female_teacher}}</h>
+    </div>
+</div>

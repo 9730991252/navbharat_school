@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
+
+<style>
+.file_input{
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: 3px dashed #999;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    i{
+        font-size: 24px;
+    }
+}
+.student_box{
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 30px;
+    width: 350px;
+    margin: 0 auto;
+}
+.name_mobile_box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .name{
+        font-size: 20px;
+        font-weight: bold;
+    }
+}
+.adhar_number_gender{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+</style>
+
+<br>
+<div class="container">
+    <div id="students_result">
+
+    </div>
+</div>
+
+<style>
+    .footer{
+      background-color: antiquewhite;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 5px;
+      align-items: center;
+      input{
+        width: 80%;
+        margin: 0 auto;
+      }
+    }
+  </style>
+<div class="footer">
+<input type="text" oninput="search_student(this.value)" class="form-control" placeholder="Search Student">
+  </div>
+
+<script>
+    function search_student(words){
+        $.ajax({
+            url: "{% url 'search_student_image' %}",
+            method: "GET",
+            data:{
+                words:words,
+                batch_id:'{{clerk.batch.id}}'
+            },
+            success: function(res){
+                $("#students_result").html(res.t)
+            }
+        })
+    }
+</script>
+{% endblock content %}

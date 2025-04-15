@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
+<br>
+<style>
+  .modal{
+    margin-top: 50px;
+  }
+</style>
+<div class="container">
+
+  <style>
+table { 
+	width: 70%; 
+	border-collapse: collapse; 
+	margin:50px auto;
+	}
+
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+	background: #eee; 
+	}
+
+th { 
+	background: #3498db; 
+	color: white; 
+	font-weight: bold; 
+	}
+
+td, th { 
+	padding: 10px; 
+	border: 1px solid #ccc; 
+	text-align: left; 
+	font-size: 18px;
+	}
+
+  </style>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Class Name</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in classes %}
+    <tr>
+      <td data-column="ID">{{ forloop.counter }}</td>
+      <td data-column="Name">{{ t.name }}</td>
+      <td data-column="Action" style="display: flex;">
+        <a href="/school/select_student_class/{{t.id}}/" class="btn btn-danger">Selecet</a>
+      </td>
+    </tr>
+    <!-- Modal -->
+    <div class="modal fade" id="Edit_class{{t.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Class</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+  
+            <!-- <marquee> Add Correct Class Information Don't Forgot To Fill any Information.  </marquee> -->
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="class_id" value="{{t.id}}">
+
+              <div class="mb-3">
+                <label for="name">Name</label>
+                <input type="text" name="name" value="{{t.name}}" id="name" class="form-control" placeholder="Enter Class name Here" >
+              </div>
+              <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
+              <button type="submit" name="edit_class" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Add</button>
+            </form>
+  
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+
+</div>
+{% endblock content %}

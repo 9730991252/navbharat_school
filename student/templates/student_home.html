@@ -4,8 +4,8 @@
 {% endblock head %}
 {% block content %}
 {% load static %}
-{% include 'include/alert.html' %}
-{% include 'include/student/student_navbar.html' %}
+{% include 'alert.html' %}
+{% include 'student/student_navbar.html' %}
 {% load static %}
 <div class="text-center">
     <select class="form-select" onchange="location.href = '/student/student_home/'+ this.value" style="width: 350px; margin: 0 auto; margin-top: 10px;" aria-label="Default select example">
@@ -14,7 +14,7 @@
         {% endfor %}
     </select>
 </div>
-{% include 'include/student/student_menu.html' %}
+{% include 'student/student_menu.html' %}
 
 
 
@@ -98,24 +98,24 @@
     }
   </style>
 <!-- Calender -->
-{% include 'include/student/calendar.html' %}
+{% include 'student/calendar.html' %}
 <!-- Calender End -->
 
 <!-- unit_first -->
-{% include 'include/student/unit_first.html' %}
+{% include 'student/unit_first.html' %}
 <!-- unit_first end -->
 
 <!-- semester_first -->
-{% include 'include/student/semester_first.html' %}
+{% include 'student/semester_first.html' %}
 <!-- semester_first end -->
 
 <!-- unit_second -->
- {% include 'include/student/unit_second.html' %}
+ {% include 'student/unit_second.html' %}
  <!-- unit_second end -->
  
  <!-- annual_exam -->
- {% include 'include/student/annual_exam.html' %}
+ {% include 'student/annual_exam.html' %}
  <!-- annual_exam -->
 <br>
-{% include 'include/home/index_footer.html' %}
+{% include 'home/index_footer.html' %}
 {% endblock content %}

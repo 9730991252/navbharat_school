@@ -1,0 +1,24 @@
+<style>
+.student_div{
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 10px;
+}
+</style>
+{% for s in student %}
+<div class="student_div" id="student_div{{s.id}}">
+<div>{{s.name}}</div>
+<div>{{s.mobile}}</div>
+<div>
+    {% if s.selected_status == 0 %}
+        <button class="btn btn-danger btn-sm" onclick="select_student('{{s.id}}'); document.getElementById('student_div{{s.id}}').style.display = 'none'">Select</button>
+    {% else %}
+        <b>class {{s.selected_class}}</b>
+    {% endif %}
+</div>
+</div>
+{% endfor %}

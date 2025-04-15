@@ -21,7 +21,24 @@ def school_login(request):
     return render(request, 'school_login.html', context)
 
 def admin_login(request):
-    return render(request, 'admin_login.html')
+    if request.session.has_key('admin_mobile'):
+         return redirect('admin_home')
+    if request.method == "POST":
+        batch_id=request.POST ['batch_id']
+        number=request.POST ['mobile']
+        pin=request.POST ['pin']
+        a = Admin_login.objects.filter(mobile=number, pin=pin).first()
+        if a:
+            a.batch_id=batch_id
+            request.session['admin_mobile'] = request.POST["mobile"]
+            return redirect('admin_home')
+        else:
+            messages.error(request,f"Mobile Number or Secret Pin invalid.")
+            return redirect('/admin_login/')
+    context = {
+        'batch':Batch.objects.all(),
+    }
+    return render(request, 'admin_login.html',context)
 
 def parent_login(request):
     batch = Batch.objects.filter(status=1, start_date__lte=date.today()).first()  
@@ -40,4 +57,18 @@ def parent_login(request):
     return render(request, 'parent_login.html')
 
 def teacher_login(request):
-    return render(request, 'teacher_login.html')
+    if request.method == "POST":
+        batch_id=request.POST ['batch_id']
+        number=request.POST ['mobile']
+        pin=request.POST ['pin']
+        c= Teacher.objects.filter(batch_id=batch_id,mobile=number,pin=pin,status=1)
+        if c:
+            request.session['teacher_mobile'] = request.POST["mobile"]
+            return redirect('teacher_home')
+        else:
+            messages.error(request,f"Mobile Number or Secret Pin invalid.")
+            return redirect('/teacher_login/')
+    context = {
+        'batch':Batch.objects.all(),
+    }
+    return render(request, 'teacher_login.html',context)

@@ -4,8 +4,8 @@
 {% endblock head %}
 {% block content %}
 {% load static %}
-{% include 'include/alert.html' %}
-{% include 'include/student/student_navbar.html' %}
+{% include 'alert.html' %}
+{% include 'student/student_navbar.html' %}
 {% load static %}
 <div class="text-center">
     <select class="form-select" onchange="location.href = '/student/student_home/'+ this.value" style="width: 350px; margin: 0 auto; margin-top: 10px;" aria-label="Default select example">
@@ -14,7 +14,7 @@
         {% endfor %}
     </select>
 </div>
-{% include 'include/student/student_menu.html' %}
+{% include 'student/student_menu.html' %}
 
 <style>
     .video_box{
@@ -41,5 +41,5 @@
 </div>
 
 <br>
-{% include 'include/home/index_footer.html' %}
+{% include 'home/index_footer.html' %}
 {% endblock content %}

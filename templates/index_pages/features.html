@@ -1,4 +1,7 @@
 <style>
+    .features{
+        height: 120vh;
+    }
     .feacture_container {
         display: flex;
         flex-wrap: wrap;
@@ -26,6 +29,7 @@
         color: white;
         display: flex;
         flex-direction: column;
+        justify-content: center;
         align-items: center;
     }
     .feature:hover {
@@ -61,15 +65,64 @@
     }
 }
 @media (max-width: 400px) {
-    .features{
-        height: 140vh;
+    .feacture_container {
+            width: 100%;
+        }
+        .feature {
+            width: 150px;
+            padding: 10px;
+        }
+        .feature i {
+            font-size: 30px;
+        }
+        .feature p {
+            font-size: 16px;
+        }
     }
-}
+    .features{
+        height: fit-content;
+    }
 </style>
 </head>
 <body>
 <div class="feacture_container">
     <h2>Our School Features</h2>
+    <div class="feature" >
+        <i><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRL3YZyn-v0r6QHlW2thz47F560i21pQxR3eA&s" alt="" style="width: 70px; border-radius: 50%;"></i>
+        <p>Cricket Club</p>
+    </div>
+    <div class="feature" >
+        <i class="fa-brands fa-pagelines"></i>
+        <p>Garden</p>
+    </div>
+    <div class="feature" >
+        <p>Daily health-enhancing cleanliness in the school.</p>
+    </div>
+    <div class="feature" style="justify-content: center;">
+        <p>Equipped  Computer Lab ,  Science Lab , Library for students.</p>
+    </div>
+    <div class="feature">
+        <i class="fa-solid fa-users"></i>
+        <p>Karmala Center for 10th Exam</p>
+    </div>
+    <div class="feature">
+        <p>Excellent guidance and personal attention to students</p>
+    </div>
+    <div class="feature">
+        <p>Students who have reached International Level in Olympiad, MTS, Scholarship</p>
+    </div>
+    <div class="feature">
+        <i class="fa-solid fa-droplet"></i>
+        <p>School with RO Water Machine</p>
+    </div>
+    <div class="feature">
+        <i class="fa-solid fa-building"></i>
+        <p>Own spacious building</p>
+    </div>
+    <div class="feature">
+        <i class="fas fa-futbol"></i>
+        <p>Large Playground</p>
+    </div>
     <div class="feature">
         <i class="fas fa-chalkboard-teacher"></i>
         <p>Experienced Staff</p>
@@ -78,10 +131,7 @@
         <i class="fas fa-user-graduate"></i>
         <p>Expert Teachers</p>
     </div>
-    <div class="feature">
-        <i class="fas fa-futbol"></i>
-        <p>Large Playground</p>
-    </div>
+
     <div class="feature">
         <i class="fas fa-desktop"></i>
         <p>Computer & Science Lab</p>

@@ -13,16 +13,6 @@ messages.warning(request,"text")
             title: "{{ message }}",
             text: "",
             icon: "{{message.tags}}",
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: () => {
-                const timer = Swal.getPopup().querySelector("b");
-                timerInterval = setInterval(() => {
-                }, 500);
-            },
-            willClose: () => {
-                clearInterval(timerInterval);
-            }
         });
 
 

@@ -1,0 +1,103 @@
+<!-- Cropper CSS/JS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<!-- Student Upload Loop -->
+{% for s in student %}
+<div class="student_box">
+    <div class="img_box">
+        {% if s.img != None %}
+        <img onclick="document.getElementById('image{{s.id}}').click()" src="{{s.img.image.url}}" style="width: 100px; border-radius: 10px;" alt="">
+        {% else %}
+            <label class="file_input" for="image{{s.id}}">
+                <i class="fa fa-upload" aria-hidden="true"></i> <b>Upload Image</b>
+            </label>
+            {% endif %}
+            <input type="file" accept="image/*" style="display: none;" id="image{{s.id}}" onchange="openCropper(event, '{{s.id}}')">
+
+            <form method="POST" enctype="multipart/form-data" id="form{{s.id}}">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{s.id}}">
+                <input type="hidden" name="img" id="croppedImgInput{{s.id}}">
+                <button type="submit" name="add_image" id="add_btn{{s.id}}" style="display: none;"></button>
+            </form>
+    </div>
+
+    <div class="name_mobile_box">
+        <div class="name">{{s.name}}</div>
+        <div class="mobile">Mo.{{s.mobile}}</div>
+        <div class="adhar_number">Adhar. {{s.aadhar_number}}</div>
+        <div class="gender">{{s.gender}}</div>
+    </div>
+</div>
+<br>
+{% endfor %}
+
+<style>
+#cropperModal{
+    display: none; 
+    position: fixed; 
+    top: 10%; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    z-index: 999; 
+    background: #fff; 
+    padding: 20px; 
+    border: 1px solid #ccc;
+}
+
+</style>
+<!-- Cropper Modal -->
+<div id="cropperModal" >
+    <img id="cropperImage" style="width: 300px;">
+    <br>
+    <button onclick="cropAndUpload()">Crop & Upload</button>
+    <button onclick="closeModal()">Cancel</button>
+</div>
+
+
+<script>
+    let cropper;
+    let currentId;
+
+    function openCropper(event, id) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = document.getElementById('cropperImage');
+            img.src = e.target.result;
+            document.getElementById('cropperModal').style.display = 'block';
+
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(img, {
+                aspectRatio: 1,
+                viewMode: 1
+            });
+        };
+        reader.readAsDataURL(file);
+        currentId = id;
+    }
+
+    function cropAndUpload() {
+        cropper.getCroppedCanvas({
+            width: 300,
+            height: 300
+        }).toBlob(function (blob) {
+            const reader = new FileReader();
+            reader.onloadend = function () {
+                const base64data = reader.result;
+                document.getElementById(`croppedImgInput${currentId}`).value = base64data;
+                document.getElementById(`add_btn${currentId}`).click();
+                closeModal();
+            };
+            reader.readAsDataURL(blob);
+        }, 'image/webp');
+    }
+
+    function closeModal() {
+        document.getElementById('cropperModal').style.display = 'none';
+        if (cropper) cropper.destroy();
+    }
+</script>

@@ -4,7 +4,7 @@
 {% endblock head %}
 {% block content %}
 {% load static %}
-{% include 'include/home/index_navbar.html' %}
+{% include 'home/index_navbar.html' %}
 <br><br>
 
 
@@ -255,15 +255,16 @@ option{
         <div class="form-container">
             <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png" alt="illustration" class="illustration" />
             <h1 class="opacity">ADMIN &nbsp; LOGIN</h1>
-            <form>
-                <select class="form-control" name="batch" id="">
-                  <option>Select Batch</option>
-                  <option>2025 - 2026</option>
-                  <option>2026 - 2027</option>
+            <form method="POST">
+                {% csrf_token %} 
+                <select class="form-control" name="batch_id" required>
+                    {% for b in batch %}
+                        <option value="{{b.id}}">{{b.name}}</option>
+                    {% endfor %}
                 </select>
-                <input type="text" placeholder="Your Mobile No" />
-                <input type="password" placeholder="Your Secret PIN" />
-                <button class="opacity">SUBMIT</button>
+                <input type="number" name="mobile" placeholder="Your Mobile No" />
+                <input type="password" name="pin" placeholder="Your Secret PIN" />
+                <button class="opacity" type="submit">SUBMIT</button>
             </form>
         </div>
         <div class="circle circle-two"></div>
@@ -331,7 +332,7 @@ displayThemeButtons();
 </script>
 
 
-{% include 'include/home/index_footer.html' %}
+{% include 'home/index_footer.html' %}
 
 
 {% endblock content %}

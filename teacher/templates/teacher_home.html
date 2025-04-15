@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'teacher_navbhar.html' %}
+{% include 'alert.html' %}
+<br>
+<div style="display: flex;justify-content: space-evenly;">
+    <b>Welcome - {{teacher.name |slice:'10'}}</b><br>
+    <p>Batch {{teacher.batch.name}}</p>
+</div>
+<div class="text-center">
+    <div class="teacher_detail_box">
+        <div style="display: flex;justify-content: space-evenly;">
+            <p>Your Class - <b>{{teacher_class.school_class.name}}</b>,</p>
+            <p>Subject - <b>{{class_teacher_subject.subject.name}}</b></p>
+        </div>
+        <p style="margin-top: -15px;">Class Students - <b>{{class_students_count}}</b></p>
+    </div>
+</div>
+
+<hr>
+
+<style>
+    .grid-table {
+      display: grid;
+      grid-template-columns: 1fr 2fr 2fr; /* 4 columns */
+      gap: 1px; /* thin line between cells */
+      background-color: #ccc;
+      width: 100%;
+      margin: 20px auto;
+      text-align: center;
+      border-collapse: collapse;
+    }
+
+    .cell {
+      padding: 10px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      font-family: Arial, sans-serif;
+    }
+
+    .header {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+  <div class="grid-table">
+    <div class="cell header">ID</div>
+    <div class="cell header">Subject</div>
+    <div class="cell header">Class</div>
+
+    {% for s in subject_class_and_teacher %}
+    <div class="cell">{{forloop.counter}}</div>
+    <div class="cell">{{s.subject.name}}</div>
+    <div class="cell">{{s.school_class.name}}</div>
+    {% endfor %}
+  </div>
+
+
+{% endblock content %}

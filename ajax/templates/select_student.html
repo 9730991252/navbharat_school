@@ -1,0 +1,20 @@
+<thead>
+    <tr>
+      <th>ID</th>
+      <th>Student Name</th>
+      <th>Mobile</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in selected_students %}
+      <tr>
+        <td data-column="ID">{{ forloop.counter }}</td>
+        <td data-column="Name">{{t.student.name}}</td>
+        <td data-column="Name">{{t.student.mobile}}</td>
+        <td data-column="Action" style="display: flex;">
+          <a href="/school/select_student_class/{{t.id}}/" class="btn btn-danger">Remove</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>

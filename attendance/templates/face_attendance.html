@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Attendance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #video-container {
+            position: relative;
+            display: inline-block;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+        }
+        #status {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .status-message {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Face Recognition Attendance</h1>
+
+    <div id="video-container">
+        <video id="video" width="640" height="480" autoplay></video>
+    </div>
+
+    <div id="status">
+        <p>Looking for faces...</p>
+        <div class="status-message"></div>
+    </div>
+
+    <button onclick="startAttendance()">Start Attendance</button>
+
+    <script>
+        const video = document.getElementById('video');
+
+        // Set up the video stream
+        async function setupCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: true
+            });
+            video.srcObject = stream;
+        }
+
+        // Start the face recognition process
+        function startAttendance() {
+            fetch('/attendance/start-attendance/')
+                .then(response => response.json())
+                .then(data => {
+                    const message = data.status ? data.status : 'Something went wrong!';
+                    document.querySelector('.status-message').textContent = message;
+                });
+        }
+
+        // Initialize camera setup
+        setupCamera();
+    </script>
+</body>
+</html>

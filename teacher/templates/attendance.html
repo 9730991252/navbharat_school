@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'teacher_navbhar.html' %}
+{% include 'alert.html' %}
+
+<div style="display: flex;gap: 10px;">
+    <a href="/teacher/student_check_in/" class="my-1 {% if request.path == '/teacher/student_check_in/' %}btn btn-warning{% else %}btn btn-primary{% endif %}" >Check In</a>
+    <a href="/teacher/student_check_Out/" class="my-1 {% if request.path == '/teacher/student_check_Out/' %}btn btn-warning{% else %}btn btn-primary{% endif %}" >Check Out</a>
+</div>
+
+{% endblock content %}

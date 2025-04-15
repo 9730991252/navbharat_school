@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.css"/>
+{% endblock head %}
+
+{% block content %}
+{% load static %}
+{% include 'teacher_navbhar.html' %}
+{% include 'alert.html' %}
+<!-- Cropper CSS/JS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<div class="container">
+<style>
+  form{
+    width: 350px;
+    margin: 0 auto;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 3px solid #bbb;
+    padding: 10px;
+    padding-left: 30px;
+  }
+  .file_input{
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: 3px dashed #999;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    i{
+        font-size: 24px;
+    }
+}
+</style>
+<form method="POST">
+  {% if teacher.image != None %}
+  <img onclick="document.getElementById('image').click()" src="{{teacher.image.url}}" style="width: 200px; border-radius: 10px;" alt=""><br>
+  <br>
+  <label for="image" class="btn btn-danger">Upload New Image <i class="fa fa-upload" aria-hidden="true"></i></label>
+  {% else %}
+  <label class="file_input" for="image">
+      <i class="fa fa-upload" aria-hidden="true"></i> <b>Upload Image</b>
+  </label>
+  {% endif %}
+  <input type="file" accept="image/*" style="display: none;" id="image" onchange="openCropper(event)">
+  <input type="hidden" name="img" id="croppedImgInput">
+  <button type="submit" name="add_image" id="add_btn" style="display: none;"></button>
+
+</form>
+</div>
+<style>
+
+.textarea-container {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      background: white;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: none;
+      padding: 12px;
+      padding-bottom: 30px; /* Space for character counter */
+      font-size: 18px;
+      border: 2px solid #d0d7de;
+      border-radius: 8px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border 0.3s ease;
+    }
+
+    textarea:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .char-counter {
+      position: absolute;
+      bottom: 32px;
+      right: 32px;
+      font-size: 12px;
+      color: #888;
+      background: white;
+      padding: 2px 6px;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .char-counter.limit-reached {
+      color: #d9534f;
+      font-weight: bold;
+    }
+</style>
+
+<form method="POST" style="padding: 0;">
+  <label for="" class="my-2 ms-2"><b>About You</b></label>
+  <div class="textarea-container">
+    <textarea id="autoResize" name="about_you" placeholder="Type About You" required>{{teacher.about_you}}</textarea>
+    <div id="charCount" class="char-counter">0 / 1000</div>
+
+  </div>
+
+  <button type="submit" name="add_about_info" class="m-2 btn btn-success text-light">Save</button>
+</form>
+
+
+<script>
+    const textarea = document.getElementById('autoResize');
+    const charCount = document.getElementById('charCount');
+    const maxLength = 1000;
+
+    function update() {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+
+      const length = textarea.value.length;
+      charCount.textContent = `${length} / ${maxLength}`;
+      charCount.classList.toggle('limit-reached', length >= maxLength);
+    }
+
+    textarea.addEventListener('input', update);
+    window.addEventListener('load', update);
+  </script>
+
+<style>
+  #cropperModal{
+      display: none; 
+      position: fixed; 
+      top: 10%; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      z-index: 999; 
+      background: #fff; 
+      padding: 20px; 
+      border: 1px solid #ccc;
+  }
+  
+  </style>
+  <!-- Cropper Modal -->
+  <div id="cropperModal" >
+      <img id="cropperImage" style="width: 300px;">
+      <br>
+      <button onclick="cropAndUpload()">Crop & Upload</button>
+      <button onclick="closeModal()">Cancel</button>
+  </div>
+  
+  
+  <script>
+      let cropper;
+      let currentId;
+  
+      function openCropper(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+  
+          const reader = new FileReader();
+          reader.onload = function (e) {
+              const img = document.getElementById('cropperImage');
+              img.src = e.target.result;
+              document.getElementById('cropperModal').style.display = 'block';
+  
+              if (cropper) cropper.destroy();
+              cropper = new Cropper(img, {
+                  aspectRatio: 2/3,
+                  viewMode: 1
+              });
+          };
+          reader.readAsDataURL(file);
+      }
+  
+      function cropAndUpload() {
+          cropper.getCroppedCanvas({
+              width: 300,
+              height: 500
+          }).toBlob(function (blob) {
+              const reader = new FileReader();
+              reader.onloadend = function () {
+                  const base64data = reader.result;
+                  document.getElementById(`croppedImgInput`).value = base64data;
+                  document.getElementById(`add_btn`).click();
+                  closeModal();
+              };
+              reader.readAsDataURL(blob);
+          }, 'image/webp');
+      }
+  
+      function closeModal() {
+          document.getElementById('cropperModal').style.display = 'none';
+          if (cropper) cropper.destroy();
+      }
+  </script>
+  
+{% endblock content %}

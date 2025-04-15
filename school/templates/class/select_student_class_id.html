@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
+<br>
+<style>
+  .modal{
+    margin-top: 50px;
+  }
+</style>
+<div class="container">
+<div class="text-center"><b>{{class.name}}</b></div>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Select New Students
+  </button>
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #ccc;">
+          <input type="text" id="words" oninput="search_student(this.value)" class="form-control" placeholder="Search Student">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="students_result" class="modal-body">
+          ...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+table { 
+	width: 70%; 
+	border-collapse: collapse; 
+	margin:50px auto;
+  margin-top: 0px;
+	}
+
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+	background: #eee; 
+	}
+
+th { 
+	background: #3498db; 
+	color: white; 
+	font-weight: bold; 
+	}
+
+td, th { 
+	padding: 10px; 
+	border: 1px solid #ccc; 
+	text-align: left; 
+	font-size: 18px;
+	}
+
+  </style>
+<table id="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Student Name</th>
+      <th>Mobile</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in selected_students %}
+    <tr>
+      <td data-column="ID">{{ forloop.counter }}</td>
+        <td data-column="Name">{{t.student.name}}</td>
+        <td data-column="Name">{{t.student.mobile}}</td>
+        <td data-column="Action" style="display: flex;">
+          <form method="POST">
+            <input type="text" value="{{t.id}}" name="id" hidden>
+            <button type="submit" name="remove_selected_student"class="btn btn-danger">Remove</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+</div>
+
+<script>
+    function search_student(words){
+        $.ajax({
+            url: "{% url 'search_student' %}",
+            method: "GET",
+            data:{
+                words:words,
+                batch_id:'{{clerk.batch.id}}'
+            },
+            success: function(res){
+                $("#students_result").html(res.t)
+            }
+        })
+    }
+    function select_student(id){
+      search_student(document.getElementById('words').value)
+        $.ajax({
+            url: "{% url 'select_student' %}",
+            method: "GET",
+            data:{
+                id:id,
+                batch_id:'{{clerk.batch.id}}',
+                class_id:'{{class.id}}',
+                clerk_id:'{{clerk.id}}'
+            },
+            success: function(res){
+                $("#table").html(res.t)
+            }
+        })
+    }
+</script>
+{% endblock content %}

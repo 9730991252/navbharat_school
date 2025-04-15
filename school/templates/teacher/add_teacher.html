@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
+<br>
+<style>
+  .modal{
+    margin-top: 50px;
+  }
+</style>
+<div class="container">
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Add_teacher">Add Teacher</button>  
+  <!-- Modal -->
+  <div class="modal fade" id="Add_teacher" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Teacher</h1>
+          <button type="button" class="btn-close"l data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <!-- <marquee> Add Correct Teacher Information Don't Forgot To Fill any Information.  </marquee> -->
+          <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="name">Name</label>
+              <input type="text" name="name" value="{{ return_name }}" id="name" class="form-control" placeholder="Enter Teacher name Here">
+            </div>
+          
+            <div class="mb-3">
+              <label for="mobile">Mobile</label>
+              <input type="number" name="mobile" value="{{ return_mobile }}" id="mobile" class="form-control" placeholder="Enter Teacher Mobile Here">
+            </div>
+          
+            <div class="mb-3">
+              <label for="pin">Secret Pin</label>
+              <input type="password" name="pin" value="{{ return_pin }}" id="pin" class="form-control" placeholder="Enter Teacher Pin Here">
+            </div>
+          
+            <div class="mb-3">
+              <label for="gender">Gender</label>
+              <select name="gender" id="gender" class="form-control">
+                <option value="">Select Gender</option>
+                <option value="MALE" {% if return_gender == "MALE" %}selected{% endif %}>Male</option>
+                <option value="FEMALE" {% if return_gender == "FEMALE" %}selected{% endif %}>Female</option>
+              </select>
+            </div>
+          
+            <div class="mb-3">
+              <label for="aadhar_number">Aadhar Number</label>
+              <input type="text" name="aadhar_number" value="{{ return_aadhar_number }}" id="aadhar_number" class="form-control" placeholder="Enter Aadhar Number">
+            </div>
+          
+            <div class="mb-3">
+              <label for="qualification">Qualification</label>
+              <input type="text" name="qualification" value="{{ return_qualification }}" id="qualification" class="form-control" placeholder="Enter Qualification">
+            </div>
+          
+            <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
+            <button type="submit" name="Add_Teacher" class="btn btn-success" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Add</button>
+            <button type="reset" class="btn btn-danger">Reset</button>
+          </form>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    table { 
+	width: 80%; 
+	border-collapse: collapse; 
+	margin:50px auto;
+}
+
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+  background: #eee; 
+	}
+  
+  th { 
+    background: #3498db; 
+	color: white; 
+	font-weight: bold; 
+	}
+
+td, th { 
+  padding: 10px; 
+	border: 1px solid #ccc; 
+	text-align: left; 
+	font-size: 18px;
+}
+.checkbox{
+  margin: 0 20px !important;
+  width: 50px;
+}
+</style>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Teacher Name</th>
+      <th>Mobile</th>
+      <th>Pin</th>
+      <th>Aadhar Number</th>
+      <th>Qualification</th>
+      <th>Action</th>
+      <th>WebSite Branding</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in teachers %}
+    <tr>
+      <td data-column="ID">{{ forloop.counter }}</td>
+      <td data-column="Name">{{ t.name }}</td>
+      <td data-column="Mobile">{{ t.mobile }}</td>
+      <td data-column="Pin">{{ t.pin }}</td>
+      <td data-column="Aadhar Number">{{ t.aadhar_number }}</td>
+      <td data-column="Qualification">{{ t.qualification }}</td>
+      <td data-column="Action" style="display: flex;">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Edit_teacher{{t.id}}">Edit</button>  
+        &nbsp;
+        <form method="POST">
+          {% csrf_token %}
+          {% if t.status == 1 %}
+          <button class="btn btn-success" type="submit" name="active">Active
+            <input type="hidden" name="id" value="{{ t.id }}">
+          </button>
+          {% else %}
+          <button class="btn btn-danger" type="submit" name="deactive">Deactive
+            <input type="hidden" name="id" value="{{ t.id }}">
+          </button>
+          {% endif %}
+        </form>
+      </td>
+      <td data-column="WebSite Branding">
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" name="id" value="{{ t.id }}">
+          <input type="checkbox" name="branding" {% if t.branding_status == 1 %}checked{% endif %} class="checkbox" onclick="document.getElementById('Change_branding_status_btn{{t.id}}').click()">
+          <button type="submit" name="Change_branding_status" style="display: none;" id="Change_branding_status_btn{{t.id}}" >123</button>
+        </form>
+      </td>
+    </tr>
+    <div class="modal fade" id="Edit_teacher{{t.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Teacher</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+    
+            <!-- <marquee> Add Correct Teacher Information Don't Forgot To Fill any Information.  </marquee> -->
+  
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="teacher_id" value="{{t.id}}">
+
+              <div class="mb-3">
+                <label for="name">Name</label>
+                <input type="text" name="name" value="{{t.name}}" id="name" class="form-control" placeholder="Enter Teacher name Here" >
+              </div>
+              <div class="mb-3">
+                <label for="mobile">Mobile</label>
+                <input type="number" name="mobile" value="{{t.mobile}}" id="mobile" class="form-control" placeholder="Enter Teacher Mobile Here" >
+              </div>
+              <div class="mb-3">
+                <label for="pin">Secret Pin</label>
+                <input type="password" name="pin" value="{{t.pin}}" id="pin" class="form-control" placeholder="Enter Teacher Pin Here" >
+              </div>
+              <div class="mb-3">
+                <label for="gender">Gender</label>
+                <select name="gender" id="gender" class="form-control">
+                  <option value="MALE" {% if t.gender == "MALE" %}selected{% endif %}>Male</option>
+                  <option value="FEMALE" {% if t.gender == "FEMALE" %}selected{% endif %}>Female</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="aadhar_number">Aadhar Number</label>
+                <input type="text" name="aadhar_number" value="{{t.aadhar_number}}" id="aadhar_number" class="form-control" placeholder="Enter Aadhar Number" >
+              </div>
+              <div class="mb-3">
+                <label for="qualification">Qualification</label>
+                <input type="text" name="qualification" value="{{t.qualification}}" id="qualification" class="form-control" placeholder="Enter Qualification" >
+              </div>
+              
+              <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
+              <button type="submit" name="edit_teacher" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Save</button>
+            </form>
+    
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+
+
+</div>
+{% endblock content %}

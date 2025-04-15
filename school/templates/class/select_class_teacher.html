@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
+<br>
+<style>
+  .modal{
+    margin-top: 50px;
+  }
+</style>
+<div class="container">
+<div class="text-center">Select Class Teacher</div>
+  <style>
+table { 
+	width: 70%; 
+	border-collapse: collapse; 
+	margin:50px auto;
+	}
+
+/* Zebra striping */
+tr:nth-of-type(odd) { 
+	background: #eee; 
+	}
+
+th { 
+	background: #3498db; 
+	color: white; 
+	font-weight: bold; 
+	}
+
+td, th { 
+	padding: 10px; 
+	border: 1px solid #ccc; 
+	text-align: left; 
+	font-size: 18px;
+	}
+
+  </style>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Class Name</th>
+      <th>Class Teacher</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in classes %}
+    <tr>
+      <td data-column="ID">{{ forloop.counter }}</td>
+      <td data-column="Name">{{ t.name }}</td>
+      <td data-column="Action" style="display: flex;" >
+        {% if t.class_teacher == '' %}
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{t.id}}">
+            Select
+          </button>
+        {% else %}
+          <bh>{{t.class_teacher.teacher.name}} &nbsp;</bh>
+          <form method="POST">
+            <input type="text" value="{{t.id}}" name="id" hidden>
+            <button type="submit" class="btn btn-danger btn-sm" name="remove_class_teacher">
+              Remove
+            </button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal{{t.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Select Teacher</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+  
+            <!-- <marquee> Add Correct Class Information Don't Forgot To Fill any Information.  </marquee> -->
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="class_id" value="{{t.id}}">
+
+              <div class="form-group">
+                <select class="form-control" name="teacher_id" required>
+                  <option value="">Select Teacher</option>
+                  {% for c in teachers %}
+                    <option value="{{c.id}}">{{c.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <br>
+              <button type="submit" name="select_class_teacher" class="btn btn-danger" >Submit</button>
+            </form>
+  
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+  </tbody>
+</table>
+
+
+</div>
+{% endblock content %}

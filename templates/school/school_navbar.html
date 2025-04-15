@@ -39,7 +39,7 @@
       }
   </style>
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
-    
+
     <div class="container-fluid">
         <button class="btn side_btn form-control" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">|||</button>
         <img src="{% static 'img/logo.jpg' %}" width="40px" style="border-radius: 50%;" alt="">
@@ -70,7 +70,7 @@
             <button class="btn dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#teacher" aria-expanded="false" aria-controls="collapseExample">
               Teacher
             </button>
-            
+
             <div class="collapse" id="teacher" style="width: 90%;margin-left: auto;margin-right: 20px;">
               <div class="card card-body">
                 <a href="/school/add_teacher/" class="btn href_btn {% if request.path == '/school/add_teacher/' %} at_page {% endif %}">Add Teacher</a>
@@ -84,14 +84,56 @@
             <button class="btn dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#student" aria-expanded="false" aria-controls="collapseExample">
               Student
             </button>
-            
+
             <div class="collapse" id="student" style="width: 90%;margin-left: auto;margin-right: 20px;">
               <div class="card card-body">
                 <a href="/school/add_student/" class="btn href_btn {% if request.path == '/school/add_student/' %} at_page {% endif %}">Add & View Student</a>
+                <a href="/school/student_image/" class="btn href_btn {% if request.path == '/school/student_image/' %} at_page {% endif %} mt-2">Student Image</a>
               </div>
             </div>
       </div>
 
+      <div>
+        <i class="fa-solid fa-school"></i> &nbsp;
+            <button class="btn dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#class" aria-expanded="false" aria-controls="collapseExample">
+              Class
+            </button>
+
+            <div class="collapse" id="class" style="width: 90%;margin-left: auto;margin-right: 20px;">
+              <div class="card card-body">
+                <a href="/school/add_class/" class="btn href_btn {% if request.path == '/school/add_class/' %} at_page {% endif %}">Add Class</a>
+                <a href="/school/select_student_class/" class="btn href_btn mt-2 {% if request.path == '/school/select_student_class/' %} at_page {% endif %}">Select Student Class</a>
+                <a href="/school/select_class_teacher/" class="btn href_btn mt-2 {% if request.path == '/school/select_class_teacher/' %} at_page {% endif %}">Select Class Teacher</a>
+              </div>
+            </div>
+      </div>
       
+      
+      <div>
+        <i class="fa-solid fa-book"></i> &nbsp;
+            <button class="btn dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#subject" aria-expanded="false" aria-controls="collapseExample">
+              Subject
+            </button>
+
+            <div class="collapse" id="subject" style="width: 90%;margin-left: auto;margin-right: 20px;">
+              <div class="card card-body">
+                <a href="/school/add_subject/" class="btn href_btn {% if request.path == '/school/add_subject/' %} at_page {% endif %}">Add Subject</a>
+                <a href="/school/select_subject_class_and_teacher/" class="mt-2 btn href_btn {% if request.path == '/school/select_subject_class_and_teacher/' %} at_page {% endif %}">Select Subject Class &Teacher</a>
+              </div>
+            </div>
+      </div>
+      <div>
+        <i class="fa-solid fa-bullhorn"></i> &nbsp;
+            <button class="btn dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#notice" aria-expanded="false" aria-controls="collapseExample">
+              Notice
+            </button>
+
+            <div class="collapse" id="notice" style="width: 90%;margin-left: auto;margin-right: 20px;">
+              <div class="card card-body">
+                <!-- <a href="/school/add_subject/" class="btn href_btn {% if request.path == '/school/add_subject/' %} at_page {% endif %}">Add Subject</a> -->
+                <!-- <a href="/school/select_subject_class_and_teacher/" class="mt-2 btn href_btn {% if request.path == '/school/select_subject_class_and_teacher/' %} at_page {% endif %}">Select Subject Class &Teacher</a> -->
+              </div>
+            </div>
+      </div>
     </div>
   </div>

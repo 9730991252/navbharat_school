@@ -4,8 +4,8 @@
 {% endblock head %}
 {% block content %}
 {% load static %}
-{% include 'include/school/school_navbar.html' %}
-{% include 'include/alert.html' %}
+{% include 'school/school_navbar.html' %}
+{% include 'alert.html' %}
 <br>
 <style>
   .modal{
@@ -57,7 +57,9 @@
             </div>
             
             <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
-            <button type="submit" name="Add_Student" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Add</button>
+            <button type="submit" name="Add_Student" class="btn btn-success" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Add</button>
+            <button type="reset" class="btn btn-danger">Reset</button>
+
           </form>
 
           </div>

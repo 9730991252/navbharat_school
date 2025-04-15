@@ -43,6 +43,10 @@ source venv/bin/activate
 
 pip install django
 pip install pillow
+pip install opencv-python
+pip install numpy
+pip install face-recognition
+pip install playsound
 pip install gunicorn
 
 ****************migrations******
