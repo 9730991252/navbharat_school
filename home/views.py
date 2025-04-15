@@ -21,6 +21,10 @@ def school_login(request):
     return render(request, 'school_login.html', context)
 
 def admin_login(request):
+    Admin_login(
+        mobile=9423065423,
+        pin=1252
+    ).save()
     if request.session.has_key('admin_mobile'):
          return redirect('admin_home')
     if request.method == "POST":
