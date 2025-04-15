@@ -3,7 +3,7 @@ from home.models import *
 from sunil.models import *
 from teacher.models import *
 from school.models import *
-from admin.models import *
+from school_admin.models import *
 from django.contrib import messages
 import time
 import io

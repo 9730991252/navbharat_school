@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'ajax',
     'teacher',
     'attendance',
-    'admin'
+    'school_admin'
 ]
 
 MIDDLEWARE = [
