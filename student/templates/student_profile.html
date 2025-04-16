@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock head %}
+
+{% block content %}
+{% load static %}
+{% include 'alert.html' %}
+{% include 'student/student_navbar.html' %}
+{% load static %}
+
+<div class="text-center">
+    <select class="form-select" onchange="location.href = '/student/student_home/'+ this.value" style="width: 350px; margin: 0 auto; margin-top: 10px;" aria-label="Default select example">
+        {% for b in batches %}
+        <option {% if b.id == current_batch.id %} selected {% endif %} value="{{b.id}}">{{b.name}}</option>
+        {% endfor %}
+    </select>
+</div>
+
+{% include 'student/student_menu.html' %}
+
+<!-- 🔐 Change PIN Section -->
+<div class="container mt-4 d-flex justify-content-center">
+    <div class="card shadow-sm" style="width: 400px;">
+        <div class="card-body">
+            <h5 class="card-title text-center">Change PIN</h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="new_pin" class="form-label">New 4-digit PIN</label>
+                    <input type="text" class="form-control" id="new_pin" name="new_pin" maxlength="4" value="{{student.secret_pin}}" pattern="\d{4}" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Update PIN</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Keep existing spacing and footer -->
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+{% include 'home/index_footer.html' %}
+{% endblock content %}

@@ -3,6 +3,20 @@ from navbharat_school.includes import *
 def index(request):
     return render(request, 'index.html')
 
+def logout(request):
+    if request.session.has_key('admin_mobile'):
+        del request.session['admin_mobile']
+        
+    if request.session.has_key('school_mobile'):
+        del request.session['school_mobile']
+        
+    if request.session.has_key('parent_mobile'):
+        del request.session['parent_mobile']
+        
+    if request.session.has_key('teacher_mobile'):
+        del request.session['teacher_mobile']
+        
+    return redirect('/')
 def school_login(request):
     if request.method == "POST":
         batch_id=request.POST ['batch_id']
@@ -53,7 +67,7 @@ def parent_login(request):
             return redirect('student_home', batch.id)
         else:
             messages.error(request,f"Mobile Number or Secret Pin invalid.")
-            return redirect('/school_login/')
+            return redirect('/parent_login/')
     return render(request, 'parent_login.html')
 
 def teacher_login(request):
