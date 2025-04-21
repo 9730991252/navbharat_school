@@ -12,6 +12,41 @@ def school_home(request):
     else:
         return redirect('school_mobile')
     
+@csrf_exempt
+def holidays(request):
+    if request.session.has_key('school_mobile'):
+        mobile = request.session['school_mobile']
+        clerk = Clerk.objects.filter(mobile=mobile).first()
+        
+        if 'add_holi_day'in request.POST:
+            date = request.POST.get('date')
+            reason = request.POST.get('reason')
+            if Holidays.objects.filter(date=date, added_by__batch=clerk.batch).exists():
+                messages.error(request, 'This holiday is already registered!')
+            else:
+                Holidays.objects.create(
+                    added_by=clerk,
+                    date=date,
+                    reason=reason
+                )
+                messages.success(request, 'Holiday added successfully!')
+            return redirect('holidays')
+        if 'delete_holiday' in request.POST:
+            holiday_id = request.POST.get('holiday_id')
+            holiday = Holidays.objects.filter(id=holiday_id).first()
+            if holiday:
+                holiday.delete()
+                messages.warning(request, 'Holiday deleted successfully!')
+            else:
+                messages.error(request, 'Holiday not found!')
+            return redirect('holidays')
+        context={
+            'clerk':clerk,
+            'holidays': Holidays.objects.filter(added_by__batch=clerk.batch).order_by('-id'),
+        }
+        return render(request, 'holidays.html', context)
+    else:
+        return redirect('school_mobile')
 
 
 @csrf_exempt

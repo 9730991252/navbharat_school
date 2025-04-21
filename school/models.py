@@ -59,6 +59,12 @@ class School_class(models.Model):
     name = models.CharField(max_length=100, unique=True)
     status = models.IntegerField(default=1)
 
+class Holidays(models.Model):
+    added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    date = models.DateField(null=True)
+    reason = models.CharField(max_length=100,null=True)
+
 class Class_student(models.Model):
     added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True)
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE)

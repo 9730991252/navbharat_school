@@ -1,0 +1,12 @@
+<div class="text-center" id="attendance_box">
+  <h6>{{date}}</h6>
+  {% if holiday %}
+      <h6><b class="text-danger">Holiday</b></h6>
+  {% endif %}
+    {% if attendance.check_in %}
+        <h>Check In - {{attendance.check_in}}</h><br>
+        <h>Check Out - {{attendance.check_out}}</h>
+    {% else %}
+        <h6><b>Absent</b></h6>
+    {% endif %}
+</div>

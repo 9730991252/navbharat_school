@@ -19,7 +19,7 @@
         padding: 10px 20px;
         align-items: center;
         text-shadow: rgb(0, 0, 0) 1px 0 10px;
-
+  
     }
     .weekends{
         background-color: rgb(18, 172, 192);
@@ -39,7 +39,7 @@
         text-align: center;
         font-weight: 300;
         padding: 10px 0px;
-
+  
     }
     .days div{
         width: 14.28%;
@@ -94,7 +94,7 @@
         border-radius: 50%;
         text-align: center;
         margin-top: -5px;
-
+  
     }
     .title{
         text-transform: uppercase;
@@ -108,18 +108,54 @@
             color: #ffffff;
         }
     }
-    #luck15, #luck18{
-        background-color: yellowgreen;
+    .attendance_day{
+        position: relative;
+        background-color: rgb(9, 255, 0);
+        z-index: 23;
     }
-    #luck30, #luck12{
-        background-color:aquamarine;
+    .holiday{
+        color: red !important;
     }
-    #luck13, #luck6, #luck20, #luck27{
-        color: red;
+  
+  
+  
+  
+  
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+        justify-content: center;
     }
-</style>
-<!-- end calender style -->
-
+  
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+  
+    .color-box {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+    }
+  
+    .legend-attendance { background-color: #00ff3c; }
+    .legend-absent { background-color: #ffffff; }
+    .legend-exam { background-color: #f8d7da; }
+    .legend-event { background-color: #d1ecf1; }
+    .legend-holiday { background-color: #ff0000; }
+  </style>
+  <!-- end calender style -->
+  
+  <div class="legend">
+    <div class="legend-item"><div class="color-box legend-attendance"></div> Present</div>
+    <div class="legend-item"><div class="color-box legend-absent"></div> Absent</div>
+    <div class="legend-item"><div class="color-box legend-holiday"></div> Holiday</div>
+    <div class="legend-item"><div class="color-box legend-event"></div> Event</div>
+    <div class="legend-item"><div class="color-box legend-exam"></div> Exam</div>
+  </div>
             <!--* calender content *-->
                 <!-- calendar vidio link -> https://youtu.be/B6a068z8Rkk?si=2abUwVyfLOaKLkgG -->
                 <div class="calender">
@@ -149,7 +185,9 @@
                 </div>
                 <!-- end calender content -->
     <script>
-        
+
+
+
         var dt = new Date(); 
         var today = new Date();
         renderdate()
@@ -157,43 +195,105 @@
             dt.setDate(1);
         var day = dt.getDay();
         var endDate = new Date( dt.getFullYear(), dt.getMonth() + 1, 0 ).getDate();
-
+  
         var prev_date = new Date( dt.getFullYear(), dt.getMonth(), 0).getDate();
-
+  
         var today = new Date();
         var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
+  
         //document.getElementById('date_str').innerHTML = dt.toDateString();
         document.getElementById('month').innerHTML =  months[dt.getMonth()];
         document.getElementById('year').innerHTML =  dt.getFullYear();
-
+  
         var cells = "";
-
+  
         for(x = day; x>0; x--){
             cells+= "<div class='prev_date'>"+ (prev_date - x + 1) +"</div>";
         }
         for(i = 1; i<=endDate; i++){
             if(i == today.getDate() && dt.getMonth() == today.getMonth() && dt.getFullYear() == today.getFullYear()){
-                cells+="<div  class='font_style today' id=" + "luck" + i +" style='border-radius: 50%;'>"+ i +"</div>";
+                cells+="<div onclick='check_day("+ i +")' class='font_style today' id=" + "luck" + i +">"+ i +"</div>";
             }else{
-                cells+="<div  class='font_style' id=" + "luck" + i +">"+ i +"</div>";
+                cells+="<div onclick='check_day("+ i +")' class='font_style' id=" + "luck" + i +">"+ i +"</div>";
             }
             i
         }
-
-
+  
+  
         document.getElementsByClassName('days')[0].innerHTML = cells;
     }
     function moveDate(para){
         $("#event").empty()
         if(para == 'next' &  dt.getFullYear() < today.getFullYear()+2){
             dt.setMonth(dt.getMonth() + 1 );
-            renderdate(),search_lucky_day(),search_event_day()
+            renderdate()
         }
         else if(para == 'prev' & dt.getFullYear() > today.getFullYear()-1){
             dt.setMonth(dt.getMonth() - 1 ); 
-            renderdate(),search_lucky_day(),search_event_day()      
-        }search_event_day() 
+            renderdate()  
+        }
+        search_attrndance_day()
+        search_holiday()
         
     }
-</script>
+  
+    function check_day(day){
+        $.ajax({
+            url: "{% url 'check_day' %}",
+            method: "GET",
+            data:{
+                student_id:'{{student.id}}',
+                day:day,
+                month:dt.getMonth()+1,
+                year:dt.getFullYear(),
+                },
+                success: function(data){
+                    document.getElementById('attendance_box').innerHTML = data.t;
+                }
+        })
+        }
+
+    search_attrndance_day()
+    function search_attrndance_day(){
+        $.ajax({
+            url: "{% url 'search_attrndance_day' %}",
+            method: "GET",
+            data:{
+                student_id:'{{student.id}}',
+                year:dt.getFullYear(),
+                month:dt.getMonth()+1
+                },
+                success: function(data){
+                    for(let key=0; key<data.attrndance_day.length; key++){
+                        i=data.attrndance_day[key].check_in
+                        nd = new Date(i)
+                        ld=nd.getDate()
+                        document.getElementById('luck'+ld).classList.add('attendance_day');
+                        
+                    }
+                }
+        })
+    }
+  
+    search_holiday()
+    function search_holiday(){
+        $.ajax({
+            url: "{% url 'search_holiday' %}",
+            method: "GET",
+            data:{
+                student_id:'{{student.id}}',
+                year:dt.getFullYear(),
+                month:dt.getMonth()+1
+                },
+                success: function(data){
+                    for(let key=0; key<data.holiday.length; key++){
+                        i=data.holiday[key].date
+                        nd = new Date(i)
+                        ld=nd.getDate()
+                        document.getElementById('luck'+ld).classList.add('holiday');
+                        
+                    }
+                }
+        })
+    }
+  </script>

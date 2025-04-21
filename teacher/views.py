@@ -11,6 +11,7 @@ def teacher_home(request):
             class_students = Class_student.objects.filter(school_class=teacher_class.school_class)
             class_students_count = class_students.count()
         messages.success(request, 'Welcome to NAVBHARAT ENGLISH MEDIUM SCHOOL KARMALA!')
+        
         context={
             'teacher':teacher,
             'teacher_class':teacher_class,
@@ -58,19 +59,335 @@ def attendance(request):
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
         teacher = Teacher.objects.filter(mobile=mobile).first()
+        classes = []
+        for c in School_class.objects.filter(batch=teacher.batch, status=1):
+            check_ins = 0
+            check_outs = 0
+            list =[]
+            for c_in in Student_Attendance.objects.filter(check_in__date=now().date()):
+                stc = Class_student.objects.filter(student_id=c_in.student.id).first()
+                if stc.school_class == c:
+                    check_ins += 1
+                    list.append({
+                        'student':c_in.student,
+                        'check_in_by_teacher':c_in.check_in_by_teacher,
+                        'check_out_by_teacher':c_in.check_out_by_teacher,
+                        'check_in':c_in.check_in,
+                        'check_out':c_in.check_out,
+                        'check_in_type':c_in.check_in_type,
+                        'check_out_type':c_in.check_out_type,
+                    })
+            for c_out in Student_Attendance.objects.filter(check_out__date=now().date()):
+                stc = Class_student.objects.filter(student_id=c_out.student.id).first()
+                if stc.school_class == c:
+                    check_outs += 1
+            classes.append({
+                'id':c.id,
+                'name':c.name,
+                'check_ins':check_ins,
+                'check_outs':check_outs,
+                'list':list
+            })
         context={
             'teacher':teacher,
+            'check_in':Student_Attendance.objects.filter(check_in__date=now().date()).count(),
+            'check_out':Student_Attendance.objects.filter(check_out__date=now().date()).count(),
+            'class':classes
         }
         return render(request, 'attendance.html', context)
     else:
         return redirect('school_mobile')
+    
+    
+ # Check In 
+ 
+
+def generate_frames_check_in(request):
+    mobile = request.session['teacher_mobile']
+    teacher = Teacher.objects.filter(mobile=mobile).first()
+    
+    video = cv2.VideoCapture(0)
+    tolerance = 0.45
+    marked_ids = set()
+
+    # Load all student encodings and images
+    student_data = []
+    for s in Student_Image.objects.all():
+        try:
+            image = face_recognition.load_image_file(s.image.path)
+            encodings = face_recognition.face_encodings(image)
+            if encodings:
+                original_image = cv2.imread(s.image.path)
+                student_data.append({
+                    'id': s.student.id,
+                    'name': s.student.name,
+                    'encoding': encodings[0],
+                    'image': original_image
+                })
+        except:
+            continue
+
+    # For showing last matched student
+    last_matched_image = None
+    last_matched_name = ""
+    today = now().date()
+
+    while True:
+        success, frame = video.read()
+        if not success:
+            break
+
+        # Resize for faster processing
+        small = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+        rgb = cv2.cvtColor(small, cv2.COLOR_BGR2RGB)
+
+        # Detect faces and encodings
+        locations = face_recognition.face_locations(rgb)
+        encodings = face_recognition.face_encodings(rgb, locations)
+
+        for face_encoding, location in zip(encodings, locations):
+            distances = [face_recognition.face_distance([s['encoding']], face_encoding)[0] for s in student_data]
+            if distances and min(distances) <= tolerance:
+                idx = np.argmin(distances)
+                student = student_data[idx]
+
+                # Check if attendance is already marked today
+                already_marked = Student_Attendance.objects.filter(
+                    student_id=student['id'],
+                    check_in__date=today
+                ).exists()
+
+                if student['id'] not in marked_ids and not already_marked:
+                    Student_Attendance.objects.create(
+                        student_id=student['id'],
+                        check_in_by_teacher=teacher,
+                        check_in=now()
+                    )
+                    marked_ids.add(student['id'])
+
+                label = f"{student['name']} (Already)" if already_marked else student['name']
+                color = (0, 255, 0)
+
+                # Update thumbnail + name
+                last_matched_image = cv2.resize(student['image'], (100, 100))
+                last_matched_name = student['name']
+
+            else:
+                label = "Unknown"
+                color = (0, 0, 255)
+
+            # Draw face box
+            top, right, bottom, left = [v * 4 for v in location]
+            cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
+            cv2.putText(frame, label, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
+
+        # Show matched student image and name
+        if last_matched_image is not None:
+            frame[10:110, 10:110] = last_matched_image
+            cv2.putText(frame, last_matched_name, (10, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+
+        # Encode and yield frame
+        _, buffer = cv2.imencode('.jpg', frame)
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+
+    video.release()
+
+
+
+def video_feed_check_in(request):
+    return StreamingHttpResponse(generate_frames_check_in(request), content_type='multipart/x-mixed-replace; boundary=frame')
+
+ 
 def student_check_in(request):
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
         teacher = Teacher.objects.filter(mobile=mobile).first()
+        
+        
+        
         context={
             'teacher':teacher,
+            'records':Student_Attendance.objects.filter(check_in__date=now().date())
+            
         }
-        return render(request, 'attendance.html', context)
+        return render(request, 'student_check_in.html', context)
+    else:
+        return redirect('school_mobile')
+ # Check in End
+    
+ # Check Out
+ 
+
+def generate_frames_check_out(request):
+    mobile = request.session['teacher_mobile']
+    teacher = Teacher.objects.filter(mobile=mobile).first()
+    
+    video = cv2.VideoCapture(0)
+    tolerance = 0.45
+    marked_ids = set()
+
+    # Load all student encodings and images
+    student_data = []
+    for s in Student_Image.objects.all():
+        try:
+            image = face_recognition.load_image_file(s.image.path)
+            encodings = face_recognition.face_encodings(image)
+            if encodings:
+                original_image = cv2.imread(s.image.path)
+                student_data.append({
+                    'id': s.student.id,
+                    'name': s.student.name,
+                    'encoding': encodings[0],
+                    'image': original_image
+                })
+        except:
+            continue
+
+    # For showing last matched student
+    last_matched_image = None
+    last_matched_name = ""
+    today = now().date()
+
+    while True:
+        success, frame = video.read()
+        if not success:
+            break
+
+        # Resize for faster processing
+        small = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+        rgb = cv2.cvtColor(small, cv2.COLOR_BGR2RGB)
+
+        # Detect faces and encodings
+        locations = face_recognition.face_locations(rgb)
+        encodings = face_recognition.face_encodings(rgb, locations)
+
+        for face_encoding, location in zip(encodings, locations):
+            distances = [face_recognition.face_distance([s['encoding']], face_encoding)[0] for s in student_data]
+            if distances and min(distances) <= tolerance:
+                idx = np.argmin(distances)
+                student = student_data[idx]
+
+                # Check if attendance is already marked today
+                already_marked = Student_Attendance.objects.filter(
+                    student_id=student['id'],
+                    check_out__date=today
+                ).exists()
+
+                label = f"{student['name']} (Already)" if already_marked else student['name']
+                color = (0, 255, 0)
+                
+                student_in = Student_Attendance.objects.filter(
+                    student_id=student['id'],
+                    check_in__date=today
+                ).exists()
+                
+                if not student_in:
+                    label = f'{student["name"]} not in'
+                    color = (255, 0, 0)
+                else:
+                    # Update thumbnail + name
+                    last_matched_image = cv2.resize(student['image'], (100, 100))
+                    last_matched_name = student['name']
+                    
+                    if not already_marked:
+                        Student_Attendance.objects.filter(student_id=student['id'], check_in__date=today).update(check_out=now(), check_out_by_teacher=teacher )
+                        marked_ids.add(student['id'])
+
+            else:
+                label = "Unknown"
+                color = (0, 0, 255)
+
+            # Draw face box
+            top, right, bottom, left = [v * 4 for v in location]
+            cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
+            cv2.putText(frame, label, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
+
+        # Show matched student image and name
+        if last_matched_image is not None:
+            frame[10:110, 10:110] = last_matched_image
+            cv2.putText(frame, last_matched_name, (10, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+
+        # Encode and yield frame
+        _, buffer = cv2.imencode('.jpg', frame)
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+
+    video.release()
+
+
+
+def video_feed_check_out(request):
+    return StreamingHttpResponse(generate_frames_check_out(request), content_type='multipart/x-mixed-replace; boundary=frame')
+
+ 
+def student_check_out(request):
+    if request.session.has_key('teacher_mobile'):
+        mobile = request.session['teacher_mobile']
+        teacher = Teacher.objects.filter(mobile=mobile).first()
+        
+        
+        
+        context={
+            'teacher':teacher,
+            'records':Student_Attendance.objects.filter(check_in__date=now().date())
+            
+        }
+        return render(request, 'student_check_out.html', context)
+    else:
+        return redirect('school_mobile')
+    
+ # Check Out End
+    
+def student_leaves(request):
+    if request.session.has_key('teacher_mobile'):
+        mobile = request.session['teacher_mobile']
+        teacher = Teacher.objects.filter(mobile=mobile).first()
+        
+        teacher_class = Class_teacher.objects.filter(teacher=teacher).first()
+        
+        leaves = []
+        for l in Leave_letter.objects.filter(batch=teacher.batch).order_by('status'):
+            sc = Class_student.objects.filter(student=l.student).first()
+            if sc.school_class == teacher_class.school_class:
+                leaves.append({
+                    'id':l.id,
+                    'student':l.student,
+                    'from_date':l.from_date,
+                    'to_date':l.to_date,
+                    'added_date':l.added_date,
+                    'status':l.status,
+                    'accepted_date':l.accepted_date,
+                    'reason':l.reason,
+                    'gap_days':(l.to_date - l.from_date).days + 1
+                })
+        if 'approve' in request.POST:
+            leave_id = request.POST.get('leave_id')
+            leave = Leave_letter.objects.filter(id=leave_id).first()
+            if leave.status == 0:
+                leave.status = 1
+                leave.accepted_date = now()
+                leave.save()
+                messages.success(request, f"Leave for {leave.student.name} has been approved.")
+            else:
+                messages.error(request, "Invalid leave request or already processed.")
+            return redirect('/teacher/student_leaves/')
+        if 'reject' in request.POST:
+            leave_id = request.POST.get('leave_id')
+            leave = Leave_letter.objects.filter(id=leave_id).first()
+            if leave.status == 0:
+                leave.status = 2
+                leave.accepted_date = now()
+                leave.save()
+                messages.warning(request, f"Leave for {leave.student.name} has been rejected.")
+            else:
+                messages.error(request, "Invalid leave request or already processed.")
+            return redirect('/teacher/student_leaves/')
+        context={
+            'teacher':teacher,
+            'leaves':leaves
+            
+        }
+        return render(request, 'student_leaves.html', context)
     else:
         return redirect('school_mobile')

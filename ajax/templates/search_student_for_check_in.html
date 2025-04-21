@@ -1,0 +1,27 @@
+<!-- Cropper CSS/JS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+
+
+<!-- Student Upload Loop -->
+{% for s in student %}
+<div class="student_box" id="student_box{{s.id}}">
+    <div class="img_box">
+        {% if s.img != None %}
+        <img src="{{s.img.image.url}}" style="width: 100px; border-radius: 10px;" alt="">
+        {% else %}
+        <img src="https://toppng.com/uploads/preview/icon-student-icon-for-new-student-11553429035frago151ec.png" style="width: 100px; border-radius: 10px;" alt="">
+            {% endif %}
+    </div>
+
+    <div class="name_mobile_box">
+        <div class="name">{{s.name}}</div>
+        <div class="mobile">
+            <button type="button" class="btn btn-success" onclick="check_in_student('{{s.id}}')">Check In</button>
+        </div>
+    </div>
+</div>
+<br>
+{% endfor %}
+

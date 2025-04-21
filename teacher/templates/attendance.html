@@ -1,15 +1,152 @@
 {% extends 'base.html' %}
-{% block head %}
 
-{% endblock head %}
-{% block content %}
+{% block head %}
 {% load static %}
+<style>
+    body {
+        background: #f2f6fc;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .top-nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 30px 0 20px;
+    }
+
+    .top-nav-buttons a {
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+    }
+
+    .top-nav-buttons a:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .card_main_box {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .detail_cards {
+        background: white;
+        border: none;
+        width: 160px;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .detail_cards:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .detail_cards i {
+        font-size: 28px;
+        background-color: #f1f1f1;
+        padding: 15px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        display: inline-block;
+        color: #333;
+    }
+
+    .detail_cards p {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #444;
+    }
+
+    .detail_cards b {
+        font-size: 24px;
+        color: #007bff;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
 {% include 'teacher_navbhar.html' %}
 {% include 'alert.html' %}
 
-<div style="display: flex;gap: 10px;">
-    <a href="/teacher/student_check_in/" class="my-1 {% if request.path == '/teacher/student_check_in/' %}btn btn-warning{% else %}btn btn-primary{% endif %}" >Check In</a>
-    <a href="/teacher/student_check_Out/" class="my-1 {% if request.path == '/teacher/student_check_Out/' %}btn btn-warning{% else %}btn btn-primary{% endif %}" >Check Out</a>
-</div>
+<div class="container">
+    <!-- Navigation Buttons -->
+    <div class="top-nav-buttons">
+        <a href="/teacher/student_check_in/"
+           class="{% if request.path == '/teacher/student_check_in/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">
+            👋 Check In
+        </a>
+        <a href="/teacher/student_check_Out/"
+           class="{% if request.path == '/teacher/student_check_Out/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">
+            🏁 Check Out
+        </a>
+    </div>
 
+</div>
+<!-- Dashboard Cards -->
+<div class="card_main_box">
+    <div class="detail_cards">
+        <i class="fas fa-sign-in-alt"></i>
+        <p>Today's Check In</p>
+        <b>{{check_in}}</b>
+    </div>
+    <div class="detail_cards">
+        <i class="fas fa-sign-out-alt"></i>
+        <p>Today's Check Out</p>
+        <b>{{check_out}}</b>
+    </div>
+</div>
+<div class="card_main_box">
+    {% for c in class %}
+        <div class="detail_cards" data-bs-toggle="modal" data-bs-target="#class_details{{c.id}}">
+            <p>{{c.name}}</p>
+            <h>In {{c.check_ins}} / out {{c.check_outs}}</h>
+        </div>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="class_details{{c.id}}" style="margin-top: 100px;z-index: +55555;" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Class {{c.name}} &nbsp;  In {{c.check_ins}} / out {{c.check_outs}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                {% for l in c.list %}
+                <div class="text-center"><b>{{l.student.name}}</b></div>
+                <div style="display: flex;justify-content: start;gap: 25px;">
+                    <div style="align-items: start;">In &nbsp;&nbsp;</div>
+                    <div style="align-items: start;">{{l.check_in|date:'h:m a'}}</div>
+                    <div style="align-items: start;">By.{{l.check_in_by_teacher.name}}</div>
+                    <div style="align-items: start;">{% if l.check_in_type == 1 %}Auto{% else %}Manual{% endif %}</div>
+                </div>
+                <div style="display: flex;justify-content: start;gap: 25px;">
+                    <div style="align-items: start;">Out</div>
+                    <div style="align-items: start;">{{l.check_out|date:'h:m a'}}</div>
+                    <div style="align-items: start;">By.{{l.check_out_by_teacher.name}}</div>
+                    <div style="align-items: start;">{% if l.check_out_type == 1 %}Auto{% else %}Manual{% endif %}</div>
+                </div>
+                <hr>
+                {% endfor %}
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock content %}

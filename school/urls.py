@@ -20,4 +20,7 @@ urlpatterns = [
     path('add_subject/', views.add_subject, name='add_subject'),
     path('select_subject_class_and_teacher/', views.select_subject_class_and_teacher, name='select_subject_class_and_teacher'),
     path('student_image/', views.student_image, name='student_image'),
+    
+    #holidays
+    path('holidays/', views.holidays, name='holidays'),
 ]

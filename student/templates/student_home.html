@@ -50,12 +50,14 @@
     }
 </style>
 
+
 <div class="welcome_box">
-    <div><img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" alt=""></div>
-    <div>
-        <h6 class="text-center welcome">Welcome Parent</h6>
+  <div><img src="{% if not student_image %} https://cdn-icons-png.flaticon.com/512/201/201818.png {% else %} {{student_image.image.url}} {% endif %}" alt=""></div>
+  <div>
+    <h6 class="text-center welcome">Welcome Parent</h6>
+    
         <h6><h7 style="font-size: 14px;">Student Name:</h7> <br>{{student.name}}</h6>
-        <h6>Class : ..</h6>
+        <h6>Class : {{class.school_class.name}}</h6>
     </div>
 </div>
 
@@ -100,6 +102,14 @@
 {% include 'student/calendar.html' %}
 <!-- Calender End -->
 
+<br>
+<div class="text-center" id="attendance_box">
+  <h6>Todays Attendance</h6>
+
+  <h>Check In - {{attendance.check_in}}</h><br>
+  <h>Check Out - {{attendance.check_out}}</h>
+</div>
+<br>
 <!-- unit_first -->
 {% include 'student/unit_first.html' %}
 <!-- unit_first end -->

@@ -1,90 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Textarea with Inline Counter</title>
-  <style>
-    body {
-      background: #f7f9fc;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+{% extends 'base.html' %}
+{% block head %}
+{% load static %}
+<style>
+    .select-container {
+        margin: 20px auto;
+        text-align: center;
     }
 
-    .textarea-container {
-      position: relative;
-      width: 80%;
-      max-width: 600px;
-      background: white;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      border-radius: 12px;
+    .select-container select {
+        width: 350px;
+        margin: auto;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 8px;
     }
 
-    textarea {
-      width: 100%;
-      min-height: 120px;
-      resize: none;
-      padding: 12px;
-      padding-bottom: 30px; /* Space for character counter */
-      font-size: 16px;
-      border: 2px solid #d0d7de;
-      border-radius: 8px;
-      outline: none;
-      box-sizing: border-box;
-      transition: border 0.3s ease;
+    .modal-header {
+        background-color: #0d6efd;
+        color: white;
+        border-top-left-radius: .5rem;
+        border-top-right-radius: .5rem;
     }
 
-    textarea:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    .modal-footer {
+        border-top: none;
     }
 
-    .char-counter {
-      position: absolute;
-      bottom: 32px;
-      right: 32px;
-      font-size: 12px;
-      color: #888;
-      background: white;
-      padding: 2px 6px;
-      border-radius: 6px;
-      pointer-events: none;
+    .leave-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
     }
 
-    .char-counter.limit-reached {
-      color: #d9534f;
-      font-weight: bold;
+    .leave-card:hover {
+        transform: translateY(-6px);
     }
-  </style>
-</head>
-<body>
 
-  <div class="textarea-container">
-    <textarea id="autoResize" maxlength="1000" placeholder="Type something beautiful..."></textarea>
-    <div id="charCount" class="char-counter">0 / 1000</div>
+    .leave-card .card-header {
+        background: linear-gradient(to right, #0d6efd, #4e91fc);
+        color: white;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .leave-card .card-body p {
+        margin-bottom: 8px;
+    }
+
+    .leave-card .card-footer {
+        background-color: #f8f9fa;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-edit {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+
+    .leave-btn {
+        text-align: center;
+        margin-top: 30px;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% include 'alert.html' %}
+{% include 'student/student_navbar.html' %}
+{% include 'student/student_menu.html' %}
+
+<div class="select-container">
+    <select class="form-select" onchange="location.href = '/student/student_home/'+ this.value" aria-label="Select Batch">
+        {% for b in batches %}
+            <option {% if b.id == current_batch.id %} selected {% endif %} value="{{b.id}}">{{b.name}}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<div class="leave-btn">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Send Leave Letter
+    </button>
+</div>
+
+<!-- Leave Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Leave Letter</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="from_date" class="form-label">From Date</label>
+                    <input type="date" class="form-control" name="from_date" required>
+                </div>
+                <div class="mb-3">
+                    <label for="to_date" class="form-label">To Date</label>
+                    <input type="date" class="form-control" name="to_date" required>
+                </div>
+                <div class="mb-3">
+                    <label for="reason" class="form-label">Reason</label>
+                    <textarea class="form-control" name="reason" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-danger w-100" name="send_leave_letter">Send</button>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+    </div>
   </div>
+</div>
 
-  <script>
-    const textarea = document.getElementById('autoResize');
-    const charCount = document.getElementById('charCount');
-    const maxLength = 1000;
+<!-- Leave Cards -->
+<div class="container mt-5">
+    <div class="row g-4">
+        {% for leave in leave_letter %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card leave-card">
+                <div class="card-header">
+                    Leave Letter
+                </div>
+                <div class="card-body">
+                    <p><strong>From:</strong> {{ leave.from_date }}</p>
+                    <p><strong>To:</strong> {{ leave.to_date }}</p>
+                    <p><strong>Reason:</strong><br>{{ leave.reason }}</p>
+                </div>
+                <div class="card-footer">
+                    <small>Submitted: {{ leave.submitted_date }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
-    function update() {
-      textarea.style.height = 'auto';
-      textarea.style.height = textarea.scrollHeight + 'px';
-
-      const length = textarea.value.length;
-      charCount.textContent = `${length} / ${maxLength}`;
-      charCount.classList.toggle('limit-reached', length >= maxLength);
-    }
-
-    textarea.addEventListener('input', update);
-    window.addEventListener('load', update);
-  </script>
-<br><br>
-</body>
-</html>
+<br><br><br><br>
+{% include 'home/index_footer.html' %}
+{% endblock content %}

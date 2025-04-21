@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% load static %}
+<style>
+    body {
+        background: #f2f6fc;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .top-nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 30px 0 20px;
+    }
+
+    .top-nav-buttons a {
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+    }
+
+    .top-nav-buttons a:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .card_main_box {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .detail_cards {
+        background: white;
+        border: none;
+        width: 160px;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .detail_cards:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .detail_cards i {
+        font-size: 28px;
+        background-color: #f1f1f1;
+        padding: 15px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        display: inline-block;
+        color: #333;
+    }
+
+    .detail_cards p {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #444;
+    }
+
+    .detail_cards b {
+        font-size: 24px;
+        color: #007bff;
+    }
+</style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock head %}
+
+{% block content %}
+{% include 'teacher_navbhar.html' %}
+{% include 'alert.html' %}
+
+
+<div class="container mt-4">
+    <div class="row g-4">
+    {% for l in leaves %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card leave-card shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    <span><i class="bi bi-envelope-paper-heart"></i> {{l.student.name}}</span><br>
+                </div>
+                <div class="card-body">
+                    <span><a href="tel:{{l.student.mobile}}" class="btn text-success btn-sm"><i class="fa fa-phone" aria-hidden="true"></i></a> Mo.{{l.student.mobile}}</span>
+                    <p class="mb-2"><i class="bi bi-calendar-check text-success"></i> <strong>From:</strong> {{ l.from_date }}</p>
+                    <p class="mb-2"><i class="bi bi-calendar-check-fill text-danger"></i> <strong>To:</strong> {{ l.to_date }}</p>
+                    <p class="mb-2"><i class="bi bi-hourglass-split"></i> <strong>Gap:</strong> {{l.gap_days}} days</p>
+                    <p class="mb-2"><i class="bi bi-chat-left-text"></i> <strong>Reason:</strong><br>{{ l.reason }}</p>
+
+                    {% if l.status == 0 %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="leave_id" value="{{l.id}}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="submit" name="approve" class="btn btn-success btn-sm"><i class="bi bi-check-circle"></i> Approve</button>
+                            <button type="submit" name="reject" class="btn btn-danger btn-sm"><i class="bi bi-x-circle"></i> Reject</button>
+                        </div>
+                    </form>
+                    {% elif l.status == 1 %}
+                        <p class="text-success"><i class="bi bi-check-circle-fill"></i> Approved</p>
+                    {% elif l.status == 2 %}
+                        <p class="text-danger"><i class="bi bi-x-circle-fill"></i> Rejected</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-light text-muted " style="border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+                    <small><i class="bi bi-clock-history"></i> Submitted on: {{ l.added_date }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+</div>
+</div>
+
+
+{% endblock content %}

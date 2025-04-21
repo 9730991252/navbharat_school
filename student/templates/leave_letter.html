@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% load static %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+    .leave-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        transform: translateY(-3px);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .card-header i {
+        margin-right: 5px;
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% include 'alert.html' %}
+{% include 'student/student_navbar.html' %}
+
+<div class="text-center">
+    <select class="form-select" onchange="location.href = '/student/student_home/'+ this.value" style="width: 350px; margin: 0 auto; margin-top: 10px;" aria-label="Default select example">
+        {% for b in batches %}
+        <option {% if b.id == current_batch.id %} selected {% endif %} value="{{b.id}}">{{b.name}}</option>
+        {% endfor %}
+    </select>
+</div>
+
+{% include 'student/student_menu.html' %}
+
+<!-- Button trigger modal -->
+<div class="text-center mt-4">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sendLeaveModal">
+        <i class="bi bi-send-check-fill"></i> Send Leave Letter
+    </button>
+</div>
+
+<!-- Send Leave Modal -->
+<div class="modal fade" id="sendLeaveModal" tabindex="-1" aria-labelledby="sendLeaveModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="sendLeaveModalLabel">Send Leave Letter</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">From Date</label>
+                    <input type="date" class="form-control" name="from_date" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">To Date</label>
+                    <input type="date" class="form-control" name="to_date" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Reason</label>
+                    <textarea class="form-control" name="reason" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-danger w-100" name="send_leave_letter">Send</button>
+            </div>
+        </form>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
+
+<br><br>
+
+<div class="container mt-4">
+    <div class="row g-4">
+        {% for leave in leave_letter %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card leave-card shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                    <span><i class="bi bi-envelope-paper-heart"></i> Leave Letter</span>
+                    <button type="button" class="btn btn-sm btn-light text-primary" data-bs-toggle="modal" data-bs-target="#editModal{{ leave.id }}">
+                        {% if leave.status == 0 %}<i class="bi bi-pencil-square"></i> Edit{% endif %}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><i class="bi bi-calendar-check text-success"></i> <strong>From:</strong> {{ leave.from_date }}</p>
+                    <p class="mb-2"><i class="bi bi-calendar-check-fill text-danger"></i> <strong>To:</strong> {{ leave.to_date }}</p>
+                    <p class="mb-2"><i class="bi bi-chat-left-text"></i> <strong>Reason:</strong><br>{{ leave.reason }}</p>
+                </div>
+                <div class="card-footer bg-light text-muted " style="border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
+                    <small><i class="bi bi-clock-history"></i> Submitted on: {{ leave.added_date }}</small>
+                    <small class="ms-3">
+                        {% if leave.status == 0 %}
+                        <i class="fa-solid fa-circle-xmark text-danger"></i> Pending
+                        {% elif leave.status == 1 %}
+                            <i class="bi bi-check-circle text-success"></i> Approved
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Modal -->
+        <div class="modal fade" id="editModal{{ leave.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ leave.id }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editModalLabel{{ leave.id }}">Edit Leave Letter</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="leave_id" value="{{ leave.id }}">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">From Date</label>
+                            <input type="date" class="form-control" name="from_date" value="{{ leave.from_date|date:'Y-m-d' }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">To Date</label>
+                            <input type="date" class="form-control" name="to_date" value="{{ leave.to_date|date:'Y-m-d' }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Reason</label>
+                            <textarea class="form-control" name="reason" rows="3" required>{{ leave.reason }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100" name="edit_leave_letter">Update</button>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<br><br><br><br>
+{% include 'home/index_footer.html' %}
+{% endblock content %}
