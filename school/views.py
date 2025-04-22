@@ -214,15 +214,18 @@ def add_student(request):
         return_name = ''
         return_mobile = ''
         return_aadhar_number = ''
+        return_address = ''
         if 'Add_Student'in request.POST:
             name = request.POST.get('name')
             mobile = request.POST.get('mobile')
             aadhar_number = request.POST.get('aadhar_number')
             pin = request.POST.get('pin')
             gender = request.POST.get('gender')
+            address = request.POST.get('address')
             if name == '':
                 messages.error(request, 'Please enter Student name!')
-
+            elif address == '':
+                messages.error(request, 'Please enter Student address!')
             elif mobile == '':
                 messages.error(request, 'Please enter Parent mobile number!')
 
@@ -238,6 +241,7 @@ def add_student(request):
             else:
                 Student(
                     name=name,
+                    address=address,
                     mobile=mobile,
                     aadhar_number=aadhar_number,
                     secret_pin=pin or str('0000'),
@@ -247,18 +251,21 @@ def add_student(request):
                 messages.success(request, 'Student added successfully!')
                 return redirect('add_student')
             return_name = name
+            return_address = address
             return_mobile = mobile
             return_aadhar_number = aadhar_number
         if 'edit_student' in request.POST:
             student_id = request.POST.get('student_id')
             name = request.POST.get('name')
+            address = request.POST.get('address')
             mobile = request.POST.get('mobile')
             aadhar_number = request.POST.get('aadhar_number')
             pin = request.POST.get('pin')
             gender = request.POST.get('gender')
             if name == '':
                 messages.error(request, 'Please enter Student name!')
-
+            elif address == '':
+                messages.error(request, 'Please enter Student address!')
             elif mobile == '':
                 messages.error(request, 'Please enter Parent mobile number!')
 
@@ -273,6 +280,7 @@ def add_student(request):
             else:
                 Student.objects.filter(id=student_id).update(
                     name=name,
+                    address=address,
                     mobile=mobile,
                     aadhar_number=aadhar_number,
                     secret_pin=pin,
@@ -298,6 +306,7 @@ def add_student(request):
             'return_name': return_name,
             'return_mobile': return_mobile,
             'return_aadhar_number': return_aadhar_number,
+            'return_address': return_address,
         }
         return render(request, 'student/add_student.html', context)
     else:

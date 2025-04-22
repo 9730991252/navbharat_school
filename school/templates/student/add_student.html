@@ -37,6 +37,10 @@
               <input type="text" name="name" value="{{return_name}}" id="name" class="form-control" placeholder="Enter Student name Here" >
             </div>
             <div class="mb-3">
+              <label for="address">Address</label>
+              <input type="text" name="address" value="{{return_address}}" id="address" class="form-control" placeholder="Enter Student Address Here" >
+            </div>
+            <div class="mb-3">
               <label for="mobile">mobile</label>
               <input type="text"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" minlength="10" maxlength="10" name="mobile" value="{{return_mobile}}" id="mobile" class="form-control" placeholder="Enter Student Mobile Here">
             </div>
@@ -102,6 +106,7 @@ td, th {
     <tr>
       <th>ID</th>
       <th>Student Name</th>
+      <th>Address</th>
       <th>Mobile</th>
       <th>Aadhar Number</th>
       <th>Pin</th>
@@ -115,6 +120,7 @@ td, th {
     <tr>
       <td data-column="">{{ forloop.counter }}</td>
       <td data-column="">{{ t.name }}</td>
+      <td data-column="">{{ t.address|slice:'30' }}</td>
       <td data-column="">{{ t.mobile }}</td>
       <td data-column="">{{ t.aadhar_number }}</td>
       <td data-column="">{{ t.secret_pin }}</td>
@@ -156,6 +162,10 @@ td, th {
               <div class="mb-3">
                 <label for="name">Name</label>
                 <input type="text" name="name" value="{{t.name}}" id="name" class="form-control" placeholder="Enter Student name Here" >
+              </div>
+              <div class="mb-3">
+                <label for="address">Address</label>
+                <input type="text" name="address" value="{{t.address}}" id="address" class="form-control" placeholder="Enter Student Address Here" >
               </div>
               <div class="mb-3">
                 <label for="mobile">mobile</label>

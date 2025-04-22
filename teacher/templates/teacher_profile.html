@@ -40,7 +40,7 @@
 }
 </style>
 <form method="POST">
-  {% if teacher.image != None %}
+  {% if teacher.image %}
   <img onclick="document.getElementById('image').click()" src="{{teacher.image.url}}" style="width: 200px; border-radius: 10px;" alt=""><br>
   <br>
   <label for="image" class="btn btn-danger">Upload New Image <i class="fa fa-upload" aria-hidden="true"></i></label>

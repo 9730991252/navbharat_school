@@ -44,6 +44,7 @@ class Student(models.Model):
     status = models.IntegerField(default=1)
     gender = models.CharField(max_length=10)
     added_date = models.DateField(auto_now_add=True)
+    address = models.CharField(max_length=255, null=True)
     added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by')
     edit_status = models.IntegerField(default=1)
  
