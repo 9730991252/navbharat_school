@@ -2,10 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Face Attendance</title>
 </head>
 <body>
-    Hellow world
+    <h1>Face Recognition Attendance</h1>
+
+    <!-- Webcam Feed -->
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+
+    <!-- Result -->
+    <div style="margin-top: 20px;">
+        <h2 id="matched-name">Waiting for face...</h2>
+        <img id="matched-image" src="" alt="Matched Face" width="150" height="150" style="display:none; border: 2px solid #000; border-radius: 8px;">
+    </div>
+
+    <script>
+        const students = JSON.parse('{{ students_json|escapejs }}');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                document.getElementById('video').srcObject = stream;
+            });
+
+        setInterval(() => {
+            const canvas = document.getElementById('canvas');
+            const video = document.getElementById('video');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('frame', blob);
+                formData.append('students', JSON.stringify(students));
+
+                fetch('/attendance/process-frame/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.name) {
+                        document.getElementById('matched-name').innerText = data.name;
+                          document.getElementById('matched-image').src = 'data:image/jpeg;base64,' + data.image;
+                          document.getElementById('matched-image').style.display = 'block';
+                    } else {
+                        document.getElementById('matched-name').innerText = "Unknown face";
+                    }
+                });
+            }, 'image/jpeg');
+        }, 1000);
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    if (cookie.trim().startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.trim().substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
 </body>
 </html>
