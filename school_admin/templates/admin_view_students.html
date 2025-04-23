@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block head %}
+
+{% endblock head %}
+{% block content %}
+{% load static %}
+{% include 'admin_navbar.html' %}
+{% include 'alert.html' %}
+<style>
+    .file_input{
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+        border: 3px dashed #999;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        i{
+            font-size: 24px;
+        }
+    }
+    .student_box{
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 30px;
+        width: 350px;
+        margin: 0 auto;
+        position: relative;
+    }
+    .name_mobile_box{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: start;
+        .name{
+            font-size: 15px;
+            font-weight: bold;
+        }
+    }
+    .adhar_number_gender{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    
+    }
+    .fee{
+        position: absolute;
+        bottom:0;
+        left: 0;
+        right: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        text-align: center;
+    }
+    </style>
+
+<!-- Student Upload Loop -->
+{% for s in students %}
+<div class="student_box">
+    <div class="img_box">
+        {% if s.img != None %}
+        <img src="{{s.img.image.url}}" style="width: 100px; border-radius: 10px;" alt="">
+        {% else %}
+        <img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" style="width: 100px; border-radius: 10px;" alt="">
+        {% endif %}
+    </div>
+
+    <div class="name_mobile_box">
+        <div class="name">{{s.name}}</div>
+        <div class="mobile"><a href="tel:{{s.mobile}}" class="btn text-success"><i class="fa fa-phone" aria-hidden="true"></i></a> {{s.mobile}} <a href="https://api.whatsapp.com/send?phone={{s.mobile}}&text=Hi" class="btn text-success"><i class="fa-brands fa-whatsapp"></i></a></div>
+        <div class="adhar_number">Class. {{s.class.name}}</div>
+    </div>
+    <div><br></div>
+    <div class="fee">
+        <div>Total Fee</div>
+        <div class="text-success">Recived Fee</div>
+        <div class="text-danger">Remaining Fee</div>
+        <div>Rs.0</div>
+        <div class="text-success">Rs.0</div>
+        <div class="text-danger">Rs.0</div>
+    </div>
+</div>
+<br>
+{% endfor %}
+
+
+{% endblock content %}

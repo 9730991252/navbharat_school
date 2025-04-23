@@ -31,18 +31,26 @@
             font-weight: 700;
         }
     }
+    a{
+        text-decoration: none;
+        color: black;
+    }
 </style>
 <div class="container card_main_box">
-    <div class="detail_cards">
-        <i class="fa-solid fa-user-tie"></i>
-        <p>Students {{total_students}}</p>
-        <h>Male {{male_students}} <br></h>
-        <h>FeMale {{female_students}}</h>
-    </div>
-    <div class="detail_cards">
-        <i class="fa-solid fa-chalkboard-user"></i>
-        <p>Teacher {{total_teacher}}</p>
-        <h>Male {{male_teacher}} &nbsp;</h>
-        <h>FeMale {{female_teacher}}</h>
-    </div>
+    <a href="/school_admin/admin_view_students/" class="detail_cards">
+        <div >
+            <i class="fa-solid fa-user-tie"></i>
+            <p>Students {{total_students}}</p>
+            <h>Male {{male_students}} <br></h>
+            <h>FeMale {{female_students}}</h>
+        </div>
+    </a>
+    <a href="/school_admin/admin_view_teacher/" class="detail_cards">
+        <div >
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <p>Teacher {{total_teacher}}</p>
+            <h>Male {{male_teacher}} &nbsp;</h>
+            <h>FeMale {{female_teacher}}</h>
+        </div>
+    </a>
 </div>
