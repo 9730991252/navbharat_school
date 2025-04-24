@@ -41,7 +41,7 @@ def send_push(request):
                     body='This is a push notification',
                 ),
             ),
-            token=device.token
+            token='epn9QnAzIVIbFWLoyOwZnU:APA91bHa6ZPIGWjeQCbQCHlfWvhCBl1UT1nWjXmxY-k8fgOwdQZk2RwKx6hVC9t_H3seNR6EV1XsfkpcPTvumIN_0W9FguvobUKBDgkhN52jrF1xylHg5i4'
         )
         
         response = messaging.send(message)
