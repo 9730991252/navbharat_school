@@ -2,10 +2,10 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-    apiKey: "AIzaSyBDzjtF1IsD_hgUSakl5SgJ0fNKwKncsPg",
-    projectId: "main-navbharat",
-    messagingSenderId: "658810373879",
-    appId: "1:658810373879:web:4abd4eb8a94fc0b7b8b5f2"
+    apiKey: "AIzaSyDeeTLSC1ta_j1ePLqprMTFa6SlznNFKE0",
+    projectId: "navbharattest-ff0c0",
+    messagingSenderId: "254125828844",
+    appId: "1:254125828844:web:b155c8317d6c412b5a93c9"
 });
 
 const messaging = firebase.messaging();
