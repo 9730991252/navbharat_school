@@ -9,6 +9,8 @@
     <h1>Django Web Push Demo</h1>
     <button onclick="requestPermission()">Enable Notifications</button>
 
+    <textarea name="" id="tocken"></textarea>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDeeTLSC1ta_j1ePLqprMTFa6SlznNFKE0",
@@ -30,6 +32,7 @@
                         vapidKey: "BH5pZILEW43BuSQq7Aiei0bSyHG5NYgNnnqlOzrNBsQmAmBI1hGHd45Z1f_1VgMpcHcWRzwfkwjJXiQfvIIWwAw" 
                     });
                     console.log('FCM Token:', token);
+                    document.getElementById('tocken').value = token; // Display token in textarea
                     saveTokenToDjango(token);
                 }
             } catch (error) {
