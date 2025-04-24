@@ -10,5 +10,93 @@
 <br>
 {% include 'school_details_card.html' %}
 
+<style>
+    body {
+        background: #f2f6fc;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .top-nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 30px 0 20px;
+    }
+
+    .top-nav-buttons a {
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+    }
+
+    .top-nav-buttons a:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .card_main_box2 {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 20px 0;
+    }
+
+    .detail_cards2 {
+        background: white;
+        border: none;
+        width: 160px;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .detail_cards2:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .detail_cards2 i {
+        font-size: 28px;
+        background-color: #f1f1f1;
+        padding: 15px;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        display: inline-block;
+        color: #333;
+    }
+
+    .detail_cards2 p {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #444;
+    }
+
+    .detail_cards2 b {
+        font-size: 24px;
+        color: #007bff;
+    }
+</style>
+
+<!-- Dashboard Cards -->
+<div class="card_main_box2">
+    <div class="detail_cards2">
+        <i class="fas fa-sign-in-alt"></i>
+        <p>Today's Check In</p>
+        <b>{{check_in}}</b>
+    </div>
+    <div class="detail_cards2">
+        <i class="fas fa-sign-out-alt"></i>
+        <p>Today's Check Out</p>
+        <b>{{check_out}}</b>
+    </div>
+</div>
+
 
 {% endblock content %}

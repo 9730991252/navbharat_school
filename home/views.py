@@ -44,6 +44,7 @@ def admin_login(request):
         a = Admin_login.objects.filter(mobile=number, pin=pin).first()
         if a:
             a.batch_id=batch_id
+            a.save()
             request.session['admin_mobile'] = request.POST["mobile"]
             return redirect('admin_home')
         else:
