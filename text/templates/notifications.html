@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Django Web Push</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+</head>
+<body>
+    <h1>Django Web Push Demo</h1>
+    <button onclick="requestPermission()">Enable Notifications</button>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDzjtF1IsD_hgUSakl5SgJ0fNKwKncsPg",
+            authDomain: "main-navbharat.firebaseapp.com",
+            projectId: "main-navbharat",  // Updated projectId
+            storageBucket: "main-navbharat.firebasestorage.app",
+            messagingSenderId: "658810373879",
+            appId: "1:658810373879:web:4abd4eb8a94fc0b7b8b5f2"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+        async function requestPermission() {
+            try {
+                const permission = await Notification.requestPermission();
+                console.log('Firebase App Initialized:', permission);
+                if (permission === 'granted') {
+                    const token = await messaging.getToken({ 
+                        vapidKey: "BH5pZILEW43BuSQq7Aiei0bSyHG5NYgNnnqlOzrNBsQmAmBI1hGHd45Z1f_1VgMpcHcWRzwfkwjJXiQfvIIWwAw" 
+                    });
+                    console.log('FCM Token:', token);
+                    saveTokenToDjango(token);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function saveTokenToDjango(token) {
+            fetch('/test/save-token/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: token })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if(data.status === 'success') {
+                    console.log('Token saved successfully');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Handle foreground messages
+        messaging.onMessage((payload) => {
+            console.log('Message received:', payload);
+            new Notification(payload.notification.title, {
+                body: payload.notification.body
+            });
+        });
+    </script>
+</body>
+</html>

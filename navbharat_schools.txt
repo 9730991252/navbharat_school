@@ -46,6 +46,8 @@ pip install cmake
 pip install face-recognition
 pip install playsound
 pip install gunicorn
+pip install firebase-admin
+pip install python-dotenv
 
 ****************migrations******
 python3 manage.py makemigrations
