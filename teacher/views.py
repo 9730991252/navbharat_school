@@ -66,21 +66,23 @@ def attendance(request):
             list =[]
             for c_in in Student_Attendance.objects.filter(check_in__date=now().date()):
                 stc = Class_student.objects.filter(student_id=c_in.student.id).first()
-                if stc.school_class == c:
-                    check_ins += 1
-                    list.append({
-                        'student':c_in.student,
-                        'check_in_by_teacher':c_in.check_in_by_teacher,
-                        'check_out_by_teacher':c_in.check_out_by_teacher,
-                        'check_in':c_in.check_in,
-                        'check_out':c_in.check_out,
-                        'check_in_type':c_in.check_in_type,
-                        'check_out_type':c_in.check_out_type,
-                    })
+                if stc != None:
+                    if stc.school_class == c:
+                        check_ins += 1
+                        list.append({
+                            'student':c_in.student,
+                            'check_in_by_teacher':c_in.check_in_by_teacher,
+                            'check_out_by_teacher':c_in.check_out_by_teacher,
+                            'check_in':c_in.check_in,
+                            'check_out':c_in.check_out,
+                            'check_in_type':c_in.check_in_type,
+                            'check_out_type':c_in.check_out_type,
+                        })
             for c_out in Student_Attendance.objects.filter(check_out__date=now().date()):
                 stc = Class_student.objects.filter(student_id=c_out.student.id).first()
-                if stc.school_class == c:
-                    check_outs += 1
+                if stc != None:
+                    if stc.school_class == c:
+                        check_outs += 1
             classes.append({
                 'id':c.id,
                 'name':c.name,
@@ -196,19 +198,76 @@ def generate_frames_check_in(request):
 
 
 def video_feed_check_in(request):
-    return StreamingHttpResponse(generate_frames_check_in(request), content_type='multipart/x-mixed-replace; boundary=frame')
+    if request.method == 'POST' and request.FILES.get('frame'):
+        frame_file = request.FILES['frame']
+        students_json = request.POST.get('students')
+        students = json.loads(students_json)
 
+        frame_data = np.asarray(bytearray(frame_file.read()), dtype=np.uint8)
+        frame = cv2.imdecode(frame_data, cv2.IMREAD_COLOR)
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        face_locations = face_recognition.face_locations(rgb)
+        face_encodings = face_recognition.face_encodings(rgb, face_locations)
+
+        today = date.today()
+        for face_encoding in face_encodings:
+            distances = [face_recognition.face_distance([np.array(s['encoding'])], face_encoding)[0] for s in students]
+            if distances and min(distances) <= 0.45:
+                idx = np.argmin(distances)
+                student = students[idx]
+
+                # Mark attendance if not already marked
+                already_marked = Student_Attendance.objects.filter(
+                    student_id=student['id'],
+                    check_in__date=today
+                ).exists()
+                if not already_marked:
+                    Student_Attendance.objects.create(student_id=student['id'], check_in=today)
+
+                # Return image from disk (reload for safety)
+                try:
+                    student_image_obj = Student_Image.objects.get(student_id=student['id'])
+                    image = cv2.imread(student_image_obj.image.path)
+                    image = cv2.resize(image, (150, 150))
+                    _, buffer = cv2.imencode('.jpg', image)
+                    img_base64 = base64.b64encode(buffer).decode('utf-8')
+                    return JsonResponse({
+                        'status': 'matched',
+                        'name': student['name'],
+                        'image': img_base64
+                    })
+                except:
+                    return JsonResponse({'status': 'matched', 'name': student['name'], 'image': None})
+
+        return JsonResponse({'status': 'no match'})  # Unknown
+    return JsonResponse({'error': 'Invalid request'}, status=400)
  
 def student_check_in(request):
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
         teacher = Teacher.objects.filter(mobile=mobile).first()
-        
+        student_data = []
+        for s in Student_Image.objects.all():
+            try:
+                image = face_recognition.load_image_file(s.image.path)
+                encodings = face_recognition.face_encodings(image)
+                if encodings:
+                    student_data.append({
+                        'id': s.student.id,
+                        'name': s.student.name,
+                        'encoding': encodings[0].tolist(),  # Convert numpy array to list
+                    })
+            except Exception as e:
+                print(f"Error loading image for {s.student.name}: {e}")
+                continue
+        students_json = json.dumps(student_data)
         
         
         context={
             'teacher':teacher,
-            'records':Student_Attendance.objects.filter(check_in__date=now().date())
+            'records':Student_Attendance.objects.filter(check_in__date=now().date()),
+            'students_json':students_json
             
         }
         return render(request, 'student_check_in.html', context)

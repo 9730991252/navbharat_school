@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Face Attendance</title>
-    
 </head>
 <body>
+    {% load static %}
     <h1>Face Recognition Attendance</h1>
 
     <!-- Webcam Feed -->
@@ -18,46 +18,72 @@
         <img id="matched-image" src="" alt="Matched Face" width="150" height="150" style="display:none; border: 2px solid #000; border-radius: 8px;">
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1/dist/face-api.js"></script>
+
     <script>
         const students = JSON.parse('{{ students_json|escapejs }}');
 
+        // Load face-api.js models
+        Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('{% static "models" %}'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('{% static "models" %}'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('{% static "models" %}'),
+            faceapi.nets.faceExpressionNet.loadFromUri('{% static "models" %}')
+        ]);
+
+        // Set up video stream from webcam
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
-                document.getElementById('video').srcObject = stream;
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+
+                // Wait until the video starts playing before setting up the canvas
+                video.onplay = () => {
+                    const canvas_for_face = faceapi.createCanvasFromMedia(video);
+                    document.body.append(canvas_for_face);
+                    const displaySize = { width: video.width, height: video.height };
+                    faceapi.matchDimensions(canvas_for_face, displaySize);
+
+                    setInterval(async () => {
+                        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
+                        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+
+                        // If one face is detected, process it
+                        if (resizedDetections.length === 1) {
+
+                            const canvas = document.getElementById('canvas');
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+                            const context = canvas.getContext('2d');
+                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                            canvas.toBlob(blob => {
+                                const formData = new FormData();
+                                formData.append('frame', blob);
+                                formData.append('students', JSON.stringify(students));
+
+                                fetch('/attendance/process-frame/', {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-CSRFToken': getCookie('csrftoken')
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.name) {
+                                        document.getElementById('matched-name').innerText = data.name;
+                                        document.getElementById('matched-image').src = 'data:image/jpeg;base64,' + data.image;
+                                        document.getElementById('matched-image').style.display = 'block';
+                                    } else {
+                                    }
+                                });
+                            }, 'image/jpeg');
+                        }
+                        else{}
+                    }, 1000);
+                }; 
             });
-
-        setInterval(() => {
-            const canvas = document.getElementById('canvas');
-            const video = document.getElementById('video');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            canvas.toBlob(blob => {
-                const formData = new FormData();
-                formData.append('frame', blob);
-                formData.append('students', JSON.stringify(students));
-
-                fetch('/attendance/process-frame/', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.name) {
-                        document.getElementById('matched-name').innerText = data.name;
-                          document.getElementById('matched-image').src = 'data:image/jpeg;base64,' + data.image;
-                          document.getElementById('matched-image').style.display = 'block';
-                    } else {
-                        document.getElementById('matched-name').innerText = "Unknown face";
-                    }
-                });
-            }, 'image/jpeg');
-        }, 1000);
 
         function getCookie(name) {
             let cookieValue = null;

@@ -21,6 +21,7 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.files.base import ContentFile
 from django.utils.timezone import localtime
 import cv2
+import json
 import numpy as np
 import face_recognition
 from django.http import StreamingHttpResponse
