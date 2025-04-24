@@ -41,7 +41,7 @@ def send_push(request):
                     body='This is a push notification',
                 ),
             ),
-            token='epn9QnAzIVIbFWLoyOwZnU:APA91bHa6ZPIGWjeQCbQCHlfWvhCBl1UT1nWjXmxY-k8fgOwdQZk2RwKx6hVC9t_H3seNR6EV1XsfkpcPTvumIN_0W9FguvobUKBDgkhN52jrF1xylHg5i4'
+            token='dm0k4a_4FalKCFUPN6SJSM:APA91bHk8IRdvYhaojO8PhyY_BjUCX9U8YJBix7rLqsdtVsQ-eRMJD087KHLhTV8TWNYsc6TRgkMlwibLcgugJGdfOpEqoHfmdg37Vi-ZbioHMoADcjJOaY'
         )
         
         response = messaging.send(message)
