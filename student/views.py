@@ -18,6 +18,28 @@ def student_home(request, batch_id):
     else:
         return redirect('login')
     
+@csrf_exempt
+def save_token(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            token = data.get('token')
+            if not token:
+                return JsonResponse({'status': 'error', 'message': 'No token provided'}, status=400)
+            else:
+                mobile = request.session['parent_mobile']
+                student = Student.objects.filter(mobile=mobile).first()
+                student.tocken = token
+                student.save()
+            return JsonResponse({'status': 'success'})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+    
 def notice(request, batch_id):
     if request.session.has_key('parent_mobile'):
         mobile = request.session['parent_mobile']

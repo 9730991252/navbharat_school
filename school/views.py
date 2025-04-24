@@ -82,7 +82,8 @@ def student_image(request):
         return render(request, 'student/student_image.html', context)
     else:
         return redirect('school_mobile')
-    
+
+
 #teacher
 def add_teacher(request):
     if request.session.has_key('school_mobile'):

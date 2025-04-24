@@ -47,6 +47,7 @@ class Student(models.Model):
     address = models.CharField(max_length=255, null=True)
     added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by')
     edit_status = models.IntegerField(default=1)
+    tocken = models.CharField(max_length=1000, null=True, blank=True)
  
 class Student_Image(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)

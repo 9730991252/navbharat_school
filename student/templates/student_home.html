@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block head %}
-
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
 {% endblock head %}
 {% block content %}
 {% load static %}
@@ -100,6 +101,9 @@
   </style>
 <!-- Calender -->
 {% include 'student/calendar.html' %}
+<div class="text-center mt-2">
+  <button class="btn btn-success" onclick="requestPermission()">Enable Presenty Notifications</button>
+</div>
 <!-- Calender End -->
 
 <br>
@@ -127,4 +131,61 @@
  <!-- annual_exam -->
 <br>
 {% include 'home/index_footer.html' %}
+
+<script>
+  const firebaseConfig = {
+      apiKey: "AIzaSyDeeTLSC1ta_j1ePLqprMTFa6SlznNFKE0",
+      authDomain: "navbharattest-ff0c0.firebaseapp.com",
+      projectId: "navbharattest-ff0c0",  // Updated projectId
+      storageBucket: "navbharattest-ff0c0.firebasestorage.app",
+      messagingSenderId: "254125828844",
+      appId: "1:254125828844:web:b155c8317d6c412b5a93c9"
+  };
+
+  const app = firebase.initializeApp(firebaseConfig);
+  const messaging = firebase.messaging();
+  async function requestPermission() {
+      try {
+          const permission = await Notification.requestPermission();
+          console.log('Firebase App Initialized:', permission);
+          if (permission === 'granted') {
+              const token = await messaging.getToken({ 
+                  vapidKey: "BH5pZILEW43BuSQq7Aiei0bSyHG5NYgNnnqlOzrNBsQmAmBI1hGHd45Z1f_1VgMpcHcWRzwfkwjJXiQfvIIWwAw" 
+              });
+              console.log('FCM Token:', token);
+              saveTokenToDjango(token);
+          }
+      } catch (error) {
+          console.error('Error:', error);
+      }
+  }
+
+  function saveTokenToDjango(token) {
+      fetch('/student/save-token/', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: token })
+      })
+      .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+      })
+      .then(data => {
+          if(data.status === 'success') {
+              console.log('Token saved successfully');
+          }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+  // Handle foreground messages
+  messaging.onMessage((payload) => {
+      console.log('Message received:', payload);
+      new Notification(payload.notification.title, {
+          body: payload.notification.body
+      });
+  });
+</script>
 {% endblock content %}

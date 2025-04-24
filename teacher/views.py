@@ -56,6 +56,7 @@ def profile(request):
     else:
         return redirect('school_mobile')
 def attendance(request):
+    Student_Attendance.objects.all().delete()
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
         teacher = Teacher.objects.filter(mobile=mobile).first()
@@ -101,101 +102,6 @@ def attendance(request):
         return redirect('school_mobile')
     
     
- # Check In 
- 
-
-def generate_frames_check_in(request):
-    mobile = request.session['teacher_mobile']
-    teacher = Teacher.objects.filter(mobile=mobile).first()
-    
-    video = cv2.VideoCapture(0)
-    tolerance = 0.45
-    marked_ids = set()
-
-    # Load all student encodings and images
-    student_data = []
-    for s in Student_Image.objects.all():
-        try:
-            image = face_recognition.load_image_file(s.image.path)
-            encodings = face_recognition.face_encodings(image)
-            if encodings:
-                original_image = cv2.imread(s.image.path)
-                student_data.append({
-                    'id': s.student.id,
-                    'name': s.student.name,
-                    'encoding': encodings[0],
-                    'image': original_image
-                })
-        except:
-            continue
-
-    # For showing last matched student
-    last_matched_image = None
-    last_matched_name = ""
-    today = now().date()
-
-    while True:
-        success, frame = video.read()
-        if not success:
-            break
-
-        # Resize for faster processing
-        small = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-        rgb = cv2.cvtColor(small, cv2.COLOR_BGR2RGB)
-
-        # Detect faces and encodings
-        locations = face_recognition.face_locations(rgb)
-        encodings = face_recognition.face_encodings(rgb, locations)
-
-        for face_encoding, location in zip(encodings, locations):
-            distances = [face_recognition.face_distance([s['encoding']], face_encoding)[0] for s in student_data]
-            if distances and min(distances) <= tolerance:
-                idx = np.argmin(distances)
-                student = student_data[idx]
-
-                # Check if attendance is already marked today
-                already_marked = Student_Attendance.objects.filter(
-                    student_id=student['id'],
-                    check_in__date=today
-                ).exists()
-
-                if student['id'] not in marked_ids and not already_marked:
-                    Student_Attendance.objects.create(
-                        student_id=student['id'],
-                        check_in_by_teacher=teacher,
-                        check_in=now()
-                    )
-                    marked_ids.add(student['id'])
-
-                label = f"{student['name']} (Already)" if already_marked else student['name']
-                color = (0, 255, 0)
-
-                # Update thumbnail + name
-                last_matched_image = cv2.resize(student['image'], (100, 100))
-                last_matched_name = student['name']
-
-            else:
-                label = "Unknown"
-                color = (0, 0, 255)
-
-            # Draw face box
-            top, right, bottom, left = [v * 4 for v in location]
-            cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
-            cv2.putText(frame, label, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
-
-        # Show matched student image and name
-        if last_matched_image is not None:
-            frame[10:110, 10:110] = last_matched_image
-            cv2.putText(frame, last_matched_name, (10, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-
-        # Encode and yield frame
-        _, buffer = cv2.imencode('.jpg', frame)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
-
-    video.release()
-
-
 
 def video_feed_check_in(request):
     if request.method == 'POST' and request.FILES.get('frame'):
@@ -223,7 +129,8 @@ def video_feed_check_in(request):
                     check_in__date=today
                 ).exists()
                 if not already_marked:
-                    Student_Attendance.objects.create(student_id=student['id'], check_in=today)
+                    Student_Attendance.objects.create(student_id=student['id'], check_in=datetime.now())
+                    send_push(student['tocken'], datetime.now() , f'{student["name"]} has checked in')
 
                 # Return image from disk (reload for safety)
                 try:
@@ -242,7 +149,20 @@ def video_feed_check_in(request):
 
         return JsonResponse({'status': 'no match'})  # Unknown
     return JsonResponse({'error': 'Invalid request'}, status=400)
- 
+
+def send_push(tocken, title, body):
+    if tocken and title and body:
+        message = messaging.Message(
+            webpush=messaging.WebpushConfig(
+                notification=messaging.WebpushNotification(
+                    title=str(title),
+                    body=body,
+                ),
+            ),
+            token=tocken
+        )
+        messaging.send(message)
+
 def student_check_in(request):
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
@@ -257,6 +177,7 @@ def student_check_in(request):
                         'id': s.student.id,
                         'name': s.student.name,
                         'encoding': encodings[0].tolist(),  # Convert numpy array to list
+                        'tocken': s.student.tocken or '',
                     })
             except Exception as e:
                 print(f"Error loading image for {s.student.name}: {e}")
