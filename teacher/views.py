@@ -57,6 +57,7 @@ def profile(request):
     else:
         return redirect('school_mobile')
 def attendance(request):
+    Student_Attendance.objects.all().delete()
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
         teacher = Teacher.objects.filter(mobile=mobile).first()
