@@ -86,9 +86,20 @@
        class="check-out {% if request.path == '/teacher/student_check_out/' %}active-btn{% endif %}">
       🏁 Check Out
     </a>
+    
+  </div>
+  
+  <div style="display: none;">
+
+    <audio controls id="succcess_audio">
+      <source src="/media/notifications/success1.mp3" type="audio/mpeg">
+    </audio>
+    
   </div>
 
-  <div id="student_result"></div>
+
+
+   <div id="student_result"></div>
 
   <div class="main-wrapper">
     <div class="card-box">
@@ -116,9 +127,15 @@
   </div>
   <br><br><br>
 
+
   <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1/dist/face-api.js"></script>
   <script>
     const students = JSON.parse('{{ students_json|escapejs }}');
+
+    function playAudio(type) {
+      var audio = document.getElementById(type);
+      audio.play();
+    }
 
     // Load face-api models
     Promise.all([
@@ -126,7 +143,7 @@
       faceapi.nets.faceLandmark68Net.loadFromUri('{% static "models" %}'),
       faceapi.nets.faceRecognitionNet.loadFromUri('{% static "models" %}'),
       faceapi.nets.faceExpressionNet.loadFromUri('{% static "models" %}')
-    ]);
+    ])
 
     // Start webcam
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -179,6 +196,7 @@
                     const img = document.getElementById('matched-image');
                     img.src = 'data:image/jpeg;base64,' + data.image;
                     img.style.display = 'block';
+                    playAudio('succcess_audio');
                   }
                 });
               }, 'image/jpeg');

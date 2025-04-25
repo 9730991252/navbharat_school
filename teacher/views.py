@@ -12,6 +12,7 @@ def teacher_home(request):
             class_students_count = class_students.count()
         messages.success(request, 'Welcome to NAVBHARAT ENGLISH MEDIUM SCHOOL KARMALA!')
         
+        
         context={
             'teacher':teacher,
             'teacher_class':teacher_class,
@@ -130,7 +131,6 @@ def video_feed_check_in(request):
                 if not already_marked:
                     Student_Attendance.objects.create(student_id=student['id'], check_in=datetime.now())
                     send_push(student['tocken'], datetime.now() , f'{student["name"]} has checked in')
-
                 # Return image from disk (reload for safety)
                 try:
                     student_image_obj = Student_Image.objects.get(student_id=student['id'])

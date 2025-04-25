@@ -102,6 +102,10 @@
         border-radius: 10px;
         margin-bottom: -5px;
         padding: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
         b{
             font-size: 15px;
             font-weight: 400;
@@ -120,14 +124,7 @@
   
   
   
-  
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 20px;
-        justify-content: center;
-    }
+
   
     .legend-item {
       display: flex;
@@ -149,13 +146,7 @@
   </style>
   <!-- end calender style -->
   
-  <div class="legend">
-    <div class="legend-item"><div class="color-box legend-attendance"></div> Present</div>
-    <div class="legend-item"><div class="color-box legend-absent"></div> Absent</div>
-    <div class="legend-item"><div class="color-box legend-holiday"></div> Holiday</div>
-    <div class="legend-item"><div class="color-box legend-event"></div> Event</div>
-    <div class="legend-item"><div class="color-box legend-exam"></div> Exam</div>
-  </div>
+
             <!--* calender content *-->
                 <!-- calendar vidio link -> https://youtu.be/B6a068z8Rkk?si=2abUwVyfLOaKLkgG -->
                 <div class="calender">
@@ -165,7 +156,13 @@
                         </div>
                         <div>
                             <div style="display: flex;justify-content: center;"><h2 id="month"></h2>&nbsp;&nbsp;<h2 id="year"></h2></div>
-                            <p class="title"> <b>attendance / exams / Events / holly days  </b> </p>
+                            <div class="title">
+                                <div class="legend-item"><div class="color-box legend-attendance"></div> Present</div>
+                                <div class="legend-item"><div class="color-box legend-absent"></div> Absent</div>
+                                <div class="legend-item"><div class="color-box legend-holiday"></div> Holiday</div>
+                                <div class="legend-item"><div class="color-box legend-event"></div> Event</div>
+                                <div class="legend-item"><div class="color-box legend-exam"></div> Exam</div>
+                                </div>
                         </div>
                         <div class="next" onclick="moveDate('next')">
                             <span>&#10095</span>
