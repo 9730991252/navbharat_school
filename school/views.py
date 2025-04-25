@@ -207,6 +207,7 @@ def add_teacher(request):
         return redirect('school_mobile')
     
 #student
+@csrf_exempt
 def add_student(request):
     if request.session.has_key('school_mobile'):
         mobile = request.session['school_mobile']
@@ -223,12 +224,15 @@ def add_student(request):
             pin = request.POST.get('pin')
             gender = request.POST.get('gender')
             address = request.POST.get('address')
+            date_of_birth = request.POST.get('date_of_birth')
             if name == '':
                 messages.error(request, 'Please enter Student name!')
             elif address == '':
                 messages.error(request, 'Please enter Student address!')
             elif mobile == '':
                 messages.error(request, 'Please enter Parent mobile number!')
+            elif date_of_birth == '':
+                messages.error(request, 'Please enter date_of_birth number!')
 
             elif aadhar_number == '':
                 messages.error(request, 'Please enter Student Aadhar_number number!')
@@ -248,6 +252,7 @@ def add_student(request):
                     secret_pin=pin or str('0000'),
                     gender=gender,
                     added_by=clerk,
+                    date_of_birth=date_of_birth
                 ).save()
                 messages.success(request, 'Student added successfully!')
                 return redirect('add_student')
@@ -263,6 +268,7 @@ def add_student(request):
             aadhar_number = request.POST.get('aadhar_number')
             pin = request.POST.get('pin')
             gender = request.POST.get('gender')
+            date_of_birth = request.POST.get('date_of_birth')
             if name == '':
                 messages.error(request, 'Please enter Student name!')
             elif address == '':
@@ -272,6 +278,9 @@ def add_student(request):
 
             elif aadhar_number == '':
                 messages.error(request, 'Please enter Student Aadhar_number number!')
+                
+            elif date_of_birth == '':
+                messages.error(request, 'Please Select Student date_of_birth!')
                 
             elif gender == '':
                 messages.error(request, 'Please Select Student gender!')
@@ -286,6 +295,7 @@ def add_student(request):
                     aadhar_number=aadhar_number,
                     secret_pin=pin,
                     gender=gender,
+                    date_of_birth=date_of_birth
                 )
                 messages.success(request, 'Student updated successfully!')
                 return redirect('add_student')
@@ -301,9 +311,13 @@ def add_student(request):
             student.status = 1
             student.save()
             return redirect('add_student')
+        if 'test'in request.POST:
+            name = request.POST.get('name')
+            print(name)
+        s = Student.objects.all().order_by('name')[:20]
         context={
             'clerk':clerk,
-            'students': Student.objects.filter().order_by('-id'),
+            'students': s,
             'return_name': return_name,
             'return_mobile': return_mobile,
             'return_aadhar_number': return_aadhar_number,

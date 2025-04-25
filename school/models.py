@@ -15,6 +15,7 @@ class Clerk(models.Model):
     secret_pin = models.IntegerField()
     status = models.IntegerField(default=1)
     
+
 class Teacher(models.Model):
     clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='clerk')
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='teachers')
@@ -48,7 +49,8 @@ class Student(models.Model):
     added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by')
     edit_status = models.IntegerField(default=1)
     tocken = models.CharField(max_length=1000, null=True, blank=True)
- 
+    date_of_birth = models.DateField(null=True)
+
 class Student_Image(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     image = models.ImageField(upload_to="student_images",default="",null=True, blank=True)
@@ -90,3 +92,24 @@ class Subject_class_and_teacher(models.Model):
     school_class = models.ForeignKey(School_class, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     
+class Notice(models.Model):
+    by_clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='by_clerk')
+    by_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, related_name='by_teacher')
+    by_admin = models.IntegerField(default=0)
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, null=True, related_name='batches')    
+    to_class = models.ForeignKey(School_class, on_delete=models.CASCADE, null=True, related_name='to_class')
+    to_student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, related_name='to_student')
+    to_school = models.IntegerField(default=0)
+    to_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, related_name='to_teacher')
+    title = models.CharField(max_length=100, null=True)
+    description = models.TextField(null=True)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    status = models.IntegerField(default=1)
+    
+    
+class Readed_Notice(models.Model):
+    read_by_student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, related_name='read_by_student')
+    read_by_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, related_name='read_bby_teacher')
+    read_by_admin = models.IntegerField(default=0)
+    notice = models.ForeignKey(Notice, on_delete=models.CASCADE, null=True, related_name='read_by_notice')
+    readed_date = models.DateTimeField(auto_now_add=True, null=True)

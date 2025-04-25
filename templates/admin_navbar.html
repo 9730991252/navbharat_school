@@ -31,9 +31,9 @@
   }
 </style>
 <div class="menu">
-  <a  href="/school_admin/admin_home/" class="my-1 {% if request.path == '/admin/admin_home/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Home</a>
-  <a  href="/school_admin/todayes_attendence/" class="my-1 {% if request.path == '/admin/todayes_attendence/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Attendence</a>
-  <a  href="" class="my-1 {% if request.path == '' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Notice</a>
+  <a  href="/school_admin/admin_home/" class="my-1 {% if request.path == '/school_admin/admin_home/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Home</a>
+  <a  href="/school_admin/todayes_attendence/" class="my-1 {% if request.path == '/school_admin/todayes_attendence/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Attendence</a>
+  <a  href="/school_admin/admin_notice/" class="my-1 btn btn-primary notice_btn">Notice</a>
   <a  href="" class="my-1 {% if request.path == '' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Exam</a>
   <a  href="" class="my-1 {% if request.path == '' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Fees</a>
   <a  href="/logout/" class="my-1 btn btn-danger">LogOut</a>

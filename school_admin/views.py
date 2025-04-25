@@ -142,3 +142,12 @@ def admin_view_teacher(request):
         return render(request, 'admin_view_teacher.html', context)
     else:
         return redirect('admin_login')
+    
+def admin_notice(request):
+    if request.session.has_key('admin_mobile'):
+        mobile = request.session['admin_mobile']
+        context={
+        }
+        return render(request, 'admin_notice.html', context)
+    else:
+        return redirect('admin_login')

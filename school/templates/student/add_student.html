@@ -41,6 +41,10 @@
               <input type="text" name="address" value="{{return_address}}" id="address" class="form-control" placeholder="Enter Student Address Here" >
             </div>
             <div class="mb-3">
+              <label for="address">Date Of Birth</label>
+              <input type="date" name="date_of_birth"  id="date_of_birth" class="form-control" >
+            </div>
+            <div class="mb-3">
               <label for="mobile">mobile</label>
               <input type="text"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" minlength="10" maxlength="10" name="mobile" value="{{return_mobile}}" id="mobile" class="form-control" placeholder="Enter Student Mobile Here">
             </div>
@@ -101,108 +105,220 @@ td, th {
 
   </style>
   <div style=" color: #808080; text-align: center;margin-bottom: -30px;font-weight: 700;">Student List</div>
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Student Name</th>
-      <th>Address</th>
-      <th>Mobile</th>
-      <th>Aadhar Number</th>
-      <th>Pin</th>
-      <th>Gender</th>
-      <th>Added By</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
+
+
+  <div >
+    
+  </div>
+
+  <style>
+/* Container wrapper for scroll and shadow */
+.table-wrapper {
+  overflow-x: auto;
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  margin: 2rem 0;
+  padding: 1rem;
+}
+
+/* Grid layout */
+.table-grid {
+  display: grid;
+  grid-template-columns: 50px 250px 150px 120px 130px 160px 80px 150px 200px;
+  align-items: center;
+  text-align: left;
+}
+
+/* Header styles */
+.table-header {
+  font-weight: 600;
+  font-size: 0.95rem;
+  background-color: #e9ecef;
+  padding: 12px 10px;
+  border-bottom: 2px solid #dee2e6;
+  color: #333;
+}
+
+/* Body cell styles */
+.table-cell {
+  padding: 12px 10px;
+  font-size: 0.9rem;
+  background-color: #fff;
+  border-bottom: 1px solid #dee2e6;
+  transition: background 0.2s ease;
+  overflow-wrap: break-word;
+}
+
+/* Hover effect */
+.table-grid > .table-cell:hover {
+  background-color: #f1f3f5;
+}
+
+/* Action buttons styling */
+.action-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Button base tweaks */
+.action-buttons .btn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+/* Custom hover effects */
+.action-buttons .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive for smaller screens */
+@media screen and (max-width: 1024px) {
+  .table-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+  .table-header, .table-cell {
+    font-size: 0.8rem;
+  }
+}
+
+
+  </style>
+
+<div id="student_result">
+  
+
+
+<div class="table-wrapper">
+  <div class="table-grid">
+    <div class="table-header">ID</div>
+    <div class="table-header">Student Name</div>
+    <div class="table-header">Address</div>
+    <div class="table-header">D.O.B</div>
+    <div class="table-header">Mobile</div>
+    <div class="table-header">Aadhar Number</div>
+    <div class="table-header">Pin</div>
+    <div class="table-header">Added By</div>
+    <div class="table-header">Action</div>
+
     {% for t in students %}
-    <tr>
-      <td data-column="">{{ forloop.counter }}</td>
-      <td data-column="">{{ t.name }}</td>
-      <td data-column="">{{ t.address|slice:'30' }}</td>
-      <td data-column="">{{ t.mobile }}</td>
-      <td data-column="">{{ t.aadhar_number }}</td>
-      <td data-column="">{{ t.secret_pin }}</td>
-      <td data-column="">{{ t.gender }}</td>
-      <td data-column="">{{ t.added_by.name|slice:'15'}}...</td>
-      <td data-column="Action" style="display: flex;">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Edit_student{{t.id}}">Edit</button>  
-        &nbsp;
-        <form method="POST">
-          {% csrf_token %}
-          {% if t.status == 1 %}
-            <button class="btn btn-success" type="submit" name="active">Active
-              <input type="hidden" name="id" value="{{ t.id }}">
-            </button>
-          {% else %}
-            <button class="btn btn-danger" type="submit" name="deactive">Deactive
-              <input type="hidden" name="id" value="{{ t.id }}">
-            </button>
-          {% endif %}
-        </form>
-        &nbsp;
-        <a href="" class="btn btn-info">View</a>
-      </td>
-    </tr>
-    <!-- Modal -->
-    <div class="modal fade" id="Edit_student{{t.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Student</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-  
-            <!-- <marquee> Add Correct Student Information Don't Forgot To Fill any Information.  </marquee> -->
-            <form method="POST">
-              {% csrf_token %}
-              <input type="text" name="student_id" value="{{t.id}}" hidden>
-              <div class="mb-3">
-                <label for="name">Name</label>
-                <input type="text" name="name" value="{{t.name}}" id="name" class="form-control" placeholder="Enter Student name Here" >
-              </div>
-              <div class="mb-3">
-                <label for="address">Address</label>
-                <input type="text" name="address" value="{{t.address}}" id="address" class="form-control" placeholder="Enter Student Address Here" >
-              </div>
-              <div class="mb-3">
-                <label for="mobile">mobile</label>
-                <input type="text"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" minlength="10" maxlength="10" name="mobile" value="{{t.mobile}}" id="mobile" class="form-control" placeholder="Enter Student Mobile Here">
-              </div>
-              <div class="mb-3">
-                <label for="pin">Secret pin</label>
-                <input type="text" name="pin" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="pin" class="form-control" maxlength="4" value="{{t.secret_pin}}" placeholder="0000" >
-              </div>
-              <div class="mb-3">
-                <label for="pin">Aadhar Number</label>
-                <input type="text" name="aadhar_number"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="12" value="{{t.aadhar_number}}" id="aadhar_number" class="form-control" placeholder="Enter Student pin Here" >
-              </div>
-              <div class="mb-3">
-                <label for="Gender">Select Gender</label>
-                <select class="form-select" name="gender" aria-label="Default select example">
-                  <option {% if t.gender == 'MALE' %} selected {% endif %} value="MALE">MALE</option>
-                  <option {% if t.gender == 'FEMALE' %} selected {% endif %} value="FEMALE">FEMALE</option>
-                </select>
-              </div>
-              
-              <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
-              <button type="submit" name="edit_student" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Edit</button>
-            </form>
-  
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
+    <div class="table-cell">{{ forloop.counter }}</div>
+    <div class="table-cell" style="text-transform: capitalize;">{{ t.name }}</div>
+    <div class="table-cell">{{ t.address|slice:'15' }}...</div>
+    <div class="table-cell">{{ t.date_of_birth }}</div>
+    <div class="table-cell">{{ t.mobile }}</div>
+    <div class="table-cell">{{ t.aadhar_number }}</div>
+    <div class="table-cell">{{ t.secret_pin }}</div>
+    <div class="table-cell">{{ t.added_by.name|slice:'10' }}...</div>
+    <div class="table-cell action-buttons">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Edit_student{{t.id}}">Edit</button>
+      <form method="POST">
+        {% csrf_token %}
+        {% if t.status == 1 %}
+        <button class="btn btn-success" type="submit" name="active">Active
+          <input type="hidden" name="id" value="{{ t.id }}">
+        </button>
+        {% else %}
+        <button class="btn btn-danger" type="submit" name="deactive">Deactive
+          <input type="hidden" name="id" value="{{ t.id }}">
+        </button>
+        {% endif %}
+      </form>
     </div>
 
+        <!-- Modal -->
+        <div class="modal fade" id="Edit_student{{t.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Student</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+      
+                <!-- <marquee> Add Correct Student Information Don't Forgot To Fill any Information.  </marquee> -->
+                <form method="POST">
+                  {% csrf_token %}
+                  <input type="text" name="student_id" value="{{t.id}}" hidden>
+                  <div class="mb-3">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" value="{{t.name}}" id="name" class="form-control" placeholder="Enter Student name Here" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="address">Address</label>
+                    <input type="text" name="address" value="{{t.address}}" id="address" class="form-control" placeholder="Enter Student Address Here" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="address">Date Of Birth</label>
+                    <input type="date" name="date_of_birth" value="{{t.date_of_birth|date:'Y-m-d'}}" id="date_of_birth" class="form-control" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="mobile">mobile</label>
+                    <input type="text"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" minlength="10" maxlength="10" name="mobile" value="{{t.mobile}}" id="mobile" class="form-control" placeholder="Enter Student Mobile Here">
+                  </div>
+                  <div class="mb-3">
+                    <label for="pin">Secret pin</label>
+                    <input type="text" name="pin" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="pin" class="form-control" maxlength="4" value="{{t.secret_pin}}" placeholder="0000" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="pin">Aadhar Number</label>
+                    <input type="text" name="aadhar_number"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="12" value="{{t.aadhar_number}}" id="aadhar_number" class="form-control" placeholder="Enter Student pin Here" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="Gender">Select Gender</label>
+                    <select class="form-select" name="gender" aria-label="Default select example">
+                      <option {% if t.gender == 'MALE' %} selected {% endif %} value="MALE">MALE</option>
+                      <option {% if t.gender == 'FEMALE' %} selected {% endif %} value="FEMALE">FEMALE</option>
+                    </select>
+                  </div>
+                  
+                  <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
+                  <button type="submit" name="edit_student" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Edit</button>
+                </form>
+                
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+          </div>
+        </div>
     {% endfor %}
-  </tbody>
-</table>
+  </div>
+</div>
 
+  
+</div>
 
 </div>
+
+
+<div class="container" style="margin-top: 20px;position: fixed;bottom: 0;left: 0;right: 0;">
+  <div class="d-flex justify-content-center">
+    <input type="text" name="search" oninput="search_student(this.value)" class="form-control" placeholder="Search Student by Name or Mobile or Aadhar" style="width: 50%; border: 2px solid #3498db;">
+  </div>
+</div>
+
+<script>
+  function search_student(words){
+      $.ajax({
+          url: "{% url 'search_student_for_edit' %}",
+          method: "GET",
+          data:{
+              words:words,
+          },
+          success: function(res){
+              $("#student_result").html(res.t)
+          }
+      })
+  }
+</script>
+
+
 {% endblock content %}

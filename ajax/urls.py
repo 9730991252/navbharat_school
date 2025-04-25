@@ -11,4 +11,5 @@ urlpatterns = [
     path('search_attrndance_day/', views.search_attrndance_day, name='search_attrndance_day'),
     path('search_holiday/', views.search_holiday, name='search_holiday'),
     path('check_day/', views.check_day, name='check_day'),
+    path('search_student_for_edit/', views.search_student_for_edit, name='search_student_for_edit'),
 ]

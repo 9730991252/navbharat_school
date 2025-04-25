@@ -1,0 +1,97 @@
+<div class="table-wrapper">
+  <div class="table-grid">
+    <div class="table-header">ID</div>
+    <div class="table-header">Student Name</div>
+    <div class="table-header">Address</div>
+    <div class="table-header">D.O.B</div>
+    <div class="table-header">Mobile</div>
+    <div class="table-header">Aadhar Number</div>
+    <div class="table-header">Pin</div>
+    <div class="table-header">Added By</div>
+    <div class="table-header">Action</div>
+
+    {% for t in students %}
+    <div class="table-cell">{{ forloop.counter }}</div>
+    <div class="table-cell" style="text-transform: capitalize;">{{ t.name }}</div>
+    <div class="table-cell">{{ t.address|slice:'30' }}</div>
+    <div class="table-cell">{{ t.date_of_birth }}</div>
+    <div class="table-cell">{{ t.mobile }}</div>
+    <div class="table-cell">{{ t.aadhar_number }}</div>
+    <div class="table-cell">{{ t.secret_pin }}</div>
+    <div class="table-cell">{{ t.added_by.name|slice:'15' }}...</div>
+    <div class="table-cell action-buttons">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Edit_student{{t.id}}">Edit</button>
+      <form method="POST">
+        {% csrf_token %}
+        {% if t.status == 1 %}
+        <button class="btn btn-success" type="submit" name="active">Active
+          <input type="hidden" name="id" value="{{ t.id }}">
+        </button>
+        {% else %}
+        <button class="btn btn-danger" type="submit" name="deactive">Deactive
+          <input type="hidden" name="id" value="{{ t.id }}">
+        </button>
+        {% endif %}
+      </form>
+    </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="Edit_student{{t.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Student</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+      
+                <!-- <marquee> Add Correct Student Information Don't Forgot To Fill any Information.  </marquee> -->
+                <form method="POST">
+                  {% csrf_token %}
+                  <input type="text" name="student_id" value="{{t.id}}" hidden>
+                  <div class="mb-3">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" value="{{t.name}}" id="name" class="form-control" placeholder="Enter Student name Here" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="address">Address</label>
+                    <input type="text" name="address" value="{{t.address}}" id="address" class="form-control" placeholder="Enter Student Address Here" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="address">Date Of Birth</label>
+                    <input type="date" name="date_of_birth" value="{{t.date_of_birth|date:'Y-m-d'}}" id="date_of_birth" class="form-control" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="mobile">mobile</label>
+                    <input type="text"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" minlength="10" maxlength="10" name="mobile" value="{{t.mobile}}" id="mobile" class="form-control" placeholder="Enter Student Mobile Here">
+                  </div>
+                  <div class="mb-3">
+                    <label for="pin">Secret pin</label>
+                    <input type="text" name="pin" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="pin" class="form-control" maxlength="4" value="{{t.secret_pin}}" placeholder="0000" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="pin">Aadhar Number</label>
+                    <input type="text" name="aadhar_number"  oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="12" value="{{t.aadhar_number}}" id="aadhar_number" class="form-control" placeholder="Enter Student pin Here" >
+                  </div>
+                  <div class="mb-3">
+                    <label for="Gender">Select Gender</label>
+                    <select class="form-select" name="gender" aria-label="Default select example">
+                      <option {% if t.gender == 'MALE' %} selected {% endif %} value="MALE">MALE</option>
+                      <option {% if t.gender == 'FEMALE' %} selected {% endif %} value="FEMALE">FEMALE</option>
+                    </select>
+                  </div>
+                  
+                  <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
+                  <button type="submit" name="edit_student" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Edit</button>
+                </form>
+                
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+          </div>
+        </div>
+    {% endfor %}
+  </div>
+</div>

@@ -51,6 +51,15 @@ def search_student_image(request):
         t = render_to_string('search_student_image.html', context)
     return JsonResponse({'t': t})
 
+def search_student_for_edit(request):
+    if request.method == 'GET':
+        words = request.GET['words']
+        context = {
+            'students':Student.objects.filter(name__icontains=words)
+        }
+        t = render_to_string('search_student_for_edit.html', context)
+    return JsonResponse({'t': t})
+
 def search_student_for_check_in(request):
     if request.method == 'GET':
         words = request.GET['words']
