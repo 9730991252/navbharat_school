@@ -218,7 +218,7 @@ def add_student(request):
         return_aadhar_number = ''
         return_address = ''
         if 'Add_Student'in request.POST:
-            name = request.POST.get('name')
+            name = request.POST.get('name').lower()
             mobile = request.POST.get('mobile')
             aadhar_number = request.POST.get('aadhar_number')
             pin = request.POST.get('pin')
@@ -262,7 +262,7 @@ def add_student(request):
             return_aadhar_number = aadhar_number
         if 'edit_student' in request.POST:
             student_id = request.POST.get('student_id')
-            name = request.POST.get('name')
+            name = request.POST.get('name').lower()
             address = request.POST.get('address')
             mobile = request.POST.get('mobile')
             aadhar_number = request.POST.get('aadhar_number')
