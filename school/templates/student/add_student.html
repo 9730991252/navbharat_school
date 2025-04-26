@@ -114,12 +114,13 @@ td, th {
   <style>
 /* Container wrapper for scroll and shadow */
 .table-wrapper {
-  overflow-x: auto;
+  overflow-x: scroll;
   background: #f8f9fa;
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   margin: 2rem 0;
   padding: 1rem;
+  width: 100%;
 }
 
 /* Grid layout */
@@ -298,7 +299,7 @@ td, th {
 
 </div>
 
-
+<br><br><br>
 <div class="container" style="margin-top: 20px;position: fixed;bottom: 0;left: 0;right: 0;">
   <div class="d-flex justify-content-center">
     <input type="text" name="search" oninput="search_student(this.value)" class="form-control" placeholder="Search Student by Name or Mobile or Aadhar" style="width: 50%; border: 2px solid #3498db;">

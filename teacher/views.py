@@ -370,3 +370,34 @@ def student_leaves(request):
         return render(request, 'student_leaves.html', context)
     else:
         return redirect('school_mobile')
+    
+def students_icard_for_teacher(request):
+    if request.session.has_key('teacher_mobile'):
+        mobile = request.session['teacher_mobile']
+        teacher = Teacher.objects.filter(mobile=mobile).first()
+        teacher_class = Class_teacher.objects.filter(teacher=teacher).first()
+        
+        icard = []
+        for s in Student.objects.filter(status=1):
+            sc = Class_student.objects.filter(student=s).first()
+            if sc:
+                print(sc.school_class.name, teacher_class.school_class.name)
+                if sc.school_class == teacher_class.school_class:
+                    icard.append({
+                        'id':s.id,
+                        'name':s.name,
+                        'address':s.address,
+                        'mobile':s.mobile,
+                        'date_of_birth':s.date_of_birth,
+                        'class':sc.school_class.name,
+                        'image':Student_Image.objects.filter(student=s).first(),
+                    })
+        
+        
+        context={
+            'teacher':teacher,
+            'icard':icard,
+        }
+        return render(request, 'students_icard_for_teacher.html', context)
+    else:
+        return redirect('school_mobile')

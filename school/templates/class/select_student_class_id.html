@@ -105,7 +105,6 @@ td, th {
         })
     }
     function select_student(id){
-      search_student(document.getElementById('words').value)
         $.ajax({
             url: "{% url 'select_student' %}",
             method: "GET",
@@ -117,6 +116,8 @@ td, th {
             },
             success: function(res){
                 $("#table").html(res.t)
+              search_student(document.getElementById('words').value)
+
             }
         })
     }

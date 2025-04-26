@@ -37,6 +37,24 @@
       border-radius: 10px;
       color: white !important;
       }
+      .offcanvas{
+        width: 20%;
+      }
+      @media screen and (max-width: 450px) {
+        .offcanvas {
+          width: 80%;
+        }
+        .navbar-brand {
+          font-size: 14px;
+        }
+        .side_btn {
+          font-size: 20px;
+        }
+        .href_btn {
+          font-size: 12px;
+          padding: 5px 10px;
+        }
+      }
   </style>
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
 
@@ -52,7 +70,7 @@
 
 
 
-  <div class="offcanvas offcanvas-start" style="width: 20%; z-index: +654654654645;" data-bs-scroll="true" tabindex="+1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+  <div class="offcanvas offcanvas-start" style="z-index: +654654654645;" data-bs-scroll="true" tabindex="+1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">
         <img src="{% static 'img/logo.jpg' %}" width="40px" style="border-radius: 50%;" alt="">

@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% load static %}
+<style>
+    .icard_box{
+        width: 8.5cm;
+        height: 5.5cm;
+        background-color: #ffffff;
+        border-radius: 10px;
+        border: 1px solid black;
+        background-image: url('{% static "img/icard/icardbackground.jpg" %}');
+        background-size: cover;
+        position: relative;
+    }
+    .address{
+        z-index: 2;
+        display: flex;
+        gap: 5px;
+        padding-right: 10px;
+
+    }
+    .card_header{
+        width: 100%;
+        height: 1.5cm;
+        border-radius: 10px 10px 0px 0px;
+        text-align: center;
+        .first-text{
+            color: yellow;
+            margin-top: -5px;
+        }
+        .second-text{
+            color: rgb(255, 0, 0);
+            font-weight: bold;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            z-index: +2321323212321;
+
+            text-shadow: 1px 0 #fff, -1px 0 #fff, 0 1px #fff, 0 -1px #fff,
+            1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
+        }
+        .third-text{
+            font-size: small;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            margin-top: -5px;
+            color: rgb(255, 255, 255);
+            text-shadow:
+            0 0 5px rgb(0, 204, 255),
+            0 0 10px rgb(0, 110, 255),
+            0 0 15px rgb(255, 255, 255),
+            0 0 25px rgba(255, 255, 255, 0),
+            0 0 35px rgba(255, 255, 255, 0);
+        }
+    }
+    .card_body{
+        width: 100%;
+        height: 2.8cm;
+        border-radius: 0px 0px 10px 10px;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: auto auto;
+        position: relative;
+    }
+    .card_body_left{
+        width: 2.1cm;
+        height: 2.5cm;
+        margin-top: 5px;
+        margin-left: 2px;
+        border-radius: 5px;
+        img{
+            border-radius: 5px;
+            width: 97%;
+            height: 2.5cm;
+            object-fit: cover;
+            border: 1px solid black;
+        }
+    }
+    .card_body_right{
+        width: 6.5cm;
+        margin-left: 6px;
+        margin-top: 10px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    h{
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 700;
+        color: rgb(170, 15, 15);
+    }
+    .qr_box{
+        position: absolute;
+        z-index: +1;
+        overflow: hidden;
+        width: 50px;
+        height: 50px;
+        right: 4px;
+        top: 10px;
+        img{
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+
+        }
+    }
+    .mobile_box{
+        position: absolute;
+    bottom: 5px;
+        left: 10px;
+        font-size: 11px;
+        font-weight: 800;
+}
+.signature_box{
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    font-size: small;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    img{
+        width: 30px;
+    }
+}
+</style>
+{% endblock head %}
+
+{% block content %}
+{% include 'teacher_navbhar.html' %}
+{% include 'alert.html' %}
+
+<div class="container">
+    {% for s in icard %}
+    <div class="icard_box">
+        <div class="card_header">
+            <div class="first-text">Shri Girdhardas Devi Pratishthan,s</div>
+            <div class="second-text">Navbharat English Medium School</div>
+            <div class="third-text">Pune Road Karmala Tal-karmala Dist-Solapur</div>
+        </div>
+        <div class="card_body">
+            <div class="card_body_left mt-2">
+                <img src="{% if s.image %}{{s.image.image.url}}{% else %}https://i.pinimg.com/564x/94/c6/25/94c62511d312b8612aa0ab92318966f2.jpg{% endif %}" alt="">
+            </div>
+            <div class="card_body_right">
+                <div class="name"><h>Name : </h> {{s.name}}</div>
+                <div class="class"><h>Class : </h> {{s.class.name}}</div>
+                <div class="dob"><h>D.O.B : </h> {{s.date_of_birth}}</div>
+                <div class="address">
+                    <h>Address:</h>
+                    <div>{{s.address}}</div>
+                </div>
+            </div>
+            <div class="qr_box">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Example" alt="QR Code" >
+            </div>
+        </div>
+        <div class="mobile_box">
+            <h>Mo.No</h>
+            <div class="number">9730991252</div>
+        </div>
+        <div class="signature_box">
+            <img src="{% static 'img/icard/signetuer.jpeg' %}" alt="">
+            <h class="h_1">Head Mistress</h>
+            <h class="h_2">Navbharat English School Karmala</h>
+        </div>
+        
+    </div>
+    <br>
+    {% endfor %}
+</div>
+
+{% endblock content %}

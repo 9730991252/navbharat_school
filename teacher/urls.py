@@ -10,5 +10,6 @@ urlpatterns = [
     path('video_feed_check_in/', views.video_feed_check_in, name='video_feed_check_in'),
     path('video_feed_check_out/', views.video_feed_check_out, name='video_feed_check_out'),
     path('student_leaves/', views.student_leaves, name='student_leaves'),
+    path('students_icard_for_teacher/', views.students_icard_for_teacher, name='students_icard_for_teacher'),
     
 ]
