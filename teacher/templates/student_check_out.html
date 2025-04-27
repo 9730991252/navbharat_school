@@ -149,6 +149,7 @@
       faceapi.nets.faceExpressionNet.loadFromUri('{% static "models" %}')
     ])
 
+    last_img = ''
     // Start webcam
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
@@ -200,8 +201,10 @@
                     const img = document.getElementById('matched-image');
                     img.src = 'data:image/jpeg;base64,' + data.image;
                     img.style.display = 'block';
-                    playAudio('succcess_audio');
-
+                    if (last_img !== data.image) {
+                      last_img = data.image;
+                      playAudio('succcess_audio');
+                    }
                   }
                 });
               }, 'image/jpeg');

@@ -56,6 +56,7 @@ def profile(request):
         return render(request, 'teacher_profile.html', context)
     else:
         return redirect('school_mobile')
+    
 def attendance(request):
     Student_Attendance.objects.all().delete()
     if request.session.has_key('teacher_mobile'):
