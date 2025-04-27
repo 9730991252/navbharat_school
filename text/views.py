@@ -4,8 +4,13 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Device
 from firebase_admin import messaging
 from django.shortcuts import render
+from navbharat_school.includes import *
 
 def index(request):
+    return render(request, 'notifications.html')
+
+def delete(request):
+    Student_Attendance.objects.all().delete()
     return render(request, 'notifications.html')
 
 @csrf_exempt
