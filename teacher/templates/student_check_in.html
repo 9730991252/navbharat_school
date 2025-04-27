@@ -3,6 +3,29 @@
 {% block head %}
 {% load static %}
 <style>
+  /* Your existing styles ... */
+
+  /* Checkmark styling */
+  .matched-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  #checkmark {
+    display: none;
+    font-size: 50px;
+    color: #28a745; /* Green color */
+    animation: pop 0.5s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+</style>
+<style>
   body {
     background: linear-gradient(to right, #e3f2fd, #ffffff);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -48,6 +71,9 @@
   }
   .video-box {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .video-box video,
   .video-box canvas {
@@ -58,8 +84,35 @@
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   }
   #canvas {
-    display: none; /* hide the hidden processing canvas */
+    display: none; /* hide hidden canvas */
   }
+
+  /* Professional Marquee */
+  .marquee-container {
+    width: 100%;
+    overflow: hidden;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+  }
+  .marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 12s linear infinite;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    padding-left: 100%;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
   .footer {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -86,36 +139,35 @@
        class="check-out {% if request.path == '/teacher/student_check_out/' %}active-btn{% endif %}">
       🏁 Check Out
     </a>
-    
-  </div>
-  
-  <div style="display: none;">
-
-    <audio controls id="succcess_audio">
-      <source src="/media/notifications/success1.mp3" type="audio/mpeg">
-    </audio>
-    
   </div>
 
-
-
-   <div id="student_result"></div>
+  <div id="student_result"></div>
 
   <div class="main-wrapper">
     <div class="card-box">
       <h2 class="mb-2 fw-bold text-dark">🎓 Check In</h2>
       <div class="video-box">
         <video id="video" autoplay muted></video>
+
+        <div class="marquee-container">
+          <div class="marquee-text">
+            Welcome to Navbharat English Medium School Karmala
+          </div>
+        </div>
+
         <canvas id="canvas"></canvas>
       </div>
-      <div style="margin-top:20px;">
-        <h2 id="matched-name">Waiting for face...</h2>
+
+      <div class="matched-container">
         <img id="matched-image"
              src="https://png.pngtree.com/png-vector/20220624/ourmid/pngtree-anonymous-user-unknown-faceless-vector-png-image_5324345.png"
              alt="Matched Face"
              width="150" height="150"
              style="border:2px solid #000; border-radius:8px;">
+        <div id="checkmark">✅</div>
       </div>
+
+      <h2 id="matched-name" style="margin-top:10px;">Waiting for face...</h2>
     </div>
   </div>
 
@@ -125,8 +177,6 @@
            placeholder="Search Student"
            oninput="search_student()">
   </div>
-  <br><br><br>
-
 
   <script src="{% static 'js/face-api.js' %}"></script>
   <script>
@@ -137,26 +187,24 @@
       audio.play();
     }
 
-    // Load face-api models
     Promise.all([
       faceapi.nets.tinyFaceDetector.loadFromUri('{% static "models" %}'),
       faceapi.nets.faceLandmark68Net.loadFromUri('{% static "models" %}'),
       faceapi.nets.faceRecognitionNet.loadFromUri('{% static "models" %}'),
       faceapi.nets.faceExpressionNet.loadFromUri('{% static "models" %}')
     ])
-last_img = ''
-    // Start webcam
+
+    last_img = '';
+
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
         const video = document.getElementById('video');
         video.srcObject = stream;
 
         video.onplay = () => {
-          // Create overlay canvas
           const overlay = faceapi.createCanvasFromMedia(video);
           document.body.append(overlay);
 
-          // Use intrinsic video size
           const displaySize = {
             width: video.videoWidth,
             height: video.videoHeight
@@ -172,7 +220,6 @@ last_img = ''
             const resized = faceapi.resizeResults(detections, displaySize);
 
             if (resized.length === 1) {
-              // Draw frame to hidden canvas
               const canvas = document.getElementById('canvas');
               canvas.width = displaySize.width;
               canvas.height = displaySize.height;
@@ -196,6 +243,10 @@ last_img = ''
                     const img = document.getElementById('matched-image');
                     img.src = 'data:image/jpeg;base64,' + data.image;
                     img.style.display = 'block';
+
+                    // Show the checkmark!
+                    document.getElementById('checkmark').style.display = 'block';
+
                     if (last_img !== data.image) {
                       last_img = data.image;
                       playAudio('succcess_audio');

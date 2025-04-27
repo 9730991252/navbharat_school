@@ -1,21 +1,273 @@
-<!-- Modal -->
-<div class="modal fade" id="Edit_student{{ t.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Student</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+{% extends 'base.html' %}
+
+{% block head %}
+{% load static %}
+<style>
+  body {
+    background: linear-gradient(to right, #e3f2fd, #ffffff);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .main-wrapper {
+    max-width: 900px;
+    margin: auto;
+    padding: 30px 20px;
+  }
+  .card-box {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 40px 30px;
+    text-align: center;
+  }
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 10px;
+  }
+  .action-buttons a {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    transform: scale(0.70);
+  }
+  .check-in {
+    background: linear-gradient(135deg, #28a745, #1c3021);
+  }
+  .check-out {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+  }
+  .active-btn {
+    box-shadow: 0 0 15px rgba(255,0,0,0.3);
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #ff5e00, #fff018);
+  }
+  .video-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .video-box video,
+  .video-box canvas {
+    width: 100%;
+    height: auto;
+    max-width: 700px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  #canvas {
+    display: none; /* hide the hidden processing canvas */
+  }
+
+  /* Professional Marquee */
+  .marquee-container {
+    width: 100%;
+    overflow: hidden;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 8px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+  }
+  .marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    animation: marquee 12s linear infinite;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    padding-left: 100%;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  .footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background-color: antiquewhite;
+    padding: 10px;
+  }
+  .footer input {
+    width: 80%;
+    margin: 0 auto;
+  }
+</style>
+{% endblock head %}
+
+{% block content %}
+  {% include 'teacher_navbhar.html' %}
+  {% include 'alert.html' %}
+
+  <div class="action-buttons">
+    <a href="{% url 'student_check_in' %}"
+       class="check-in {% if request.path == '/teacher/student_check_in/' %}active-btn{% endif %}">
+      👋 Check In
+    </a>
+    <a href="{% url 'student_check_out' %}"
+       class="check-out {% if request.path == '/teacher/student_check_out/' %}active-btn{% endif %}">
+      🏁 Check Out
+    </a>
+  </div>
+  
+  <div style="display: none;">
+    <audio controls id="succcess_audio">
+      <source src="/media/notifications/success1.mp3" type="audio/mpeg">
+    </audio>
+    <audio controls id="error_audio">
+      <source src="/media/notifications/error.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+  <div id="student_result"></div>
+
+  <div class="main-wrapper">
+    <div class="card-box">
+      <h2 class="mb-2 fw-bold text-dark">🎓 Check Out</h2>
+      <div class="video-box">
+        <video id="video" autoplay muted></video>
+
+        <!-- Marquee inserted here -->
+        <div class="marquee-container">
+          <div class="marquee-text">
+            Welcome to Navbharat English Medium School Karmala
+          </div>
         </div>
-        <div class="modal-body">
-          <form method="POST">
-            <input type="text" name="name" value="{{ t.name }}" placeholder="Name" required>
-            <button type="submit" name="test">Submit</button>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
+
+        <canvas id="canvas"></canvas>
+      </div>
+
+      <div style="margin-top:20px;">
+        <h2 id="matched-name">Waiting for face...</h2>
+        <img id="matched-image"
+             src="https://png.pngtree.com/png-vector/20220624/ourmid/pngtree-anonymous-user-unknown-faceless-vector-png-image_5324345.png"
+             alt="Matched Face"
+             width="150" height="150"
+             style="border:2px solid #000; border-radius:8px;">
       </div>
     </div>
   </div>
+
+  <div class="footer">
+    <input type="text"
+           class="form-control"
+           placeholder="Search Student"
+           oninput="search_student()">
+  </div>
+
+  <br><br><br>
+
+  <script src="{% static 'js/face-api.js' %}"></script>
+  <script>
+    const students = JSON.parse('{{ students_json|escapejs }}');
+
+    function playAudio(type) {
+      var audio = document.getElementById(type);
+      audio.play();
+    }
+
+    Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('{% static "models" %}'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('{% static "models" %}'),
+      faceapi.nets.faceRecognitionNet.loadFromUri('{% static "models" %}'),
+      faceapi.nets.faceExpressionNet.loadFromUri('{% static "models" %}')
+    ])
+
+    last_img = ''
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+
+        video.onplay = () => {
+          const overlay = faceapi.createCanvasFromMedia(video);
+          document.body.append(overlay);
+
+          const displaySize = {
+            width: video.videoWidth,
+            height: video.videoHeight
+          };
+          faceapi.matchDimensions(overlay, displaySize);
+
+          setInterval(async () => {
+            const detections = await faceapi
+              .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+              .withFaceLandmarks()
+              .withFaceExpressions();
+
+            const resized = faceapi.resizeResults(detections, displaySize);
+
+            if (resized.length === 1) {
+              const canvas = document.getElementById('canvas');
+              canvas.width = displaySize.width;
+              canvas.height = displaySize.height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(video, 0, 0, displaySize.width, displaySize.height);
+
+              canvas.toBlob(blob => {
+                const fd = new FormData();
+                fd.append('frame', blob);
+                fd.append('students', JSON.stringify(students));
+
+                fetch('/teacher/video_feed_check_out/', {
+                  method: 'POST',
+                  headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                  body: fd
+                })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.name) {
+                    document.getElementById('matched-name').innerText = data.name;
+                    const img = document.getElementById('matched-image');
+                    img.src = 'data:image/jpeg;base64,' + data.image;
+                    img.style.display = 'block';
+                    if (last_img !== data.image) {
+                      last_img = data.image;
+                      playAudio('succcess_audio');
+                    }
+                  }
+                });
+              }, 'image/jpeg');
+            }
+          }, 1000);
+        };
+      })
+      .catch(err => console.error('Webcam error:', err));
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        document.cookie.split(';').forEach(cookie => {
+          const c = cookie.trim();
+          if (c.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(c.substring(name.length + 1));
+          }
+        });
+      }
+      return cookieValue;
+    }
+
+    function search_student() {
+      const query = document.querySelector('.footer input').value.trim();
+      const resultDiv = document.getElementById('student_result');
+      if (!query) {
+        resultDiv.innerHTML = '';
+        return;
+      }
+      fetch("{% url 'search_student_for_check_in' %}?words=" + encodeURIComponent(query) + "&batch_id={{ clerk.batch.id }}")
+        .then(res => res.json())
+        .then(res => {
+          resultDiv.innerHTML = res.t;
+        });
+    }
+  </script>
+{% endblock content %}
