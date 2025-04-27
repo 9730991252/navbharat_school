@@ -39,21 +39,55 @@ def save_token(request):
     
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 
-    
 def notice(request, batch_id):
-    if request.session.has_key('parent_mobile'):
-        mobile = request.session['parent_mobile']
-        student = Student.objects.filter(mobile=mobile).first()
-        current_batch = Batch.objects.get(id=batch_id)
-        
-        context={
-            'student':student,
-            'batches':Batch.objects.filter(status=1),
-            'current_batch':Batch.objects.get(id=batch_id),
-        }
-        return render(request, 'notice.html', context)
-    else:
+    if not request.session.get('parent_mobile'):
         return redirect('login')
+    
+    mobile = request.session['parent_mobile']
+    student = Student.objects.filter(mobile=mobile).first()
+    student_class = Class_student.objects.filter(student=student).first()
+    if not student:
+        return redirect('login')
+    
+    student_class = Class_student.objects.filter(student=student).first()
+    print(student_class.school_class.id)
+    current_batch = get_object_or_404(Batch, id=batch_id)
+
+    notices = Notice.objects.filter(batch=current_batch, status=1).order_by('-id')
+
+    # Filter notices based on student
+    filtered_notices = [
+    notice for notice in notices if (
+        (notice.to_student == student) or
+        (notice.to_school == 1) or
+        (notice.to_class == student_class.school_class) or
+        (notice.to_teacher == '')
+    )
+    ]
+
+    # Get list of read notices and read dates
+    readed_notices = Readed_Notice.objects.filter(
+        read_by_student=student,
+        notice__in=filtered_notices
+    )
+    
+    readed_notice_dict = {rn.notice_id: rn.readed_date for rn in readed_notices}
+    read_notice_ids = list(readed_notice_dict.keys())
+
+    # Attach readed_date to each notice
+    all_notices = []
+    for notice in filtered_notices:
+        notice.readed_date = readed_notice_dict.get(notice.id)
+        all_notices.append(notice)
+
+    context = {
+        'student': student,
+        'batches': Batch.objects.filter(status=1),
+        'current_batch': current_batch,
+        'all_notices': all_notices,
+        'read_notice_ids': read_notice_ids,
+    }
+    return render(request, 'notice.html', context)
     
 @csrf_exempt
 def leave_letter(request, batch_id):

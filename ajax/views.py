@@ -60,7 +60,75 @@ def search_student_for_edit(request):
         t = render_to_string('search_student_for_edit.html', context)
     return JsonResponse({'t': t})
 
+def save_readed_notices_student(request):
+    if request.method == 'GET':
+        notice_id = request.GET['notice_id']
+        student_id = request.GET['student_id']
+        status = 0
+        if notice_id and student_id:
+            # Check if the record already exists
+            if not Readed_Notice.objects.filter(notice_id=notice_id, read_by_student_id=student_id).exists():
+                Readed_Notice(
+                    notice_id=notice_id,
+                    read_by_student_id=student_id
+                ).save()
+                status = 1
+        
+
+        context = {
+            'n': Notice.objects.filter(id=notice_id).first(),
+            'student': Student.objects.filter(id=student_id).first(),
+            'readed_notice': Readed_Notice.objects.filter(notice_id=notice_id, read_by_student_id=student_id).first(),
+        }
+        t = render_to_string('save_readed_notices_student.html', context)
+        return JsonResponse({'t': t})
+    
+def save_readed_notices_admin(request):
+    if request.method == 'GET':
+        notice_id = request.GET['notice_id']
+        status = 0
+        if notice_id:
+            # Check if the record already exists
+            if not Readed_Notice.objects.filter(notice_id=notice_id, read_by_admin=1).exists():
+                Readed_Notice(
+                    notice_id=notice_id,
+                    read_by_admin=1
+                ).save()
+                status = 1
+        
+
+        context = {
+            'n': Notice.objects.filter(id=notice_id).first(),
+            'readed_notice': Readed_Notice.objects.filter(notice_id=notice_id, read_by_admin=1).first(),
+        }
+        t = render_to_string('save_readed_notices_admin.html', context)
+        return JsonResponse({'t': t})
+    
+def save_readed_notices_teacher(request):
+    if request.method == 'GET':
+        notice_id = request.GET['notice_id']
+        teacher_id = request.GET['teacher_id']
+        status = 0
+        if notice_id and teacher_id:
+            # Check if the record already exists
+            if not Readed_Notice.objects.filter(notice_id=notice_id, read_by_teacher_id=teacher_id).exists():
+                Readed_Notice(
+                    notice_id=notice_id,
+                    read_by_teacher_id=teacher_id
+                ).save()
+                status = 1
+        
+
+        context = {
+            'n': Notice.objects.filter(id=notice_id).first(),
+            'student': Student.objects.filter(id=teacher_id).first(),
+            'readed_notice': Readed_Notice.objects.filter(notice_id=notice_id, read_by_teacher_id=teacher_id).first(),
+        }
+        t = render_to_string('save_readed_notices_teacher.html', context)
+        return JsonResponse({'t': t})
+
 def search_student_for_check_in(request):
+    
     if request.method == 'GET':
         words = request.GET['words']
         batch_id = request.GET['batch_id']

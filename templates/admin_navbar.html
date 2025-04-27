@@ -22,13 +22,34 @@
 
 
 
-<style>
-  .menu{
-      display: flex;
-      width: 100%;
-      overflow: scroll;
-      gap: 10px;
-  }
+  <style>
+    .menu {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        white-space: nowrap;
+    }
+    .menu a {
+        flex: 0 0 auto;
+        padding: 8px 16px;
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        font-size: 14px;
+    }
+    /* Hide scrollbar on mobile */
+    .menu::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 <div class="menu">
   <a  href="/school_admin/admin_home/" class="my-1 {% if request.path == '/school_admin/admin_home/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Home</a>

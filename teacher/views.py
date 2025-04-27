@@ -57,6 +57,7 @@ def profile(request):
     else:
         return redirect('school_mobile')
 def attendance(request):
+    Student_Attendance.objects.all().delete()
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
         teacher = Teacher.objects.filter(mobile=mobile).first()
@@ -105,6 +106,8 @@ def attendance(request):
 
 def video_feed_check_in(request):
     if request.method == 'POST' and request.FILES.get('frame'):
+        mobile = request.session['teacher_mobile']
+        teacher = Teacher.objects.filter(mobile=mobile).first()
         frame_file = request.FILES['frame']
         students_json = request.POST.get('students')
         students = json.loads(students_json)
@@ -129,7 +132,11 @@ def video_feed_check_in(request):
                     check_in__date=today
                 ).exists()
                 if not already_marked:
-                    Student_Attendance.objects.create(student_id=student['id'], check_in=datetime.now())
+                    Student_Attendance.objects.create(
+                        student_id=student['id'],
+                        check_in=datetime.now(),
+                        check_in_by_teacher=teacher,
+                        )
                     send_push(student['tocken'], datetime.now() , f'{student["name"]} has checked in')
                 # Return image from disk (reload for safety)
                 try:
@@ -297,10 +304,100 @@ def generate_frames_check_out(request):
 
 
 def video_feed_check_out(request):
-    return StreamingHttpResponse(generate_frames_check_out(request), content_type='multipart/x-mixed-replace; boundary=frame')
+    if request.method == 'POST' and request.FILES.get('frame'):
+        mobile = request.session['teacher_mobile']
+        teacher = Teacher.objects.filter(mobile=mobile).first()
+        frame_file = request.FILES['frame']
+        students_json = request.POST.get('students')
+        students = json.loads(students_json)
 
+        frame_data = np.asarray(bytearray(frame_file.read()), dtype=np.uint8)
+        frame = cv2.imdecode(frame_data, cv2.IMREAD_COLOR)
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        face_locations = face_recognition.face_locations(rgb)
+        face_encodings = face_recognition.face_encodings(rgb, face_locations)
+
+        today = date.today()
+        for face_encoding in face_encodings:
+            distances = [face_recognition.face_distance([np.array(s['encoding'])], face_encoding)[0] for s in students]
+            if distances and min(distances) <= 0.45:
+                idx = np.argmin(distances)
+                student = students[idx]
+
+                name = student['name']
+                # Mark attendance if not already marked
+                already_marked = Student_Attendance.objects.filter(
+                    student_id=student['id'],
+                    check_out__date=today
+                ).exists()
+                
+                if already_marked:
+                    name = f'{student["name"]} already checked out'
+                
+                student_in = Student_Attendance.objects.filter(
+                    student_id=student['id'],
+                    check_in__date=today
+                ).exists()
+                
+                if not student_in:
+                    name = f'{student["name"]} not in'
+                
+                if not already_marked and student_in:
+                    Student_Attendance.objects.filter(student_id=student['id'], check_in__date=today).update(
+                        check_out=datetime.now(), check_out_by_teacher=teacher )
+                    send_push(student['tocken'], datetime.now() , f'{student["name"]} has checked in')
+                # Return image from disk (reload for safety)
+                try:
+                    student_image_obj = Student_Image.objects.get(student_id=student['id'])
+                    image = cv2.imread(student_image_obj.image.path)
+                    image = cv2.resize(image, (150, 150))
+                    _, buffer = cv2.imencode('.jpg', image)
+                    img_base64 = base64.b64encode(buffer).decode('utf-8')
+                    return JsonResponse({
+                        'status': 'matched',
+                        'name': name,
+                        'image': img_base64
+                    })
+                except:
+                    return JsonResponse({'status': 'matched', 'name': name, 'image': None})
+
+        return JsonResponse({'status': 'no match'})  # Unknown
+    return JsonResponse({'error': 'Invalid request'}, status=400)
  
 def student_check_out(request):
+    if request.session.has_key('teacher_mobile'):
+        mobile = request.session['teacher_mobile']
+        teacher = Teacher.objects.filter(mobile=mobile).first()
+        student_data = []
+        for s in Student_Image.objects.all():
+            try:
+                image = face_recognition.load_image_file(s.image.path)
+                encodings = face_recognition.face_encodings(image)
+                if encodings:
+                    student_data.append({
+                        'id': s.student.id,
+                        'name': s.student.name,
+                        'encoding': encodings[0].tolist(),  # Convert numpy array to list
+                        'tocken': s.student.tocken or '',
+                    })
+            except Exception as e:
+                print(f"Error loading image for {s.student.name}: {e}")
+                continue
+        students_json = json.dumps(student_data)
+        
+        
+        context={
+            'teacher':teacher,
+            'records':Student_Attendance.objects.filter(check_in__date=now().date()),
+            'students_json':students_json
+            
+        }
+        return render(request, 'student_check_out.html', context)
+    else:
+        return redirect('school_mobile')
+    
+def teacher_notice(request):
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
         teacher = Teacher.objects.filter(mobile=mobile).first()
@@ -309,13 +406,43 @@ def student_check_out(request):
         
         context={
             'teacher':teacher,
-            'records':Student_Attendance.objects.filter(check_in__date=now().date())
             
         }
-        return render(request, 'student_check_out.html', context)
+        return render(request, 'teacher_notice.html', context)
     else:
         return redirect('school_mobile')
     
+def teacher_received_notice(request):
+    if request.session.has_key('teacher_mobile'):
+        mobile = request.session['teacher_mobile']
+        teacher = Teacher.objects.filter(mobile=mobile).first()
+        n = []
+        for i in Notice.objects.filter().order_by('-id'):
+            if i.to_teacher == teacher or i.to_all_teachers == 1 or i.to_school == 1 or i.to_class != None:
+                n.append({
+                    'id':i.id,
+                    'notice_number':i.notice_number,
+                    'by_clerk':i.by_clerk,
+                    'by_teacher':i.by_teacher,
+                    'by_admin':i.by_admin,
+                    'batch':i.batch,
+                    'to_class':i.to_class,
+                    'to_student':i.to_student,
+                    'to_school':i.to_school,
+                    'to_teacher':i.to_teacher,
+                    'title':i.title,
+                    'description':i.description,
+                    'added_date':i.added_date,
+                    'readed_date':Readed_Notice.objects.filter(notice_id=i.id, read_by_teacher=teacher).first(),
+                })
+        
+        context={ 
+            'teacher':teacher,
+            'all_notices':n,
+        }
+        return render(request, 'teacher_received_notice.html', context)
+    else:
+        return redirect('school_mobile')
  # Check Out End
     
 def student_leaves(request):

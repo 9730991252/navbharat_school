@@ -144,12 +144,12 @@
                 <img src="{% if s.image %}{{s.image.image.url}}{% else %}https://i.pinimg.com/564x/94/c6/25/94c62511d312b8612aa0ab92318966f2.jpg{% endif %}" alt="">
             </div>
             <div class="card_body_right">
-                <div class="name"><h>Name : </h> {{s.name}}</div>
-                <div class="class"><h>Class : </h> {{s.class.name}}</div>
+                <div class="name" style="text-transform: capitalize;"><h>Name : </h> {{s.name}}</div>
+                <div class="class"><h>Class : </h> {{s.class}}</div>
                 <div class="dob"><h>D.O.B : </h> {{s.date_of_birth}}</div>
                 <div class="address">
                     <h>Address:</h>
-                    <div>{{s.address}}</div>
+                    <div style="text-transform: capitalize;">{{s.address}}</div>
                 </div>
             </div>
             <div class="qr_box">
@@ -158,7 +158,7 @@
         </div>
         <div class="mobile_box">
             <h>Mo.No</h>
-            <div class="number">9730991252</div>
+            <div class="number">{{s.mobile}}</div>
         </div>
         <div class="signature_box">
             <img src="{% static 'img/icard/signetuer.jpeg' %}" alt="">

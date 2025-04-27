@@ -88,26 +88,17 @@
            class="{% if request.path == '/teacher/student_check_in/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">
             👋 Check In
         </a>
-        <a href="/teacher/student_check_Out/"
-           class="{% if request.path == '/teacher/student_check_Out/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">
+        <a href="/teacher/student_check_out/"
+           class="{% if request.path == '/teacher/student_check_out/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">
             🏁 Check Out
         </a>
     </div>
 
 </div>
-<!-- Dashboard Cards -->
-<div class="card_main_box">
-    <div class="detail_cards">
-        <i class="fas fa-sign-in-alt"></i>
-        <p>Today's Check In</p>
-        <b>{{check_in}}</b>
-    </div>
-    <div class="detail_cards">
-        <i class="fas fa-sign-out-alt"></i>
-        <p>Today's Check Out</p>
-        <b>{{check_out}}</b>
-    </div>
-</div>
+
+
+{% include 'attendance_check_in_check_out_box.html' %}
+
 <div class="card_main_box">
     {% for c in class %}
         <div class="detail_cards" data-bs-toggle="modal" data-bs-target="#class_details{{c.id}}">

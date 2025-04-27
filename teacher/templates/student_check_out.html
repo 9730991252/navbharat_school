@@ -3,194 +3,239 @@
 {% block head %}
 {% load static %}
 <style>
-    body {
-        background: linear-gradient(to right, #e3f2fd, #ffffff);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .main-wrapper {
-        max-width: 900px;
-        margin: auto;
-        padding: 30px 20px;
-    }
-
-    .card-box {
-        background-color: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        padding: 40px 30px;
-        text-align: center;
-    }
-
-    .action-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 25px;
-        margin-bottom: 10px;
-    }
-
-    .action-buttons a {
-        padding: 12px 24px;
-        border-radius: 10px;
-        font-size: 17px;
-        font-weight: 600;
-        color: white;
-        text-decoration: none;
-        transition: all 0.3s ease-in-out;
-        transform: scale(0.70);
-    }
-
-    .check-in {
-        background: linear-gradient(135deg, #28a745, #1c3021);
-    }
-
-    .check-out {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-    }
-
-    .active-btn {
-        box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-        transform: scale(1.05);
-        background: linear-gradient(135deg, #ff5e00, #fff018);
-
-    }
-
-    .video-box img {
-        border: 5px solid #343a40;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        max-width: 700px;
-        height: auto;
-    }
+  body {
+    background: linear-gradient(to right, #e3f2fd, #ffffff);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .main-wrapper {
+    max-width: 900px;
+    margin: auto;
+    padding: 30px 20px;
+  }
+  .card-box {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 40px 30px;
+    text-align: center;
+  }
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 10px;
+  }
+  .action-buttons a {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    transform: scale(0.70);
+  }
+  .check-in {
+    background: linear-gradient(135deg, #28a745, #1c3021);
+  }
+  .check-out {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+  }
+  .active-btn {
+    box-shadow: 0 0 15px rgba(255,0,0,0.3);
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #ff5e00, #fff018);
+  }
+  .video-box {
+    position: relative;
+  }
+  .video-box video,
+  .video-box canvas {
+    width: 100%;
+    height: auto;
+    max-width: 700px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  #canvas {
+    display: none; /* hide the hidden processing canvas */
+  }
+  .footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background-color: antiquewhite;
+    padding: 10px;
+  }
+  .footer input {
+    width: 80%;
+    margin: 0 auto;
+  }
 </style>
 {% endblock head %}
 
 {% block content %}
-{% include 'teacher_navbhar.html' %}
-{% include 'alert.html' %}
-<div class="action-buttons">
-    <a href="/teacher/student_check_in/"
+  {% include 'teacher_navbhar.html' %}
+  {% include 'alert.html' %}
+
+  <div class="action-buttons">
+    <a href="{% url 'student_check_in' %}"
        class="check-in {% if request.path == '/teacher/student_check_in/' %}active-btn{% endif %}">
-        👋 Check In
+      👋 Check In
     </a>
-    <a href="/teacher/student_check_out/"
+    <a href="{% url 'student_check_out' %}"
        class="check-out {% if request.path == '/teacher/student_check_out/' %}active-btn{% endif %}">
-        🏁 Check Out
+      🏁 Check Out
     </a>
-</div>
-
-<style>
-    .file_input{
-        height: 100px;
-        width: 100px;
-        border-radius: 50%;
-        border: 3px dashed #999;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        i{
-            font-size: 24px;
-        }
-    }
-    .student_box{
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        padding: 10px;
-        display: flex;
-        justify-content: space-evenly;
-        gap: 30px;
-        width: 350px;
-        margin: 0 auto;
-    }
-    .name_mobile_box{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        .name{
-            font-size: 20px;
-            font-weight: bold;
-        }
-    }
-    .adhar_number_gender{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
     
-    }
-    </style>
+  </div>
+  
+  <div style="display: none;">
 
-<div id="student_result"></div>
+    <audio controls id="succcess_audio">
+      <source src="/media/notifications/success1.mp3" type="audio/mpeg">
+    </audio>
 
-<div class="main-wrapper">
+    <audio controls id="error_audio">
+      <source src="/media/notifications/error.mp3" type="audio/mpeg">
+    </audio>
+    
+  </div>
+
+
+
+   <div id="student_result"></div>
+
+  <div class="main-wrapper">
     <div class="card-box">
-        <h2 class="mb-2 fw-bold text-dark">🎓 Check Out</h2>
-        <div class="video-box">
-            <img src="{% url 'video_feed_check_out' %}" alt="Live Camera Feed">
-        </div>
+      <h2 class="mb-2 fw-bold text-dark">🎓 Check Out</h2>
+      <div class="video-box">
+        <video id="video" autoplay muted></video>
+        <canvas id="canvas"></canvas>
+      </div>
+      <div style="margin-top:20px;">
+        <h2 id="matched-name">Waiting for face...</h2>
+        <img id="matched-image"
+             src="https://png.pngtree.com/png-vector/20220624/ourmid/pngtree-anonymous-user-unknown-faceless-vector-png-image_5324345.png"
+             alt="Matched Face"
+             width="150" height="150"
+             style="border:2px solid #000; border-radius:8px;">
+      </div>
     </div>
-</div>
+  </div>
+
+  <div class="footer">
+    <input type="text"
+           class="form-control"
+           placeholder="Search Student"
+           oninput="search_student()">
+  </div>
+  <br><br><br>
 
 
-<style>
-    .footer{
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: antiquewhite;
-        input{
-            width: 80%;
-            margin: 0 auto;
-        }
+  <script src="{% static 'js/face-api.js' %}"></script>
+  <script>
+    const students = JSON.parse('{{ students_json|escapejs }}');
+
+    function playAudio(type) {
+      var audio = document.getElementById(type);
+      audio.play();
     }
-</style>
-<div class="footer">
-    <input type="text" class="form-control" placeholder="Search Student" oninput="search_student()">
-</div>
-<br><br><br>
 
-<script>
-    function check_in_student(id){
-           document.getElementById('student_box'+id).style.display = 'none';
-           $.ajax({
-               url: "{% url 'check_out_student_manual' %}",
-               method: "GET",
-               data: {
-                   s_id:id,
-               },
-               success: function(res) {
-               },
-           });
-       }
-   
-       function search_student() {
-           const query = document.querySelector('.footer input').value;
-           const resultDiv = document.getElementById('student_result');
-   
-           if (query.trim() === '') {
-               resultDiv.innerHTML = '';
-               return;
-           }
-           else{
-               $.ajax({
-                   url: "{% url 'search_student_for_check_out' %}",
-                   method: "GET",
-                   data: {
-                       words: query,
-                       batch_id: '{{ clerk.batch.id }}'
-                   },
-                   success: function(res) {
-                       resultDiv.innerHTML = res.t;
-                   },
-               });
-           }
-       }
-   </script>
+    // Load face-api models
+    Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri('{% static "models" %}'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('{% static "models" %}'),
+      faceapi.nets.faceRecognitionNet.loadFromUri('{% static "models" %}'),
+      faceapi.nets.faceExpressionNet.loadFromUri('{% static "models" %}')
+    ])
 
+    // Start webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+
+        video.onplay = () => {
+          // Create overlay canvas
+          const overlay = faceapi.createCanvasFromMedia(video);
+          document.body.append(overlay);
+
+          // Use intrinsic video size
+          const displaySize = {
+            width: video.videoWidth,
+            height: video.videoHeight
+          };
+          faceapi.matchDimensions(overlay, displaySize);
+
+          setInterval(async () => {
+            const detections = await faceapi
+              .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+              .withFaceLandmarks()
+              .withFaceExpressions();
+
+            const resized = faceapi.resizeResults(detections, displaySize);
+
+            if (resized.length === 1) {
+              // Draw frame to hidden canvas
+              const canvas = document.getElementById('canvas');
+              canvas.width = displaySize.width;
+              canvas.height = displaySize.height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(video, 0, 0, displaySize.width, displaySize.height);
+
+              canvas.toBlob(blob => {
+                const fd = new FormData();
+                fd.append('frame', blob);
+                fd.append('students', JSON.stringify(students));
+
+                fetch('/teacher/video_feed_check_out/', {
+                  method: 'POST',
+                  headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                  body: fd
+                })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.name) {
+                    document.getElementById('matched-name').innerText = data.name;
+                    const img = document.getElementById('matched-image');
+                    img.src = 'data:image/jpeg;base64,' + data.image;
+                    img.style.display = 'block';
+                    playAudio('succcess_audio');
+
+                  }
+                });
+              }, 'image/jpeg');
+            }
+          }, 1000);
+        };
+      })
+      .catch(err => console.error('Webcam error:', err));
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        document.cookie.split(';').forEach(cookie => {
+          const c = cookie.trim();
+          if (c.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(c.substring(name.length + 1));
+          }
+        });
+      }
+      return cookieValue;
+    }
+
+    function search_student() {
+      const query = document.querySelector('.footer input').value.trim();
+      const resultDiv = document.getElementById('student_result');
+      if (!query) {
+        resultDiv.innerHTML = '';
+        return;
+      }
+      fetch("{% url 'search_student_for_check_in' %}?words=" + encodeURIComponent(query) + "&batch_id={{ clerk.batch.id }}")
+        .then(res => res.json())
+        .then(res => {
+          resultDiv.innerHTML = res.t;
+        });
+    }
+  </script>
 {% endblock content %}

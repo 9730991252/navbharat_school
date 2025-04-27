@@ -1,0 +1,25 @@
+<div class="notice-card" id="notice-{{n.id}}">
+    <div class="notice-header">
+        <div class="notice-title">{{ n.title|slice:":30" }}{% if n.title|length > 35 %}...{% endif %}</div>
+        <div class="notice-number">Notice {{ n.notice_number }}</div>
+    </div>
+    <div class="notice-meta">
+        <strong>Sender:</strong> 
+        {% if n.by_teacher %}{{ n.by_teacher.name }}
+        {% elif n.by_clerk %}{{ n.by_clerk.name }}
+        {% elif n.by_admin == 1 %}Admin
+        {% else %}Unknown{% endif %}
+        <br>
+        <strong>Added On:</strong> {{ n.added_date|date:"d M, Y h:i A" }}
+    </div>
+    <div class="notice-body">
+        <span id="short-desc-{{ n.id }}">{{ n.description|slice:":100" }}</span>
+        <span id="full-desc-{{ n.id }}" style="display: none;">{{ n.description }}</span>
+        <br>
+        <button class="read-more-btn" id="read-more-btn{{n.id}}" onclick="showFullDescription('{{ n.id }}', '{{ n.id }}')">Read More</button>
+        <button class="read-less-btn" id="read-less-btn{{n.id}}" style="display: none;" onclick="showLessDescription('{{ n.id }}')">Read Less</button>
+    </div>
+    <div class="notice-meta">
+        <strong>Read At:</strong> {{ readed_notice.readed_date|date:"d M, Y h:i A" }}
+    </div>
+</div>

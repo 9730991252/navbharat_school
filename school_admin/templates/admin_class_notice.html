@@ -1,0 +1,400 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+    body {
+        background: linear-gradient(to right, #f8f9fa, #e0eafc);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Loader styles */
+    #loader-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.7);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .loader {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid #6c63ff;
+        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .notice-container {
+        margin: 30px auto;
+        max-width: 500px;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .notice-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .notice-container h6 {
+        font-weight: 700;
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+        text-align: center;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .form-control, textarea {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 10px 15px;
+        width: 100%;
+        resize: none;
+        transition: border 0.3s, box-shadow 0.3s;
+        background-color: #f9f9f9;
+    }
+
+    .form-control:focus, textarea:focus {
+        border-color: #6c63ff;
+        box-shadow: 0 0 5px #6c63ff;
+        background-color: #fff;
+        outline: none;
+    }
+
+    textarea {
+        min-height: 120px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: #6c63ff;
+        color: white;
+        padding: 12px;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        margin-top: 20px;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .submit-btn:hover {
+        background: #5848e5;
+        transform: translateY(-2px);
+    }
+</style>
+<style>
+    body {
+        background: linear-gradient(to right, #f8f9fa, #e0eafc);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .notice-container {
+        margin: 30px auto;
+        max-width: 500px;
+        padding: 30px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .notice-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .notice-container h6 {
+        font-weight: 700;
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+        text-align: center;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .form-control, textarea {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 10px 15px;
+        width: 100%;
+        resize: none;
+        transition: border 0.3s, box-shadow 0.3s;
+        background-color: #f9f9f9;
+    }
+
+    .form-control:focus, textarea:focus {
+        border-color: #6c63ff;
+        box-shadow: 0 0 5px #6c63ff;
+        background-color: #fff;
+        outline: none;
+    }
+
+    textarea {
+        min-height: 120px;
+    }
+
+    .textarea-container {
+        position: relative;
+    }
+
+    .char-counter {
+        position: absolute;
+        right: 10px;
+        bottom: 5px;
+        font-size: 12px;
+        color: #777;
+    }
+
+    .char-counter.limit-reached {
+        color: red;
+        font-weight: bold;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: #6c63ff;
+        color: white;
+        padding: 12px;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        margin-top: 20px;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .submit-btn:hover {
+        background: #5848e5;
+        transform: translateY(-2px);
+    }
+
+    /* Recent Notices Section */
+    .recent-notices {
+        margin: 50px auto;
+        max-width: 1000px;
+    }
+
+    .recent-notices h6 {
+        font-weight: 700;
+        font-size: 20px;
+        margin-bottom: 25px;
+        text-align: center;
+        color: #444;
+    }
+
+    .notice-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .notice-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .notice-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .notice-number {
+        background: #6c63ff;
+        color: white;
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .notice-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .notice-description {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 12px;
+    }
+
+    .notice-date {
+        font-size: 13px;
+        color: #999;
+    }
+
+    .no-notices {
+        text-align: center;
+        color: #999;
+        font-size: 18px;
+        padding: 20px;
+    }
+
+    /* Pagination */
+    .pagination {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 0;
+    }
+
+    .pagination li {
+        margin: 0 5px;
+    }
+
+    .pagination li a, .pagination li span {
+        display: block;
+        padding: 8px 14px;
+        background: #6c63ff;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+
+    .pagination li a:hover {
+        background: #5848e5;
+    }
+
+    .pagination li.active span {
+        background: #5848e5;
+    }
+
+    @media(max-width: 600px) {
+        .notice-container {
+            padding: 20px;
+            margin: 20px;
+        }
+        .recent-notices {
+            margin: 20px;
+        }
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% load static %}
+{% include 'admin_navbar.html' %}
+{% include 'admin_notic_menu.html' %}
+{% include 'alert.html' %}
+
+<!-- Hidden Loader -->
+<div id="loader-overlay">
+    <div class="loader"></div>
+</div>
+
+<!-- Send Class Notice Form -->
+<div class="notice-container">
+    <h6>📢 Send Notice to Class</h6>
+
+    <form method="POST" id="noticeForm">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="class" class="form-label">Select Class</label>
+            <select id="class" name="class" class="form-control" required>
+                <option value="" disabled selected>Select a Class</option>
+                {% for class in classes %}
+                    <option value="{{ class.id }}">{{ class.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <div class="mb-3">
+            <label for="notice" class="form-label">Title</label>
+            <input class="form-control" id="notice" name="title" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <div class="textarea-container">
+                <textarea id="autoResize" name="description" placeholder="Type Notice..." required></textarea>
+            </div>
+        </div>
+
+
+        <button type="submit" class="submit-btn">Send Notice</button>
+    </form>
+</div>
+
+
+<!-- Recent Notices Section -->
+<div class="recent-notices">
+    <h6>📜 Recent Notices</h6>
+
+    {% if notices %}
+        <div class="notice-grid">
+            {% for notice in notices %}
+                <div class="notice-card">
+                    <div class="notice-number">Notice #{{ notice.notice_number }} <h class="text-warning">To {{notice.to_class.name|cut:" "}} Class</h></div>
+                    <div class="notice-title">{{ notice.title }}</div>
+                    <div class="notice-description">{{ notice.description|truncatechars:150 }}</div>
+                    <div class="notice-date">{{ notice.added_date|date:"d M Y, h:i A" }}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <ul class="pagination">
+            {% if notices.has_previous %}
+                <li><a href="?page={{ notices.previous_page_number }}">Previous</a></li>
+            {% endif %}
+
+            {% for num in notices.paginator.page_range %}
+                {% if notices.number == num %}
+                    <li class="active"><span>{{ num }}</span></li>
+                {% elif num > notices.number|add:'-3' and num < notices.number|add:'3' %}
+                    <li><a href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if notices.has_next %}
+                <li><a href="?page={{ notices.next_page_number }}">Next</a></li>
+            {% endif %}
+        </ul>
+    {% else %}
+        <div class="no-notices">No notices found.</div>
+    {% endif %}
+</div>
+
+
+<!-- Scripts -->
+<script>
+    const form = document.getElementById('noticeForm');
+    form.addEventListener('submit', function() {
+        document.getElementById('loader-overlay').style.display = 'flex';
+    });
+</script>
+{% endblock content %}
+

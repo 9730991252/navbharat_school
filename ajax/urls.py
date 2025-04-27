@@ -12,4 +12,7 @@ urlpatterns = [
     path('search_holiday/', views.search_holiday, name='search_holiday'),
     path('check_day/', views.check_day, name='check_day'),
     path('search_student_for_edit/', views.search_student_for_edit, name='search_student_for_edit'),
+    path('save_readed_notices_student/', views.save_readed_notices_student, name='save_readed_notices_student'),
+    path('save_readed_notices_admin/', views.save_readed_notices_admin, name='save_readed_notices_admin'),
+    path('save_readed_notices_teacher/', views.save_readed_notices_teacher, name='save_readed_notices_teacher'),
 ]

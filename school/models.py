@@ -93,6 +93,7 @@ class Subject_class_and_teacher(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     
 class Notice(models.Model):
+    notice_number = models.CharField(max_length=100,null=True)
     by_clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='by_clerk')
     by_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, related_name='by_teacher')
     by_admin = models.IntegerField(default=0)
@@ -101,11 +102,11 @@ class Notice(models.Model):
     to_student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, related_name='to_student')
     to_school = models.IntegerField(default=0)
     to_teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, null=True, related_name='to_teacher')
+    to_all_teachers = models.IntegerField(default=0)
     title = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True)
     added_date = models.DateTimeField(auto_now_add=True, null=True)
     status = models.IntegerField(default=1)
-    
     
 class Readed_Notice(models.Model):
     read_by_student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, related_name='read_by_student')

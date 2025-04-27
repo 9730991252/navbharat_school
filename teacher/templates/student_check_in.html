@@ -128,7 +128,7 @@
   <br><br><br>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1/dist/face-api.js"></script>
+  <script src="{% static 'js/face-api.js' %}"></script>
   <script>
     const students = JSON.parse('{{ students_json|escapejs }}');
 

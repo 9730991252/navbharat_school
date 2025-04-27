@@ -80,26 +80,17 @@
 {% endblock head %}
 
 {% block content %}
-{% load static %}
+{% include 'teacher_navbhar.html' %}
 {% include 'alert.html' %}
-{% include 'student/student_navbar.html' %}
+{% include 'teacher_notice_menu.html' %}
 
-<div class="text-center">
-    <select class="form-select" onchange="location.href = '/student/student_home/' + this.value" style="width: 350px; margin: 20px auto;" aria-label="Default select example">
-        {% for b in batches %}
-            <option {% if b.id == current_batch.id %} selected {% endif %} value="{{ b.id }}">{{ b.name }}</option>
-        {% endfor %}
-    </select>
-</div>
-
-{% include 'student/student_menu.html' %}
 
 <div class="notice-container">
     <h3 style="color: #333;">Notices</h3>
     {% if all_notices %}
         {% for n in all_notices %}
         <div id="mainnotice-{{n.id}}">
-        <div class="notice-card {% if n.id not in read_notice_ids %} unread {% endif %}" id="notice-{{n.id}}">
+        <div class="notice-card {% if not n.readed_date %} unread {% endif %}" id="notice-{{n.id}}">
             <div class="notice-number">Notice {{ n.notice_number }}</div>
             <div class="notice-header">
                 <div class="notice-title">{{ n.title|slice:":30" }}{% if n.title|length > 35 %}...{% endif %}</div>
@@ -122,7 +113,7 @@
             </div>
             {% if n.readed_date %}
             <div class="notice-meta">
-                <strong>Read At:</strong> {{ n.readed_date|date:"d M, Y h:i A" }}
+                <strong>Read At:</strong> {{ n.readed_date.readed_date|date:"d M, Y h:i A" }}
             </div>
             {% endif %}
         </div>
@@ -139,6 +130,7 @@
 <script>
 function showFullDescription(id, noticeId) {
     $('#full-desc-' + id).show();
+    $('#short-desc-' + id).hide();  // Corrected the method to hide the short description
 
     saveReadedNotice(noticeId);
 }
@@ -150,12 +142,13 @@ function showLessDescription(id) {
 }
 
 function saveReadedNotice(noticeId) {
+
     $.ajax({
-        url: "{% url 'save_readed_notices_student' %}",
+        url: "{% url 'save_readed_notices_teacher' %}",
         method: "GET",
         data: {
             notice_id: noticeId,
-            student_id: '{{ student.id }}'
+            teacher_id: "{{ teacher.id }}",
         },
         success: function(response) {
             document.getElementById('mainnotice-'+noticeId).innerHTML = response.t;
@@ -169,3 +162,4 @@ function saveReadedNotice(noticeId) {
 }
 </script>
 {% endblock content %}
+

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from home.models import *
 from sunil.models import *
 from teacher.models import *
@@ -27,3 +27,4 @@ import face_recognition
 from django.http import StreamingHttpResponse
 from django.utils.timezone import now
 from firebase_admin import messaging
+from django.core.paginator import Paginator

@@ -1,44 +1,74 @@
 <style>
-    .menu{
+    .menu {
         display: flex;
-        width: 100%;
-        overflow: scroll;
+        overflow-x: auto;
         gap: 10px;
+        padding: 10px;
+        background: #f8f9fa;
+        white-space: nowrap;
+    }
+    .menu a {
+        flex: 0 0 auto;
+        padding: 8px 16px;
+        text-decoration: none;
+        font-weight: 600;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        font-size: 14px;
+    }
+    /* Hide scrollbar on mobile */
+    .menu::-webkit-scrollbar {
+        display: none;
     }
 </style>
+
 <div class="menu">
-   <a  href="/student/student_home/{{current_batch.id}}" class="btn btn-primary my-1 home">Home</a>
-   <a  href="/student/notice/{{current_batch.id}}" class="btn btn-primary my-1 notice">Notice</a>
-   <a  href="/student/leave_letter/{{current_batch.id}}" class="btn btn-primary my-1 notice">Leave letter</a>
-   <a  href="" class="btn btn-primary my-1 exam">Exam</a>
-   <a  href="" class="btn btn-primary my-1 teachers">Teachers</a>
-   <a  href="/student/videos/{{current_batch.id}}" class="btn btn-primary my-1 videos">Videos</a>
-   <a  href="" class="btn btn-primary my-1 fee">Fee</a>
-   <a  href="/student/student_profile/{{current_batch.id}}" class="btn btn-primary my-1 fee">Profile</a>
-   <a  href="" class="btn btn-primary my-1 fee">Fee</a>
-   <a  href="" class="btn btn-primary my-1 fee">Identity Card</a>
-   <a  href="/logout/" class="btn btn-danger my-1 fee">Logout</a>
-   <script>
-    if('{{request.path}}' == '/student/student_home/{{current_batch.id}}'){
+    <a href="/student/student_home/{{current_batch.id}}" class="btn btn-primary my-1 home">Home</a>
+    <a href="/student/notice/{{current_batch.id}}" class="btn btn-primary my-1 notice">Notice</a>
+    <a href="/student/leave_letter/{{current_batch.id}}" class="btn btn-primary my-1 leave">Leave Letter</a>
+    <a href="/student/exam/{{current_batch.id}}" class="btn btn-primary my-1 exam">Exam</a>
+    <a href="/student/teachers/{{current_batch.id}}" class="btn btn-primary my-1 teachers">Teachers</a>
+    <a href="/student/videos/{{current_batch.id}}" class="btn btn-primary my-1 videos">Videos</a>
+    <a href="/student/fee/{{current_batch.id}}" class="btn btn-primary my-1 fee">Fee</a>
+    <a href="/student/student_profile/{{current_batch.id}}" class="btn btn-primary my-1 profile">Profile</a>
+    <a href="/student/identity_card/{{current_batch.id}}" class="btn btn-primary my-1 idcard">Identity Card</a>
+    <a href="/logout/" class="btn btn-danger my-1 logout">Logout</a>
+</div>
+
+<script>
+    const path = '{{request.path}}';
+
+    if (path.includes('/student/student_home/')) {
         document.querySelector('.home').classList.add('btn-warning');
     }
-    if('{{request.path}}' == '/student/leave_letter/{{current_batch.id}}'){
-        document.querySelector('.home').classList.add('btn-warning');
-    }
-    if('{{request.path}}' == '/student/notice/{{current_batch.id}}'){
+    if (path.includes('/student/notice/')) {
         document.querySelector('.notice').classList.add('btn-warning');
     }
-    if('{{request.path}}' == '/student/exam/{{current_batch.id}}'){
+    if (path.includes('/student/leave_letter/')) {
+        document.querySelector('.leave').classList.add('btn-warning');
+    }
+    if (path.includes('/student/exam/')) {
         document.querySelector('.exam').classList.add('btn-warning');
     }
-    if('{{request.path}}' == '/student/teachers/{{current_batch.id}}'){
+    if (path.includes('/student/teachers/')) {
         document.querySelector('.teachers').classList.add('btn-warning');
     }
-    if('{{request.path}}' == '/student/fee/{{current_batch.id}}'){
-        document.querySelector('.fee').classList.add('btn-warning');
-    }
-    if('{{request.path}}' == '/videos/fee/{{current_batch.id}}'){
+    if (path.includes('/student/videos/')) {
         document.querySelector('.videos').classList.add('btn-warning');
     }
-   </script>
-</div>
+    if (path.includes('/student/fee/')) {
+        document.querySelector('.fee').classList.add('btn-warning');
+    }
+    if (path.includes('/student/student_profile/')) {
+        document.querySelector('.profile').classList.add('btn-warning');
+    }
+    if (path.includes('/student/identity_card/')) {
+        document.querySelector('.idcard').classList.add('btn-warning');
+    }
+</script>
