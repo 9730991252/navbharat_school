@@ -1,7 +1,33 @@
 from navbharat_school.includes import *
 # Create your views here.
+def check_new_visitor(request):
+    v = 1
+    if request.session.has_key('admin_mobile'):
+        v = 0
+    if request.session.has_key('school_mobile'):
+        v = 0
+    if request.session.has_key('parent_mobile'):
+        v = 0
+    if request.session.has_key('teacher_mobile'):
+        v = 0
+    if not web_visitor.objects.all().first():
+        web_visitor.objects.create(
+            count=v
+        )
+    else:
+        web_visitor.objects.all().update(
+            count=F('count') + v
+        )
+    return web_visitor.objects.all().first().count
+
+
 def index(request):
-    return render(request, 'index.html')
+    context = {
+        'visitor': check_new_visitor(request),
+        'teachers_count': Teacher.objects.filter(status=1, branding_status=1).count(),
+        'teachers': Teacher.objects.filter(status=1, branding_status=1),
+    }
+    return render(request, 'index.html', context)
 
 def logout(request):
     if request.session.has_key('admin_mobile'):

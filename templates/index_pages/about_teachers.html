@@ -6,7 +6,7 @@
 
 .banner{
     width: 100%;
-    height: 70vh;
+    height: 100vh;
     text-align: center;
     overflow: hidden;
     position: relative;
@@ -36,7 +36,7 @@
     inset: 0 0 0 0;
     transform: 
         rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
-        translateZ(400px);
+        translateZ(500px);
 }
 .banner .slider_about_t .item img{
     width: 100%;
@@ -85,12 +85,23 @@
     width: 100%;
     height: 40vh;
     position: absolute;
-    bottom: 50px;
+    bottom: 270px;
     left: 0;
     background-size: auto 100%;
     background-repeat: no-repeat;
     background-position: top ;
     z-index: 1;
+}
+.teacher_name_box{
+    width: 100%;
+    height: 20%;
+    background-color: rgb(255, 255, 255);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-size: 0.7em;
+    font-weight: 700;
 }
 @media screen and (max-width: 1023px) {
     .banner .slider_about_t{
@@ -121,6 +132,9 @@
     }
 }
 @media screen and (max-width: 767px) {
+    .banner{
+        height: 70vh;
+    }
     .banner .slider_about_t{
         width: 100px;
         height: 150px;
@@ -129,26 +143,28 @@
     .banner .slider_about_t .item{
         transform: 
             rotateY(calc( (var(--position) - 1) * (360 / var(--quantity)) * 1deg))
-            translateZ(180px);
+            translateZ(350px);
     }
     .banner .content h1{
         font-size: 5em;
+    }
+    .banner .content .model{
+    bottom: 50px;
     }
 }
 </style>
 
 <div class="banner">
-    <div class="slider_about_t" style="--quantity: 10">
-        <div class="item" style="--position: 1"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 2"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 3"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 4"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 5"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 6"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 7"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 8"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 9"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
-        <div class="item" style="--position: 10"><img src="{% static 'img/teacher.jpg' %}" alt=""></div>
+    <div class="slider_about_t" style="--quantity: {{teachers_count}}">
+        {% for t in teachers %}
+            <div class="item" style="--position: {{ forloop.counter }}">
+                <div style="position: relative;">
+
+                    <img src="{% static 'img/teacher.jpg' %}" alt="">
+                    <div class="teacher_name_box">{{ t.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
     </div>
     <div class="content">
         <div class="model"></div>
