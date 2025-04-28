@@ -81,6 +81,21 @@
         font-size: 24px;
         color: #007bff;
     }
+    .class_attendance_main_box{
+        display: flex;
+        justify-content: space-evenly;
+        gap: 10px;
+    }
+    .class_attendance_box{
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 49%;
+        text-align: center;
+    }
 </style>
 
 <!-- Dashboard Cards -->
@@ -114,18 +129,23 @@
                 <div class="modal-body">
                 {% for l in c.list %}
                 <div class="text-center"><b>{{l.student.name}}</b></div>
-                <div style="display: flex;justify-content: start;gap: 25px;">
-                    <div style="align-items: start;">In &nbsp;&nbsp;</div>
-                    <div style="align-items: start;">{{l.check_in|date:'h:m a'}}</div>
-                    <div style="align-items: start;">By.{{l.check_in_by_teacher.name}}</div>
-                    <div style="align-items: start;">{% if l.check_in_type == 1 %}Auto{% else %}Manual{% endif %}</div>
+                <div class="class_attendance_main_box">
+                    <div class="class_attendance_box" >
+                        <div style="align-items: start;">In &nbsp;&nbsp;</div>
+                        <div style="align-items: start;">{{l.check_in|date:'h:m a'}}</div>
+                        <br>
+                        <div style="align-items: start;">By.{{l.check_in_by_teacher.name}}</div>
+                        <div style="align-items: start;">{% if l.check_in_type == 1 %}Auto{% else %}Manual{% endif %}</div>
+                    </div>
+                    <div class="class_attendance_box" >
+                        <div style="align-items: start;">Out</div>
+                        <div style="align-items: start;">{{l.check_out|date:'h:m a'}}</div>
+                        <br>
+                        <div style="align-items: start;">By.{{l.check_out_by_teacher.name}}</div>
+                        <div style="align-items: start;">{% if l.check_out_type == 1 %}Auto{% else %}Manual{% endif %}</div>
+                    </div>
                 </div>
-                <div style="display: flex;justify-content: start;gap: 25px;">
-                    <div style="align-items: start;">Out</div>
-                    <div style="align-items: start;">{{l.check_out|date:'h:m a'}}</div>
-                    <div style="align-items: start;">By.{{l.check_out_by_teacher.name}}</div>
-                    <div style="align-items: start;">{% if l.check_out_type == 1 %}Auto{% else %}Manual{% endif %}</div>
-                </div>
+
                 <hr>
                 {% endfor %}
                 </div>

@@ -1,4 +1,4 @@
-<div class="notice-card {% if not n.readed_date %} unread {% endif %}" id="notice-{{n.id}}">
+<div class="notice-card " id="notice-{{n.id}}">
     <div class="notice-number">Notice {{ n.notice_number }}</div>
     <div class="notice-header">
         <div class="notice-title">{{ n.title|slice:":30" }}{% if n.title|length > 35 %}...{% endif %}</div>
@@ -19,9 +19,7 @@
         <button class="read-more-btn" id="read-more-btn{{n.id}}" onclick="showFullDescription('{{ n.id }}', '{{ n.id }}')">Read More</button>
         <button class="read-less-btn" id="read-less-btn{{n.id}}" style="display: none;" onclick="showLessDescription('{{ n.id }}')">Read Less</button>
     </div>
-    {% if n.readed_date %}
     <div class="notice-meta">
-        <strong>Read At:</strong> {{ readed_notice.date|date:"d M, Y h:i A" }}
+        <strong>Read At:</strong> {{ readed_notice.readed_date|date:"d M, Y h:i A" }}
     </div>
-    {% endif %}
 </div>
