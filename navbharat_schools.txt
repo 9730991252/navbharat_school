@@ -22,7 +22,7 @@ python3 manage.py migrate
 systemctl daemon-reload
 systemctl restart navbharat_school.com.gunicorn
 exit
-
+ 
 root
 cd navbharat_school
 git pull
