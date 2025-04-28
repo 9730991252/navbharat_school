@@ -13,8 +13,8 @@
         <strong>Added On:</strong> {{ n.added_date|date:"d M, Y h:i A" }}
     </div>
     <div class="notice-body">
-        <span id="short-desc-{{ n.id }}">{{ n.description|slice:":10" }}...</span>
-        <span id="full-desc-{{ n.id }}" style="display: none;">{{ n.description }}</span>
+        <span id="short-desc-{{ n.id }}" style="display: none;">{{ n.description|slice:":10" }}...</span>
+        <span id="full-desc-{{ n.id }}" >{{ n.description }}</span>
         <br>
         <button class="read-more-btn" id="read-more-btn{{n.id}}" onclick="showFullDescription('{{ n.id }}', '{{ n.id }}')">Read More</button>
         <button class="read-less-btn" id="read-less-btn{{n.id}}" style="display: none;" onclick="showLessDescription('{{ n.id }}')">Read Less</button>
