@@ -28,3 +28,4 @@ from django.http import StreamingHttpResponse
 from django.utils.timezone import now
 from firebase_admin import messaging
 from django.core.paginator import Paginator
+from home.views import check_new_visitor

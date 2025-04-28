@@ -57,6 +57,8 @@ def school_login(request):
             return redirect('/school_login/')
     context = {
         'batch':Batch.objects.all(),
+        'visitor': check_new_visitor(request),
+        
     }
     return render(request, 'school_login.html', context)
 
@@ -78,6 +80,8 @@ def admin_login(request):
             return redirect('/admin_login/')
     context = {
         'batch':Batch.objects.all(),
+        'visitor': check_new_visitor(request),
+        
     }
     return render(request, 'admin_login.html',context)
 
@@ -95,7 +99,11 @@ def parent_login(request):
         else:
             messages.error(request,f"Mobile Number or Secret Pin invalid.")
             return redirect('/parent_login/')
-    return render(request, 'parent_login.html')
+    context={
+        'visitor': check_new_visitor(request),
+        
+    }
+    return render(request, 'parent_login.html', context)
 
 def teacher_login(request):
     if request.method == "POST":
@@ -111,5 +119,7 @@ def teacher_login(request):
             return redirect('/teacher_login/')
     context = {
         'batch':Batch.objects.all(),
+        'visitor': check_new_visitor(request),
+        
     }
     return render(request, 'teacher_login.html',context)

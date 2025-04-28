@@ -13,6 +13,8 @@ def student_home(request, batch_id):
             'class':Class_student.objects.filter(student=student, batch=current_batch).first(),
             'attendance':Student_Attendance.objects.filter(student=student, check_in__date=date.today()).first(),
             'student_image':Student_Image.objects.filter(student_id=student.id).first(),
+                    'visitor': check_new_visitor(request),
+
         }
         return render(request, 'student_home.html', context)
     else:
@@ -124,6 +126,8 @@ def leave_letter(request, batch_id):
             'batches':Batch.objects.filter(status=1),
             'current_batch':Batch.objects.get(id=batch_id),
             'leave_letter':Leave_letter.objects.filter(student=student).order_by('-id'),
+                    'visitor': check_new_visitor(request),
+
         }
         return render(request, 'leave_letter.html', context)
     else:
@@ -140,6 +144,8 @@ def videos(request, batch_id):
             'student_image':Student_Image.objects.filter(student_id=student.id),
             'batches':Batch.objects.filter(status=1),
             'current_batch':Batch.objects.get(id=batch_id),
+                    'visitor': check_new_visitor(request),
+
         }
         return render(request, 'videos.html', context)
     else:
@@ -167,6 +173,8 @@ def student_profile(request, batch_id):
             'student_image': Student_Image.objects.filter(student_id=student.id),
             'batches': Batch.objects.filter(status=1),
             'current_batch': current_batch,
+                    'visitor': check_new_visitor(request),
+
         }
         return render(request, 'student_profile.html', context)
     else:
