@@ -2,7 +2,6 @@ from navbharat_school.includes import *
 
 # Create your views here.
 def teacher_home(request):
-    Student_Image.objects.all().delete()
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
         class_students_count = 0
