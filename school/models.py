@@ -114,3 +114,9 @@ class Readed_Notice(models.Model):
     read_by_admin = models.IntegerField(default=0)
     notice = models.ForeignKey(Notice, on_delete=models.CASCADE, null=True, related_name='read_by_notice')
     readed_date = models.DateTimeField(auto_now_add=True, null=True)
+    
+class Bank_Account(models.Model):
+    added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True)
+    account_number = models.CharField(max_length=100, null=True)
+    bank_name = models.CharField(max_length=100, null=True)
+    status = models.IntegerField(default=1)

@@ -11,6 +11,27 @@ def school_home(request):
         return render(request, 'school_home.html', context)
     else:
         return redirect('school_mobile')
+def add_bank_account(request):
+    if request.session.has_key('school_mobile'):
+        mobile = request.session['school_mobile']
+        clerk = Clerk.objects.filter(mobile=mobile).first()
+        if 'Add_Bank_Account' in request.POST:
+            bank_name = request.POST.get('bank_name')
+            account_number = request.POST.get('account_number')
+            
+            Bank_Account(
+                added_by=clerk,
+                bank_name=bank_name,
+                account_number=account_number
+            ).save()
+            messages.success(request, 'Bank Account Added Successfully!')
+        context={
+            'clerk': clerk,
+            'bank_accounts': Bank_Account.objects.filter(added_by=clerk)
+        }
+        return render(request, 'account/add_bank_account.html', context)
+    else:
+        return redirect('school_mobile')
     
 @csrf_exempt
 def holidays(request):

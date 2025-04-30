@@ -23,4 +23,7 @@ urlpatterns = [
     
     #holidays
     path('holidays/', views.holidays, name='holidays'),
+    
+    #account
+    path('add_bank_account/', views.add_bank_account, name='add_bank_account')
 ]
