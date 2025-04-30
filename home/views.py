@@ -106,6 +106,9 @@ def parent_login(request):
     return render(request, 'parent_login.html', context)
 
 def teacher_login(request):
+    if request.session.has_key('teacher_mobile'):
+        print('yes')
+        return redirect('teacher_home')
     if request.method == "POST":
         batch_id=request.POST ['batch_id']
         number=request.POST ['mobile']
