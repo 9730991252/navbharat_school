@@ -1,10 +1,19 @@
 from navbharat_school.includes import *
 # Create your views here.
+
+def save_student_used_count(s_id):
+    obj, created = Student_used_count.objects.get_or_create(student_id=s_id, defaults={'used_count': 1})
+    if not created:
+        obj.used_count = F('used_count') + 1
+        obj.save()
+        
 def student_home(request, batch_id):
     if request.session.has_key('parent_mobile'):
         mobile = request.session['parent_mobile']
         student = Student.objects.filter(mobile=mobile).first()
         current_batch = Batch.objects.get(id=batch_id)
+        save_student_used_count(student.id)
+        
         
         context={
             'student':student,

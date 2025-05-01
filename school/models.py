@@ -120,3 +120,7 @@ class Bank_Account(models.Model):
     account_number = models.CharField(max_length=100, null=True)
     bank_name = models.CharField(max_length=100, null=True)
     status = models.IntegerField(default=1)
+    
+class Clerk_used_count(models.Model):
+    clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE)
+    used_count = models.IntegerField(default=0)

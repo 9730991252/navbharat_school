@@ -13,3 +13,7 @@ class Student_Attendance(models.Model):
     check_out = models.DateTimeField(null=True)
     check_in_type = models.IntegerField(default=1, null=True)
     check_out_type = models.IntegerField(default=1, null=True)
+    
+class Teacher_used_count(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    used_count = models.IntegerField(default=0)

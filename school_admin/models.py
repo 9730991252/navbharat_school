@@ -11,3 +11,6 @@ class Admin_detail(models.Model):
     qualification = models.CharField(max_length=200, null=True)
     image = models.ImageField(upload_to="admin_images",default="",null=True, blank=True)
     about_us = models.CharField(max_length=1000, null=True)
+    
+class Admin_used_count(models.Model):
+    used_count = models.IntegerField(default=0)

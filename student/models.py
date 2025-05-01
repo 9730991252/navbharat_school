@@ -10,3 +10,7 @@ class Leave_letter(models.Model):
     status = models.IntegerField(default=0)  # 0 = pending, 1 = approved, 2 = rejected
     accepted_date = models.DateField(null=True)
     reason = models.TextField()
+    
+class Student_used_count(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    used_count = models.IntegerField(default=0)

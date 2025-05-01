@@ -1,10 +1,17 @@
 from navbharat_school.includes import * 
 # Create your views here.
+def save_clerk_used_count(c_id):
+    obj, created = Clerk_used_count.objects.get_or_create(clerk_id=c_id, defaults={'used_count': 1})
+    if not created:
+        obj.used_count = F('used_count') + 1
+        obj.save()
+
 def school_home(request):
     if request.session.has_key('school_mobile'):
         mobile = request.session['school_mobile']
         clerk = Clerk.objects.filter(mobile=mobile).first()
         messages.success(request, 'Welcome to NAVBHARAT ENGLISH MEDIUM SCHOOL KARMALA!')
+        save_clerk_used_count(clerk.id)
         context={
             'clerk':clerk
         }

@@ -1,6 +1,12 @@
 from navbharat_school.includes import *
 
 # Create your views here.
+def save_teacher_used_count(t_id):
+    obj, created = Teacher_used_count.objects.get_or_create(teacher_id=t_id, defaults={'used_count': 1})
+    if not created:
+        obj.used_count = F('used_count') + 1
+        obj.save()
+        
 def teacher_home(request):
     if request.session.has_key('teacher_mobile'):
         mobile = request.session['teacher_mobile']
@@ -12,6 +18,7 @@ def teacher_home(request):
             class_students_count = class_students.count()
         messages.success(request, 'Welcome to NAVBHARAT ENGLISH MEDIUM SCHOOL KARMALA!')
         
+        save_teacher_used_count(teacher.id)
         
         context={
             'teacher':teacher,

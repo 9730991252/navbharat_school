@@ -1,11 +1,18 @@
 from navbharat_school.includes import * 
 
 # Create your views here.
+def save_admin_used_count():
+    obj, created = Admin_used_count.objects.get_or_create(defaults={'used_count': 1})
+    if not created:
+        obj.used_count = F('used_count') + 1
+        obj.save()
+        
 def admin_home(request):
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
         a = Admin_login.objects.filter(mobile=mobile).first()
         classes = []
+        save_admin_used_count()
         for c in School_class.objects.filter(batch=a.batch, status=1):
             check_ins = 0
             check_outs = 0
