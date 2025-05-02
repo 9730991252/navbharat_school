@@ -43,7 +43,7 @@ def admin_home(request):
                 'check_outs':check_outs,
                 'list':list
             })
-        
+        avalable_cash = check_avalable_cash(request, a.batch)
         context={
             'total_students':Student.objects.all().count(),
             'male_students':Student.objects.filter(gender='MALE').count(),
@@ -53,7 +53,8 @@ def admin_home(request):
             'female_teacher':Teacher.objects.filter(gender='FEMALE').count(),
             'check_in':Student_Attendance.objects.filter(check_in__date=now().date()).count(),
             'check_out':Student_Attendance.objects.filter(check_out__date=now().date()).count(),
-            'class':classes
+            'class':classes,
+            'avalable_cash':avalable_cash
         }
         return render(request, 'admin_home.html', context)
     else:
@@ -73,9 +74,34 @@ def admin_student_approval(request):
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
         a = Admin_login.objects.filter(mobile=mobile).first()
-        context={
-            'batch':a.batch
+        batch = a.batch
+        student = Student.objects.all()
+        st = []
+        for s in student:
             
+            stf = Student_Total_Fee.objects.filter(student=s, added_by__batch_id=batch).first()
+            payable_fee = 0
+            if stf:
+                payable_fee = int(stf.total_fee or 0) - int(stf.discount or 0)
+            if stf and stf.admin_verify_status == 0:
+                st.append({
+                    'id':s.id,
+                    'name':s.name,
+                    'mobile':s.mobile,
+                    'aadhar_number':s.aadhar_number,
+                    'secret_pin':s.secret_pin,
+                    'gender':s.gender,
+                    'img':Student_Image.objects.filter(student=s).first(),
+                    'class':Class_student.objects.filter(student=s).first(),
+                    'total_fee':stf.total_fee if stf else 0,
+                    'discount':stf.discount if stf else 0,
+                    'payable_fee':payable_fee,
+                    'admin_verify_status':stf.admin_verify_status if stf else '',
+                    'verify_date':stf.verify_date if stf else ''
+                })
+        context={
+            'batch':a.batch,
+            'student':st
         }
         return render(request, 'admin_student_approval.html', context)
     else:

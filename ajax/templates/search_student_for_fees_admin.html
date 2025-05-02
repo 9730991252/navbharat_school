@@ -23,7 +23,7 @@
     </div>
     {% if s.payable_fee != 0 %}
         {% if s.admin_verify_status != 1 %}
-            <div class="btn btn-success verify_btn" onclick="verify_student('{{s.id}}')" style="width: 100%;">Verify</div>
+        <div class="btn btn-success verify_btn" onclick="verify_student('{{s.id}}', '{{s.name}}')" style="width: 100%;">Verify</div>
         {% else %}
         <div class="text-success verifyed_box text-center"><b>Verifyed Date {{s.verify_date}}</b></div>
         {% endif %}

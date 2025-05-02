@@ -29,6 +29,19 @@ def student_fees(request):
         return render(request, 'account/student_fees.html', context)
     else:
         return redirect('school_mobile')
+    
+def school_cash_transfer(request):
+    if request.session.has_key('school_mobile'):
+        mobile = request.session['school_mobile']
+        clerk = Clerk.objects.filter(mobile=mobile).first()
+        avalable_cash = check_avalable_cash(request, clerk.batch)
+        context={
+            'clerk':clerk,
+            'avalable_cash':avalable_cash,
+        }
+        return render(request, 'account/school_cash_transfer.html', context)
+    else:
+        return redirect('school_mobile')
 
 @csrf_exempt  # Only for testing; remove in production
 def student_fee_detail(request, id):

@@ -99,4 +99,46 @@
 </div>
 
 
+<style>
+    .cash-widget {
+        max-width: 260px;
+        margin: 24px auto;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, #e6fffa, #f0fff4);
+        border: 1px solid #b2f5ea;
+        border-left: 6px solid #38a169;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        font-family: 'Segoe UI', 'Inter', sans-serif;
+        color: #2f855a;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        text-align: center;
+    }
+
+    .cash-widget:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .cash-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #276749;
+        margin-bottom: 4px;
+    }
+
+    .cash-amount {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #22543d;
+    }
+</style>
+
+<div class="cash-widget">
+    <div class="cash-label">Clerk Available Cash</div>
+    <div class="cash-amount">Rs.{{ avalable_cash }}</div>
+</div>
+
+
+
 {% endblock content %}

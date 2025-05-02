@@ -73,7 +73,40 @@
 <div class="container">
     <div id="student_result_container">
         <div id="student_result">
-            
+            {% for s in student %}
+<div class="student_box" id="student_id{{s.id}}">
+    <div class="img_box">
+        {% if s.img != None %}
+        <img src="{{s.img.image.url}}" style="width: 100px; border-radius: 10px;" alt="">
+        {% else %}
+        <img src="https://cdn-icons-png.flaticon.com/512/201/201818.png" style="width: 100px; border-radius: 10px;" alt="">
+        {% endif %}
+    </div>
+
+    <div class="name_mobile_box">
+        <div class="name">{{s.name}}</div>
+        <div class="mobile"><a href="tel:{{s.mobile}}" class="btn text-success"><i class="fa fa-phone" aria-hidden="true"></i></a> {{s.mobile}} <a href="https://api.whatsapp.com/send?phone={{s.mobile}}&text=Hi" class="btn text-success"><i class="fa-brands fa-whatsapp"></i></a></div>
+        <div class="adhar_number">Class. {{s.class.school_class.name}}</div>
+    </div>
+    <div class="fee">
+        <div>Total Fee</div>
+        <div class="text-danger">Discount</div>
+        <div class="text-success"><b>Payable Fee</b></div>
+        <div>Rs.{{s.total_fee}}</div>
+        <div class="text-danger">Rs.{{s.discount}}</div>
+        <div class="text-success"><b>Rs.{{s.payable_fee}}</b></div>
+    </div>
+    {% if s.payable_fee != 0 %}
+        {% if s.admin_verify_status != 1 %}
+            <div class="btn btn-success verify_btn" onclick="verify_student('{{s.id}}', '{{s.name}}')" style="width: 100%;">Verify</div>
+        {% else %}
+        <div class="text-success verifyed_box text-center"><b>Verifyed Date {{s.verify_date}}</b></div>
+        {% endif %}
+
+    {% endif %}
+</div>
+<br>
+{% endfor %}
         </div>
     </div>
 </div>
@@ -81,7 +114,7 @@
 <br><br><br>
 <div class="container" style="margin-top: 20px;position: fixed;bottom: 0;left: 0;right: 0;">
   <div class="d-flex justify-content-center">
-    <input type="text" name="search" id="serch_student_input" oninput="search_student(this.value)" class="form-control" placeholder="Search Student by Name or Mobile or Aadhar" style="width: 50%; border: 2px solid #3498db;">
+    <input type="text" name="search" id="serch_student_input" oninput="search_student(this.value)" class="form-control" placeholder="Search Student by Name or Mobile or Aadhar" style="width: 95%; border: 2px solid #3498db;">
   </div>
 </div>
 
@@ -99,7 +132,7 @@
           }
       })
   }
-  function verify_student(id){
+  function verify_student(id, name){
       $.ajax({
           url: "{% url 'verify_student_admin' %}",
           method: "GET",
@@ -108,7 +141,7 @@
               batch:'{{batch.id}}'
           },
           success: function(res){
-              search_student(serch_student_input.value)
+              search_student(name)
           }
       })
   }

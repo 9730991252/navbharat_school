@@ -1,4 +1,15 @@
-from navbharat_school.includes import *
+from django.shortcuts import render, redirect, get_object_or_404
+from home.models import *
+from sunil.models import *
+from teacher.models import *
+from school.models import *
+from school_admin.models import *
+from student.models import *
+from django.contrib import messages
+from datetime import date
+from django.db.models import *
+from django.db.models import Avg, Sum, Min, Max
+from django.db.models import F
 # Create your views here.
 def check_new_visitor(request):
     v = 1
@@ -19,6 +30,10 @@ def check_new_visitor(request):
             count=F('count') + v
         )
     return web_visitor.objects.all().first().count
+
+def check_avalable_cash(request, batch):
+    avalable_cash = Student_received_Fee_Cash.objects.filter(added_by__batch=batch).aggregate(Sum('received_amount'))['received_amount__sum']
+    return avalable_cash
 
 
 def index(request):
