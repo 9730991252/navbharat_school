@@ -146,7 +146,7 @@
     }
 
     /* CSS Spinner Loader */
-    #form-loader, #form-loader_cash {
+    #form-loader, #form-loader_cash, #form-loader_bank {
         display: none;
         text-align: center;
         padding: 20px;
@@ -358,23 +358,63 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
 </div>
 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bank">Credit Bank fee</button>
 <!-- Modal -->
-<div class="modal fade" id="bank" tabindex="-1" aria-labelledby="bank" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Credit Bank fee</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="modal fade" id="bank" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-header custom-modal-header">
+                <h5 class="modal-title">Credit Bank fee</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                
+            <form method="POST" class="custom_form" id="bank-form">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Bank</label>
+                        <select name="bank" class="form-select" required>
+                            <option selected>Select Bank</option>
+                            {% for bank in accounts %}
+                                <option value="{{bank.id}}">{{bank.bank_name}} - {{bank.account_number}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" required name="received_amount" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" max="{{todayes_date|date:'Y-m-d'}}"  min="{{clerk.batch.start_date|date:'Y-m-d'}}" required name="date">
+                    </div>
+                    <div class="form-group">
+                        <label>UTR Number</label>
+                        <input type="text" required name="utr_number">
+                    </div>
+                </div>
+                <div class="modal-footer custom-modal-footer">
+                    <button type="submit" class="submit-btn" id="save_bank_fee" name="save_bank_fee">Add Bank</button>
+                    <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+            <!-- CSS Loader -->
+            <div id="form-loader_bank">
+                <div class="spinner"></div>
+                <p>Saving fee, please wait...</p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
+            <script>
+                const bankform = document.getElementById('bank-form');
+                const bankloader = document.getElementById('form-loader_bank');
+                const bankloader_btn = document.getElementById('save_bank_fee');
+            
+                cashform.addEventListener('submit', function () {
+                    bankloader.style.display = 'block';
+                    bankloader_btn.style.display = 'nonw';
+                });
+            </script>
         </div>
     </div>
 </div>
+
+
 </div>
 
 <style>
@@ -407,16 +447,31 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
       <thead>
         <tr>
             <th>Paid Date</th>
-          <th>Cash Amount</th>
+          <th>Amount</th>
+          <th>UTR Number</th>
+          <th>Bank</th>
         </tr>
       </thead>
       <tbody>
         {% for t in cash_fee %}
         <tr>
             <td>{{ t.paid_date }}</td>
-          <td>₹.{{t.received_amount}}</td>
+            <td>₹.{{t.received_amount}}  Cash</td>
+            <td>-</td>
+            <td>-</td>
         </tr>
         {% endfor %}
+        {% for t in bank_fee %}
+        <tr>
+            <td>{{ t.paid_date }}</td>
+            <td>₹.{{t.recived_amount}}  Bank</td>
+            <td>{{t.utr_number}}</td>
+            <td>{{t.account.bank_name}}, {{t.account.account_number}}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="4" style="text-align: start; font-weight: bold;">Total Recived Fee: ₹.{{ paid_fee }}</td>
+        </tr>
       </tbody>
     </table>
 

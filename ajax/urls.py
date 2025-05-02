@@ -15,4 +15,7 @@ urlpatterns = [
     path('save_readed_notices_student/', views.save_readed_notices_student, name='save_readed_notices_student'),
     path('save_readed_notices_admin/', views.save_readed_notices_admin, name='save_readed_notices_admin'),
     path('save_readed_notices_teacher/', views.save_readed_notices_teacher, name='save_readed_notices_teacher'),
+    path('search_student_for_fees/', views.search_student_for_fees, name='search_student_for_fees'),
+    path('search_student_for_fees_admin/', views.search_student_for_fees_admin, name='search_student_for_fees_admin'),
+    path('verify_student_admin/', views.verify_student_admin, name='verify_student_admin'),
 ]

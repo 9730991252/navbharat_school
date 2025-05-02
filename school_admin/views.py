@@ -58,6 +58,29 @@ def admin_home(request):
         return render(request, 'admin_home.html', context)
     else:
         return redirect('admin_login')
+    
+def admin_account(request):
+    if request.session.has_key('admin_mobile'):
+        mobile = request.session['admin_mobile']
+        a = Admin_login.objects.filter(mobile=mobile).first()
+        context={
+        }
+        return render(request, 'admin_account.html', context)
+    else:
+        return redirect('admin_login')
+    
+def admin_student_approval(request):
+    if request.session.has_key('admin_mobile'):
+        mobile = request.session['admin_mobile']
+        a = Admin_login.objects.filter(mobile=mobile).first()
+        context={
+            'batch':a.batch
+            
+        }
+        return render(request, 'admin_student_approval.html', context)
+    else:
+        return redirect('admin_login')
+    
 def todayes_attendence(request):
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
@@ -112,8 +135,21 @@ def todayes_attendence(request):
 def admin_view_students(request):
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
+        a = Admin_login.objects.filter(mobile=mobile).first()
         s = []
         for i in Student.objects.all():
+            stf = Student_Total_Fee.objects.filter(student=i, added_by__batch=a.batch).first()
+            
+            total_fee = 0
+            if stf:
+                total_fee = int(stf.total_fee or 0) - int(stf.discount or 0)
+            
+            received_cash = Student_received_Fee_Cash.objects.filter(student=i).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
+            received_bank = Student_recived_Fee_Bank.objects.filter(student=i).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
+            rst = int(received_cash) + int(received_bank)
+            
+            remaining_fee = total_fee - rst or 0
+            
             s.append({
                 'id':i.id,
                 'name':i.name,
@@ -121,8 +157,12 @@ def admin_view_students(request):
                 'aadhar_number':i.aadhar_number,
                 'gender':i.gender,
                 'img':Student_Image.objects.filter(student_id=i.id).first(),
-                'class':Class_student.objects.filter(student_id=i.id).first(),
+                'class':Class_student.objects.filter(student_id=i.id, added_by__batch=a.batch).first() or '',
+                'total_fee':total_fee,  
+                'recived_fee':rst,
+                'remaining_fee':remaining_fee,
             })
+        s = sorted(s, key=lambda k: k['recived_fee'], reverse=True)
         context={
             'students':s,
             'total_students':Student.objects.all().count(),

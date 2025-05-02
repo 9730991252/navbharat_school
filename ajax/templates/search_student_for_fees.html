@@ -1,0 +1,31 @@
+
+{% for s in student %}
+<a style="text-decoration: none; color: black;" href="/school/student_fee_detail/{{s.id}}">
+
+    <div class="student_box">
+        <div class="img_box">
+            {% if s.img != None %}
+            <img  src="{{s.img.image.url}}" style="width: 100px; border-radius: 10px;" alt="">
+            {% else %}
+            <img  src="https://cdn-icons-png.flaticon.com/512/201/201818.png " style="width: 100px; border-radius: 10px;" alt="">
+            {% endif %}
+            
+            <form method="POST" enctype="multipart/form-data" id="form{{s.id}}">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{s.id}}">
+                <input type="hidden" name="img" id="croppedImgInput{{s.id}}">
+                <button type="submit" name="add_image" id="add_btn{{s.id}}" style="display: none;"></button>
+            </form>
+        </div>
+
+        <div class="name_mobile_box">
+            <div class="name">{{s.name}}</div>
+            <div class="mobile">Mo.{{s.mobile}}</div>
+            <div class="adhar_number">Adhar. {{s.aadhar_number}}</div>
+            <div class="gender">{{s.gender}}</div>
+        </div>
+    </div>
+    <br>
+</a>
+{% endfor %}
+    

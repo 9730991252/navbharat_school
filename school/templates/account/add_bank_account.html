@@ -120,7 +120,7 @@ td, th {
             <!-- <marquee> Add Correct Subject Information Don't Forgot To Fill any Information.  </marquee> -->
             <form method="POST">
               {% csrf_token %}
-              <input type="hidden" name="subject_id" value="{{t.id}}">
+              <input type="hidden" name="id" value="{{t.id}}">
 
               <div class="mb-3">
                 <label for="bank_name">Bank Name</label>
@@ -130,7 +130,7 @@ td, th {
                 <input type="text" name="account_number" value="{{t.account_number}}" id="account_number" class="form-control" placeholder="Enter Account Number Here" >
               </div>
               <div class="spinner-border" role="status" style="display: none;" id="spinner"></div>
-              <button type="submit" name="edit_subject" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Add</button>
+              <button type="submit" name="edit_bank_account" class="btn btn-danger" onclick="this.style.display = 'none'; spinner.style.display = 'flex'">Add</button>
             </form>
   
             </div>

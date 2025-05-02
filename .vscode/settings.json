@@ -1,3 +1,5 @@
 {
-    "bitoAI.codeCompletion.enableAutoCompletion": false
+    "bitoAI.codeCompletion.enableAutoCompletion": false,
+    "Codegeex.GenerationPreference": "block",
+    "Codegeex.SidebarUI.LanguagePreference": "English"
 }

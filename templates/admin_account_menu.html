@@ -1,0 +1,18 @@
+<style>
+    .menu{
+        display: flex;
+        width: 100%;
+        overflow: scroll;
+        gap: 10px;
+    }
+    .account_btn{
+        background-color: #FFC107 !important;
+        color: white !important;
+        outline: none;
+        border-color: #FFC107 ;
+        color: black !important;
+    }
+  </style>
+  <div class="menu">
+    <a  href="/school_admin/admin_student_approval/" class="my-1 {% if request.path == '/school_admin/admin_student_approval/' %}btn btn-warning{% else %}btn btn-primary{% endif %}">Student Approval</a>
+  </div>
