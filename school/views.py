@@ -35,9 +35,30 @@ def school_cash_transfer(request):
         mobile = request.session['school_mobile']
         clerk = Clerk.objects.filter(mobile=mobile).first()
         avalable_cash = check_avalable_cash(request, clerk.batch)
+        if 'transfer_cash_to_bank'in request.POST:
+            print('yes')
+            transfer_amount = request.POST.get('transfer_amount')
+            transfer_date = request.POST.get('transfer_date')
+            to_bank = request.POST.get('to_bank')
+            if Cash_Transfer_To_Bank.objects.filter(from_clerk=clerk, to_bank=to_bank, transfer_date=transfer_date).exists():
+                messages.error(request, 'This transfer is already done')
+            else:
+                if int(transfer_amount) > int(avalable_cash):
+                    messages.error(request, 'You dont have enough cash')
+                else:
+                    Cash_Transfer_To_Bank.objects.create(
+                        from_clerk=clerk,
+                        to_bank=to_bank,
+                        amount=transfer_amount,
+                        transfer_date=transfer_date,
+                    )
+                    messages.success(request, 'Cash Transferd Successfully')
+            
         context={
             'clerk':clerk,
-            'avalable_cash':avalable_cash,
+            'avalable_cash':avalable_cash, 
+            'bank':Bank_Account.objects.filter(status=1),
+            'today_date':date.today()
         }
         return render(request, 'account/school_cash_transfer.html', context)
     else:

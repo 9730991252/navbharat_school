@@ -188,7 +188,7 @@ def admin_view_students(request):
                 'recived_fee':rst,
                 'remaining_fee':remaining_fee,
             })
-        s = sorted(s, key=lambda k: k['recived_fee'], reverse=True)
+        s = sorted(s, key=lambda k: k['total_fee'], reverse=True)
         context={
             'students':s,
             'total_students':Student.objects.all().count(),

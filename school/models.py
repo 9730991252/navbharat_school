@@ -159,3 +159,14 @@ class Student_recived_Fee_Bank(models.Model):
     admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
     verify_date = models.DateTimeField(null=True, blank=True)
     utr_number = models.CharField(max_length=100, null=True, blank=True)
+    
+class Cash_Transfer_To_Bank(models.Model):
+    from_admin = models.IntegerField(default=0)
+    from_clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, blank=True)
+    to_bank = models.ForeignKey(Bank_Account, on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.FloatField(default=0)
+    transfer_date = models.DateField(null=True)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(null=True)
+    admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
+    verify_date = models.DateTimeField(null=True, blank=True)
