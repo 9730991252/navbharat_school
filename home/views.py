@@ -12,6 +12,7 @@ from django.db.models import Avg, Sum, Min, Max
 from django.db.models import F
 # Create your views here.
 def check_new_visitor(request):
+
     v = 1
     if request.session.has_key('admin_mobile'):
         v = 0
@@ -40,6 +41,9 @@ def check_avalable_cash(request, batch):
 
 
 def index(request):
+    Teacher.objects.all().update(
+        image=''
+    )
     context = {
         'visitor': check_new_visitor(request),
         'teachers_count': Teacher.objects.filter(status=1, branding_status=1).count(),

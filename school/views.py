@@ -55,8 +55,8 @@ def school_expenses(request):
             ).save()
             messages.success(request, 'Bank Expenses Added Successfully!')
             return redirect('school_expenses')
-        if 'edit_cash_expense' in request.POST:
-            exp_id = request.POST.get('expense_id')
+        if 'edit_cash_expenses' in request.POST:
+            exp_id = request.POST.get('id')
             expense = Expenses.objects.get(id=exp_id)
             expense.amount = request.POST.get('amount')
             expense.remark = request.POST.get('remark')
@@ -67,8 +67,8 @@ def school_expenses(request):
             messages.success(request, 'Cash Expense Updated Successfully!')
             return redirect('school_expenses')
 
-        if 'edit_bank_expense' in request.POST:
-            exp_id = request.POST.get('expense_id')
+        if 'edit_bank_expenses' in request.POST:
+            exp_id = request.POST.get('id')
             expense = Expenses.objects.get(id=exp_id)
             expense.amount = request.POST.get('amount')
             expense.remark = request.POST.get('remark')

@@ -27,6 +27,23 @@ def student_home(request, batch_id):
     else:
         return redirect('login')
     
+def teachers(request, batch_id):
+    if request.session.has_key('parent_mobile'):
+        mobile = request.session['parent_mobile']
+        student = Student.objects.filter(mobile=mobile).first()
+        current_batch = Batch.objects.get(id=batch_id)
+        
+        school_class = Class_student.objects.filter(student=student, batch=current_batch).first()
+        context={
+            'student':student,
+            'batches':Batch.objects.filter(status=1),
+            'current_batch':Batch.objects.get(id=batch_id),
+            'teachers':Subject_class_and_teacher.objects.filter(added_by__batch=current_batch, school_class=school_class.school_class)
+        }
+        return render(request, 'teachers.html', context)
+    else:
+        return redirect('login')
+    
 @csrf_exempt
 def save_token(request):
     if request.method == 'POST':

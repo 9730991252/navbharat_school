@@ -75,7 +75,7 @@ def debit(request):
         mobile = request.session['admin_mobile']
         a = Admin_login.objects.filter(mobile=mobile).first()
         context={
-            'expenses':Expenses.objects.filter(batch=a.batch).order_by('-date')
+            'expenses':Expenses.objects.filter(batch=a.batch).order_by('date')
         }
         return render(request, 'debit.html', context)
     else:
@@ -439,15 +439,9 @@ def admin_received_notice(request):
 def admin_view_teacher(request):
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
-        s = []
-        for i in Teacher.objects.all():
-            s.append({
-                'id':i.id,
-                'name':i.name,
-                'mobile':i.mobile,
-            })
+
         context={
-            'teachers':s,
+            'teachers':Teacher.objects.all(),
         }
         return render(request, 'admin_view_teacher.html', context)
     else:

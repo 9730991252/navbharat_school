@@ -62,7 +62,7 @@
                                 {% endif %}
                             </td>
                             <td>₹{{ exp.amount }}</td>
-                            <td>{{ exp.remark }}</td>
+                            <td>{{ exp.remark|slice:'25' }}...</td>
                             <td>{{ exp.date|date:"d M Y" }}</td>
                             <td>
                                 {% if exp.from_bank %}
@@ -75,16 +75,101 @@
                             <td>{{ exp.added_by.name }}</td>
                             <td>
                                 {% if exp.admin_verify_status == 1 %}
-                                    <span class="badge bg-success">Verified</span>
+                                    <span class="badge bg-success">Verified </span>
                                 {% else %}
-                                    <span class="badge bg-secondary">Not Verified</span>
+                                    <button class="btn btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#Edit_expences-{{exp.type}}-{{exp.id}}" ><i class="fas fa-edit    "></i></button>
                                 {% endif %}
                             </td>
                         </tr>
+
+                          <!-- edit bank Modal -->
+                          <div class="modal fade mt-5" id="Edit_expences-bank-{{exp.id}}" tabindex="-1" aria-labelledby="bankLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content shadow">
+                                <div class="modal-header bg-primary text-white">
+                                  <h5 class="modal-title" id="bankLabel">Edit Expense From Bank</h5>
+                                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="POST" onsubmit="showLoader()">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="id" value="{{exp.id}}" id="id" hidden>
+                                  
+                                  <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Amount</label>
+                                        <input type="number" value="{{exp.amount}}" name="amount" class="form-control" placeholder="Enter Amount" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label class="form-label">Date</label>
+                                      <input type="date" value="{{exp.date|date:'Y-m-d'}}" max="{{today_date|date:'Y-m-d'}}" min="{{clerk.batch.start_date|date:'Y-m-d'}}" name="date" class="form-control" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Bank Account</label>
+                                        <select class="form-control" name="from_bank" required>
+                                          <option value="">Select Bank Account</option>
+                                          {% for b in bank_accounts %}
+                                              <option {% if exp.from_bank == b %} selected {% endif %} value="{{b.id}}">{{b.bank_name}} - {{b.account_number}}</option>
+                                          {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Check Number</label>
+                                        <input type="text" name="check_number" value="{{exp.check_number}}" class="form-control" placeholder="Enter Check Number" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Remark</label>
+                                        <input type="text" name="remark" value="{{exp.remark}}" class="form-control"  placeholder="Enter Remark" required>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" name="edit_bank_expenses" class="btn btn-primary">Edit</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <!-- edit cash Modal -->
+                          <div class="modal fade mt-5" id="Edit_expences-cash-{{exp.id}}" tabindex="-1" aria-labelledby="cashLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content shadow">
+                                <div class="modal-header bg-success text-white">
+                                  <h5 class="modal-title" id="cashLabel">Edit Expense From Cash</h5>
+                                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="POST" onsubmit="showLoader()">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="id" value="{{exp.id}}" id="id" hidden>
+                                  <div class="modal-body">
+                                    <div class="mb-3">
+                                      <label class="form-label">Amount</label>
+                                      <input type="number" value="{{exp.amount}}" name="amount" class="form-control" placeholder="Enter Amount" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label class="form-label">Remark</label>
+                                      <input type="text" value="{{exp.remark}}" name="remark" class="form-control" placeholder="Enter Remark" required>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label class="form-label">Date</label>
+                                      <input type="date" max="{{today_date|date:'Y-m-d'}}" value="{{exp.date|date:'Y-m-d'}}" min="{{clerk.batch.start_date|date:'Y-m-d'}}" name="date" class="form-control" required>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" name="edit_cash_expenses" class="btn btn-success">Edit</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                                          
+
                         {% empty %}
                         <tr>
                             <td colspan="9" class="text-center">No expenses added yet.</td>
                         </tr>
+
                         {% endfor %}
                     </tbody>
                 </table>

@@ -1,11 +1,22 @@
 {% extends 'base.html' %}
 {% block head %}
-
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
 {% endblock head %}
 {% block content %}
 {% load static %}
-{% include 'admin_navbar.html' %}
 {% include 'alert.html' %}
+{% include 'student/student_navbar.html' %}
+{% load static %}
+<div class="text-center">
+    <select class="form-select" onchange="location.href = '/student/student_home/'+ this.value" style="width: 350px; margin: 0 auto; margin-top: 10px;" aria-label="Default select example">
+        {% for b in batches %}
+        <option {% if b.id == current_batch.id %} selected {% endif %} value="{{b.id}}">{{b.name}}</option>
+        {% endfor %}
+    </select>
+</div>
+{% include 'student/student_menu.html' %}
+
 <style>
     .file_input{
         height: 100px;
@@ -22,7 +33,7 @@
             font-size: 24px;
         }
     }
-    .teachers{
+    .teachers_box{
         border-radius: 8px;
         border: 1px solid #ccc;
         padding: 10px;
@@ -54,18 +65,20 @@
 
 <!-- Student Upload Loop -->
 {% for s in teachers %}
-<div class="teachers">
+<div class="teachers_box">
     <div class="img_box">
-        {% if s.image != '' %}
-        <img src="{{s.image.url}}" style="width: 100px; border-radius: 10px;" alt="">
+        {% if s.teacher.image %}
+        <img src="{{s.teacher.image.url}}" style="width: 100px; border-radius: 10px;" alt="">
         {% else %}
         <img src="https://i.pinimg.com/564x/19/46/9a/19469aed7f222d6009f48158a682bb9c.jpg" style="width: 100px; border-radius: 10px;" alt="">
         {% endif %}
     </div>
 
     <div class="name_mobile_box">
-        <div class="name">{{s.name}}</div>
-        <div class="mobile"><a href="tel:{{s.mobile}}" class="btn text-success"><i class="fa fa-phone" aria-hidden="true"></i></a> {{s.mobile}} <a href="https://api.whatsapp.com/send?phone={{s.mobile}}&text=Hi" class="btn text-success"><i class="fa-brands fa-whatsapp"></i></a></div>
+        <div class="name">Subject {{s.subject.name}}</div>
+        <div class="mobile">{{s.teacher.name}}</div>
+        <div class="mobile">{{s.teacher.qualification}}</div>
+        <div class="mobile"><a href="tel:{{s.teacher.mobile}}" class="btn text-success"><i class="fa fa-phone" aria-hidden="true"></i></a> {{s.teacher.mobile}} <a href="https://api.whatsapp.com/send?phone={{s.teacher.mobile}}&text=Hi" class="btn text-success"><i class="fa-brands fa-whatsapp"></i></a></div>
     </div>
 </div>
 <br>
