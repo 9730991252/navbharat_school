@@ -41,9 +41,6 @@ def check_avalable_cash(request, batch):
 
 
 def index(request):
-    Teacher.objects.all().update(
-        image=''
-    )
     context = {
         'visitor': check_new_visitor(request),
         'teachers_count': Teacher.objects.filter(status=1, branding_status=1).count(),
