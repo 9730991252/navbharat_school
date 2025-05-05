@@ -17,7 +17,78 @@ def school_home(request):
         }
         return render(request, 'school_home.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
+    
+def school_expenses(request):
+    if request.session.has_key('school_mobile'):
+        mobile = request.session['school_mobile']
+        clerk = Clerk.objects.filter(mobile=mobile).first()
+        if 'add_cash_expenses'in request.POST:
+            amount = request.POST.get('amount')
+            remark = request.POST.get('remark')
+            cdate = request.POST.get('date')
+            Expenses(
+                batch=clerk.batch,
+                amount=amount,
+                remark=remark,
+                type='cash',
+                added_by=clerk,
+                date=cdate
+            ).save()
+            messages.success(request, 'Cash Expenses Added Successfully!')
+            return redirect('school_expenses')
+        if 'add_bank_expenses'in request.POST:
+            amount = request.POST.get('amount')
+            remark = request.POST.get('remark')
+            from_bank = request.POST.get('from_bank')
+            check_number = request.POST.get('check_number')
+            bdate = request.POST.get('date')
+            Expenses(
+                batch=clerk.batch,
+                amount=amount,
+                remark=remark,
+                type='bank',
+                added_by=clerk,
+                from_bank_id=from_bank,
+                check_number=check_number,
+                date=bdate
+            ).save()
+            messages.success(request, 'Bank Expenses Added Successfully!')
+            return redirect('school_expenses')
+        if 'edit_cash_expense' in request.POST:
+            exp_id = request.POST.get('expense_id')
+            expense = Expenses.objects.get(id=exp_id)
+            expense.amount = request.POST.get('amount')
+            expense.remark = request.POST.get('remark')
+            expense.date = request.POST.get('date')
+            expense.updated_by = clerk
+            expense.updated_date = datetime.now()
+            expense.save()
+            messages.success(request, 'Cash Expense Updated Successfully!')
+            return redirect('school_expenses')
+
+        if 'edit_bank_expense' in request.POST:
+            exp_id = request.POST.get('expense_id')
+            expense = Expenses.objects.get(id=exp_id)
+            expense.amount = request.POST.get('amount')
+            expense.remark = request.POST.get('remark')
+            expense.date = request.POST.get('date')
+            expense.from_bank_id = request.POST.get('from_bank')
+            expense.check_number = request.POST.get('check_number')
+            expense.updated_by = clerk
+            expense.updated_date = datetime.now()
+            expense.save()
+            messages.success(request, 'Bank Expense Updated Successfully!')
+            return redirect('school_expenses')
+        context={
+            'clerk':clerk,
+            'expenses':Expenses.objects.filter(batch=clerk.batch),
+            'bank_accounts':Bank_Account.objects.filter(status=1),
+            'today_date':date.today()
+        }
+        return render(request, 'account/school_expenses.html', context)
+    else:
+        return redirect('school_login')
 
 def student_fees(request):
     if request.session.has_key('school_mobile'):
@@ -28,41 +99,105 @@ def student_fees(request):
         }
         return render(request, 'account/student_fees.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 def school_cash_transfer(request):
     if request.session.has_key('school_mobile'):
         mobile = request.session['school_mobile']
         clerk = Clerk.objects.filter(mobile=mobile).first()
         avalable_cash = check_avalable_cash(request, clerk.batch)
-        if 'transfer_cash_to_bank'in request.POST:
-            print('yes')
+        if 'transfer_cash_to_bank' in request.POST:
             transfer_amount = request.POST.get('transfer_amount')
             transfer_date = request.POST.get('transfer_date')
             to_bank = request.POST.get('to_bank')
-            if Cash_Transfer_To_Bank.objects.filter(from_clerk=clerk, to_bank=to_bank, transfer_date=transfer_date).exists():
-                messages.error(request, 'This transfer is already done')
+
+            # Validate inputs
+            if not transfer_amount or not transfer_date or not to_bank:
+                messages.error(request, 'All fields are required for cash transfer.')
+            elif not transfer_amount.isdigit() or int(transfer_amount) <= 0:
+                messages.error(request, 'Invalid transfer amount.')
             else:
                 if int(transfer_amount) > int(avalable_cash):
-                    messages.error(request, 'You dont have enough cash')
+                    messages.error(request, 'You don\'t have enough cash.')
                 else:
                     Cash_Transfer_To_Bank.objects.create(
+                        batch=clerk.batch,
                         from_clerk=clerk,
-                        to_bank=to_bank,
+                        to_bank_id=to_bank,
                         amount=transfer_amount,
                         transfer_date=transfer_date,
                     )
-                    messages.success(request, 'Cash Transferd Successfully')
-            
+                    messages.success(request, 'Cash Transferred Successfully.')
+            return redirect('school_cash_transfer')
+        if 'transfer_cash_to_admin' in request.POST:
+            transfer_amount = request.POST.get('transfer_amount')
+            transfer_date = request.POST.get('transfer_date')
+            # Validate inputs
+            if not transfer_amount.isdigit() or int(transfer_amount) <= 0:
+                messages.error(request, 'Invalid transfer amount.')
+            else:
+                if int(transfer_amount) > int(avalable_cash):
+                    messages.error(request, 'You don\'t have enough cash.')
+                else:
+                    Cash_Transfer_To_Admin.objects.create(
+                        batch=clerk.batch,
+                        from_clerk=clerk,
+                        amount=transfer_amount,
+                        transfer_date=transfer_date,
+                    )
+                    messages.success(request, 'Cash Transferred Successfully.')
+            return redirect('school_cash_transfer')
+        if 'transfer_cash_to_bank_edit' in request.POST:
+            id = request.POST.get('id')
+            transfer_amount = request.POST.get('transfer_amount')
+            transfer_date = request.POST.get('transfer_date')
+            to_bank = request.POST.get('to_bank')
+
+            # Validate inputs
+            if not transfer_amount or not transfer_date or not to_bank:
+                messages.error(request, 'All fields are required for cash transfer.')
+            else:
+                if int(float(transfer_amount)) > int(avalable_cash):
+                    messages.error(request, 'You don\'t have enough cash.')
+                else:
+                    Cash_Transfer_To_Bank.objects.filter(id=id).update(
+                        amount=transfer_amount,
+                        transfer_date=transfer_date,
+                        to_bank=to_bank,
+                    )
+                    messages.success(request, 'Cash Transfer Updated Successfully.')
+
+            return redirect('school_cash_transfer')
+        if 'transfer_cash_to_admin_edit' in request.POST:
+            id = request.POST.get('id')
+            transfer_amount = request.POST.get('transfer_amount')
+            transfer_date = request.POST.get('transfer_date')
+
+            # Validate inputs
+            if not transfer_amount or not transfer_date:
+                messages.error(request, 'All fields are required for cash transfer.')
+            else:
+                if int(float(transfer_amount)) > int(avalable_cash):
+                    messages.error(request, 'You don\'t have enough cash.')
+                else:
+                    Cash_Transfer_To_Admin.objects.filter(id=id).update(
+                        amount=transfer_amount,
+                        transfer_date=transfer_date,
+                    )
+                    messages.success(request, 'Cash Transfer Updated Successfully.')
+
+            return redirect('school_cash_transfer')
         context={
             'clerk':clerk,
             'avalable_cash':avalable_cash, 
             'bank':Bank_Account.objects.filter(status=1),
-            'today_date':date.today()
+            'today_date':date.today(),
+            'cash_transfer_to_bank':Cash_Transfer_To_Bank.objects.filter(batch=clerk.batch),
+            'cash_transfer_to_admin':Cash_Transfer_To_Admin.objects.filter(batch=clerk.batch),
         }
         return render(request, 'account/school_cash_transfer.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
 
 @csrf_exempt  # Only for testing; remove in production
 def student_fee_detail(request, id):
@@ -138,7 +273,7 @@ def student_fee_detail(request, id):
         }
         return render(request, 'account/student_fee_detail.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
 
     
 def add_bank_account(request):
@@ -184,7 +319,7 @@ def add_bank_account(request):
         }
         return render(request, 'account/add_bank_account.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 @csrf_exempt
 def holidays(request):
@@ -220,7 +355,7 @@ def holidays(request):
         }
         return render(request, 'holidays.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
 
 
 @csrf_exempt
@@ -255,7 +390,7 @@ def student_image(request):
         }
         return render(request, 'student/student_image.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
 
 
 #teacher
@@ -378,7 +513,7 @@ def add_teacher(request):
         }
         return render(request, 'teacher/add_teacher.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 #student
 @csrf_exempt
@@ -499,7 +634,7 @@ def add_student(request):
         }
         return render(request, 'student/add_student.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 #Class
 def add_class(request):
@@ -553,7 +688,7 @@ def add_class(request):
 
         return render(request, 'class/add_class.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 def select_student_class(request):
     if request.session.has_key('school_mobile'):
@@ -567,7 +702,7 @@ def select_student_class(request):
 
         return render(request, 'class/select_student_class.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 @csrf_exempt
 def select_student_class_id(request, id):
@@ -588,7 +723,7 @@ def select_student_class_id(request, id):
 
         return render(request, 'class/select_student_class_id.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 @csrf_exempt
 def select_class_teacher(request):
@@ -635,7 +770,7 @@ def select_class_teacher(request):
 
         return render(request, 'class/select_class_teacher.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 def add_subject(request):
     if request.session.has_key('school_mobile'):
@@ -686,7 +821,7 @@ def add_subject(request):
 
         return render(request, 'subject/add_subject.html', context)
     else:
-        return redirect('school_mobile')
+        return redirect('school_login')
     
 @csrf_exempt
 def select_subject_class_and_teacher(request):

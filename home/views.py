@@ -33,6 +33,9 @@ def check_new_visitor(request):
 
 def check_avalable_cash(request, batch):
     avalable_cash = Student_received_Fee_Cash.objects.filter(added_by__batch=batch).aggregate(Sum('received_amount'))['received_amount__sum']
+    avalable_cash -= Cash_Transfer_To_Bank.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
+    avalable_cash -= Cash_Transfer_To_Admin.objects.filter(batch=batch).aggregate(Sum('amount'))['amount__sum'] or 0
+    avalable_cash -= Expenses.objects.filter(batch=batch, type='cash').aggregate(Sum('amount'))['amount__sum'] or 0
     return avalable_cash
 
 

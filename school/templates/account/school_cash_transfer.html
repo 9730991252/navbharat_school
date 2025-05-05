@@ -19,14 +19,14 @@
     }
 
     .btn-gradient-alt {
-        background: linear-gradient(45deg, #fd7e14, #e8590c);
+        background: linear-gradient(45deg, #14cefd, #0cd9e8);
         color: white;
         border: none;
         transition: background 0.3s ease;
     }
 
     .btn-gradient-alt:hover {
-        background: linear-gradient(45deg, #e8590c, #d9480f);
+        background: linear-gradient(45deg, #0cbce8, #0fd2d9);
         color: #fff;
     }
 
@@ -94,6 +94,15 @@
     .btn-outline-secondary {
         border-radius: 0.5rem;
     }
+    .cash_transfer_to_bank_card_box{
+        width: 400px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+    }
 </style>
 {% endblock head %}
 
@@ -101,27 +110,132 @@
 {% include 'school/school_navbar.html' %}
 {% include 'alert.html' %}
 
-<div class="container mt-5">
+<div class="container mt-2">
     <div class="alert alert-success text-center shadow rounded py-3 fs-5 fw-semibold">
         💰 Available Cash: <strong>Rs. {{ avalable_cash }}</strong>
     </div>
 </div>
-<div class="container mt-5" style="display: flex;justify-content: space-evenly;">
-
+<div class="container mt-1" style="display: flex;justify-content: space-evenly;">
     <!-- Transfer to Bank -->
-    <div class="text-center my-4">
+    <div class="text-center my-4" style="display: flex;flex-direction: column;">
         <button type="button" class="btn btn-gradient btn-lg px-5 py-2" data-bs-toggle="modal" data-bs-target="#cashToBankModal">
             Transfer Cash to Bank
         </button>
+        <br><br>
+        {% for b in cash_transfer_to_bank %}
+        <div class="cash_transfer_to_bank_card_box">
+            <div style="display: flex;justify-content: space-evenly;">
+                <div> <b>Rs.{{b.amount}}</b></div>
+                <div> To. {{b.to_bank.bank_name}} {{b.to_bank.account_number}} </div>
+            </div>
+            <div style="display: flex;justify-content: space-evenly;">
+                <div>{{b.transfer_date}}</div>
+                <div>By.{% if c.from_clerk != 'None' %}{{b.from_clerk.name}}{% else %}Admin{% endif %}</div>
+            </div>
+            {% if b.admin_verify_status == 0 %}
+                <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#cashToBankModal_edit{{b.id}}" style="position: absolute;top: 0px;right: 0px;"><i class="fas fa-edit    "></i></button>
+            {% endif %}
+        </div>
+        <br>
+        <div class="modal fade text-start" id="cashToBankModal_edit{{b.id}}" tabindex="-1" aria-labelledby="cashToBankLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cashToBankLabel">💼 Transfer Cash to Bank Edit</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST" onsubmit="bank_form_submited()">
+                        {% csrf_token %}
+                        <input type="text" name="id" value="{{b.id}}" hidden>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">💵 Transfer Amount</label>
+                                <input type="number" value="{{b.amount}}" class="form-control" name="transfer_amount" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">📅 Transfer Date</label>
+                                <input type="date" value="{{b.transfer_date|date:'Y-m-d'}}" class="form-control" min="{{clerk.batch.start_date|date:'Y-m-d'}}" max="{{today_date|date:'Y-m-d'}}" name="transfer_date" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">🏦 Select Bank</label>
+                                <select class="form-select" name="to_bank" required>
+                                    <option value="" selected disabled>Choose a bank</option>
+                                    {% for bc in bank %}
+                                        <option value="{{ bc.id }}" {% if b.to_bank == bc %} selected {% endif %}>{{ bc.bank_name }} - {{ bc.account_number }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success" name="transfer_cash_to_bank_edit">✅ Confirm</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">❌ Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div>
+
+        </div>
     </div>
 
     <!-- Transfer to Admin -->
-    <div class="text-center my-4">
+    <div class="text-center my-4" style="display: flex;flex-direction: column;">
         <button type="button" class="btn btn-gradient-alt btn-lg px-5 py-2" data-bs-toggle="modal" data-bs-target="#cashToAdminModal">
             Transfer Cash to Admin
         </button>
-    </div>
+        <br><br>
 
+        {% for b in cash_transfer_to_admin %}
+        <div class="cash_transfer_to_bank_card_box">
+            <div style="display: flex;justify-content: space-evenly;">
+                <div> <b>Rs.{{b.amount}}</b></div>
+                <div> To.Admin</div>
+            </div>
+            <div style="display: flex;justify-content: space-evenly;">
+                <div>{{b.transfer_date}}</div>
+                <div>By.{% if c.from_clerk != 'None' %}{{b.from_clerk.name}}{% else %}Admin{% endif %}</div>
+            </div>
+            <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#cashToadminModal_edit{{b.id}}" style="position: absolute;top: 0px;right: 0px;"><i class="fas fa-edit    "></i></button>
+        </div>
+        <br>
+        <div class="modal fade text-start" id="cashToadminModal_edit{{b.id}}" tabindex="-1" aria-labelledby="cashToBankLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cashToBankLabel">💼 Transfer Cash to Admin Edit</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="text" name="id" value="{{b.id}}" hidden>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">💵 Transfer Amount</label>
+                                <input type="number" value="{{b.amount}}" class="form-control" name="transfer_amount" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">📅 Transfer Date</label>
+                                <input type="date" value="{{b.transfer_date|date:'Y-m-d'}}" class="form-control" min="{{clerk.batch.start_date|date:'Y-m-d'}}" max="{{today_date|date:'Y-m-d'}}" name="transfer_date" required>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success" name="transfer_cash_to_admin_edit">✅ Confirm</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">❌ Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<!--//?//**//**//**//**//**//*/*/*/*/*/*/*/*//*/*/*/*/**-/*/*/*/*/*/*/*/*/*/*/-->
     <!-- Modal: Cash to Bank -->
     <div class="modal fade" id="cashToBankModal" tabindex="-1" aria-labelledby="cashToBankLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -130,7 +244,7 @@
                     <h5 class="modal-title" id="cashToBankLabel">💼 Transfer Cash to Bank</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="POST">
+                <form method="POST" onsubmit="bank_form_submited()">
                     {% csrf_token %}
                     <div class="modal-body">
                         <div class="mb-3">
@@ -139,7 +253,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">📅 Transfer Date</label>
-                            <input type="date" class="form-control" name="transfer_date" required>
+                            <input type="date" class="form-control" min="{{clerk.batch.start_date|date:'Y-m-d'}}" max="{{today_date|date:'Y-m-d'}}" name="transfer_date" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">🏦 Select Bank</label>
@@ -154,7 +268,7 @@
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success" name="transfer_cash_to_bank" id="submitBankBtn">✅ Confirm</button>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">❌ Cancel</button>
-                        <div id="loaderBank" class="ms-3 d-none">
+                        <div id="loaderBank" class="ms-3" style="display: none;">
                             <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
@@ -173,22 +287,22 @@
                     <h5 class="modal-title" id="cashToAdminLabel">👨‍💼 Transfer Cash to Admin</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="POST">
+                <form method="POST" onsubmit="admin_form_submited()">
                     {% csrf_token %}
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">💵 Transfer Amount</label>
-                            <input type="number" class="form-control" name="transfer_amount_admin" required>
+                            <input type="number" class="form-control" name="transfer_amount" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">📅 Transfer Date</label>
-                            <input type="date" class="form-control" name="transfer_date_admin" required>
+                            <input type="date" class="form-control" min="{{clerk.batch.start_date|date:'Y-m-d'}}" max="{{today_date|date:'Y-m-d'}}" name="transfer_date" required>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success" name="transfer_cash_to_admin" id="submitAdminBtn">✅ Confirm</button>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">❌ Cancel</button>
-                        <div id="loaderAdmin" class="ms-3 d-none">
+                        <div id="loaderAdmin" class="ms-3" style="display: none;">
                             <div class="spinner-border text-success" role="status" style="width: 1.5rem; height: 1.5rem;">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
@@ -198,23 +312,19 @@
             </div>
         </div>
     </div>
-</div>
+<!--//?//**//**//**//**//**//*/*/*/*/*/*/*/*//*/*/*/*/**-/*/*/*/*/*/*/*/*/*/*/-->
 
 <!-- Loader Scripts -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const bankForm = document.querySelector('#cashToBankModal form');
-        const adminForm = document.querySelector('#cashToAdminModal form');
+    function bank_form_submited(){
+        document.getElementById('loaderBank').style.display = 'flex';
+        document.getElementById('submitBankBtn').style.display = 'none';
 
-        bankForm.addEventListener('submit', function () {
-            document.getElementById('submitBankBtn').disabled = true;
-            document.getElementById('loaderBank').classList.remove('d-none');
-        });
+    }
+    function admin_form_submited(){
+        document.getElementById('loaderAdmin').style.display = 'flex';
+        document.getElementById('submitAdminBtn').style.display = 'none';
 
-        adminForm.addEventListener('submit', function () {
-            document.getElementById('submitAdminBtn').disabled = true;
-            document.getElementById('loaderAdmin').classList.remove('d-none');
-        });
-    });
+    }
 </script>
 {% endblock content %}

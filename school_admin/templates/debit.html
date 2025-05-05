@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+    }
+
+
+    .menu form {
+        margin: 0;
+    }
+
+    .btn-bank {
+        background: #0D6EfD;
+        color: #fff;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .btn-bank:hover {
+        background: linear-gradient(to right, #667eea, #764ba2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+
+
+    .text-center b {
+        font-size: 1.5rem;
+        color: #4e73df;
+        margin-top: 1.5rem;
+        display: block;
+        text-align: center;
+    }
+
+    .bank_statement_box {
+        background-color: #ffffff;
+        border-radius: 12px;
+        margin: 1.5rem auto;
+        padding: 1.5rem;
+        max-width: 600px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: all 0.25s ease-in-out;
+    }
+
+    .bank_statement_box:hover {
+        transform: scale(1.015);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+
+    .statement-header,
+    .statement-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .amount {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #c92020;
+    }
+
+    .date {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .origin-badge {
+        display: inline-block;
+        background-color: #f8f9fa;
+        color: #343a40;
+        font-size: 0.8rem;
+        padding: 0.3rem 0.7rem;
+        border-radius: 10px;
+        font-weight: 500;
+        border: 1px solid #ced4da;
+        position: relative;
+        
+    }
+
+    .origin-admin {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border-color: #bee5eb;
+    }
+
+    .origin-clerk {
+        background-color: #e2e3e5;
+        color: #383d41;
+        border-color: #d6d8db;
+    }
+
+    .origin-parent {
+        background-color: #def8d7;
+        color: #2d721c;
+        border-color: #c6f5c6;
+        height: 90px;
+        overflow: hidden;
+        padding-left: 60px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        img{
+            height:100% ;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        div{
+            margin-left: 40px;
+        }
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% include 'admin_navbar.html' %}
+{% include 'alert.html' %}
+{% include 'admin_account_menu.html' %}
+
+    {% for bc in expenses %}
+    <div class="bank_statement_box">
+        <div class="statement-header">
+            <div class="amount">Rs. {{ bc.amount }}</div>
+            <div class="date">{{ bc.date }}</div>
+        </div>
+        <div class="statement-footer">
+            <div class="origin-badge">
+            From, Clerk {{bc.added_by.name}} - {{bc.type}}
+            {% if bc.from_bank.id %}
+                <div class="date">Bank {{bc.from_bank.bank_name}} - {{bc.from_bank.account_number}}</div>
+                <div class="date">Check Number {{bc.check_number}}</div>
+            {% endif %}
+            </div><br>
+
+        </div>
+        <p style="margin-top: -5px;">{{bc.remark}}</p>
+        <div id="verify_btn_box{{bc.id}}">
+            {% if bc.admin_verify_status == 0 %}
+                <button type="button" style="width: 100%;" onclick="verify('{{bc.id}}')" class="btn btn-success">Verify</button>
+            {% else %}
+                <div class="text-success text-center fw-bold">Verifyed {{bc.verify_date}}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+
+<script>
+    function verify(id) {
+      $.ajax({
+          url: "{% url 'verify_expense' %}",
+          method: "GET",
+          data:{
+            id:id,
+          },
+          success: function(res){
+            document.getElementById('verify_btn_box'+id).innerHTML = '<div class="text-success text-center fw-bold">Verifyed '+res.datetime+'</div>'
+          }
+      })
+    }
+</script>
+{% endblock content %}

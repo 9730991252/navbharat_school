@@ -63,6 +63,39 @@ def search_student_for_edit(request):
         t = render_to_string('search_student_for_edit.html', context)
     return JsonResponse({'t': t})
 
+def verify_bank_credit(request):
+    if request.method == 'GET':
+        id = request.GET['id']
+        credit_type = request.GET['credit_type']
+        if credit_type == 'Student_recived_Fee_Bank':
+            c = Student_recived_Fee_Bank.objects.filter(id=id).first()
+            if c:
+                c.admin_verify_status = 1
+                c.verify_date = datetime.now()
+                c.save()
+        elif credit_type == 'Cash_Transfer_To_Bank':
+            c = Cash_Transfer_To_Bank.objects.filter(id=id).first()
+            if c:
+                c.admin_verify_status = 1
+                c.verify_date = datetime.now()
+                c.save()
+    return JsonResponse({'datetime':datetime.now()})
+
+def verify_expense(request):
+    if request.method == 'GET':
+        id = request.GET['id']
+        c = Expenses.objects.filter(id=id).first()
+        if c:
+            c.admin_verify_status = 1
+            c.verify_date = datetime.now()
+            c.save()
+    return JsonResponse({'datetime':datetime.now()})
+
+def verify_student(request):
+    if request.method == 'GET':
+        id = request.GET['id']
+    return JsonResponse({'t': 't'})
+
 def search_student_for_fees(request):
     if request.method == 'GET':
         words = request.GET['words']

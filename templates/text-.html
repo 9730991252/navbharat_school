@@ -1,145 +1,184 @@
-{% extends 'base.html' %}
-{% block head %}
-{% load static %}
-<style>
-    body {
-        background-color: #f8f9fa;
-    }
-
-    .btn-gradient {
-        background: linear-gradient(45deg, #28a745, #218838);
-        color: white;
-        border: none;
-        transition: background 0.3s ease;
-    }
-
-    .btn-gradient:hover {
-        background: linear-gradient(45deg, #218838, #1e7e34);
-        color: #fff;
-    }
-
-    .bg-gradient {
-        background: linear-gradient(135deg, #007bff, #6610f2);
-    }
-
-    .alert-success {
-        background: #d4edda;
-        border-left: 5px solid #28a745;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .modal-dialog {
-        max-width: 550px;
-    }
-
-    .modal-content {
-        border-radius: 1rem;
-        border: none;
-        background: #ffffff;
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
-        overflow: hidden;
-    }
-
-    .modal-header {
-        background: linear-gradient(135deg, #0d6efd, #6610f2);
-        color: white;
-        border-bottom: none;
-        padding: 1.2rem 1.5rem;
-    }
-
-    .modal-title {
-        font-weight: 600;
-        font-size: 1.25rem;
-    }
-
-    .btn-close-white {
-        filter: invert(1);
-    }
-
-    .modal-body {
-        padding: 1.8rem;
-        background-color: #f9f9f9;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: #333;
-    }
-
-    .form-control,
-    .form-select {
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .modal-footer {
-        border-top: none;
-        padding: 1.2rem 1.5rem;
-        background-color: #f1f1f1;
-    }
-
-    .btn-success {
-        border-radius: 0.5rem;
-        padding: 0.5rem 1.5rem;
-    }
-
-    .btn-outline-secondary {
-        border-radius: 0.5rem;
-    }
-</style>
-{% endblock head %}
-
-{% block content %}
-{% include 'school/school_navbar.html' %}
-{% include 'alert.html' %}
-
-<div class="container mt-5">
-    <div class="alert alert-success text-center shadow rounded py-3 fs-5 fw-semibold">
-        💰 Available Cash: <strong>Rs. {{ avalable_cash }}</strong>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   ID Card Front and Back
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans&family=Pacifico&display=swap');
+  </style>
+ </head>
+ <body class="bg-gray-400 flex items-center justify-center min-h-screen p-4">
+  <div class="flex flex-col sm:flex-row gap-8">
+   <!-- Front side -->
+   <div class="relative w-[320px] h-[440px] bg-white shadow-lg overflow-hidden rounded-md" style="font-family: 'Open Sans', sans-serif">
+    <!-- Top wave -->
+    <svg class="absolute top-0 left-0 w-full" fill="none" style="height: 80px" viewbox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+     <path d="M0 80H320V0C280 40 240 40 200 40C160 40 120 0 80 0C40 0 0 40 0 40V80Z" fill="#1e2f73">
+     </path>
+     <path d="M0 80H320V20C280 60 240 60 200 60C160 60 120 20 80 20C40 20 0 60 0 60V80Z" fill="#3a5dbf">
+     </path>
+     <path d="M0 80H320V40C280 80 240 80 200 80C160 80 120 40 80 40C40 40 0 80 0 80Z" fill="#7ea9d9">
+     </path>
+    </svg>
+    <!-- Logo top left -->
+    <div class="absolute top-6 left-6 flex items-center space-x-1">
+     <div class="text-white font-bold text-xs px-2 py-1 rounded-r-md" style="background-color: #7ea9d9; font-family: 'Montserrat', sans-serif">
+      LOGO
+     </div>
+     <div class="text-[#1e2f73] font-semibold text-xs tracking-wide">
+      HERE
+     </div>
     </div>
-
-    <div class="text-center my-4">
-        <button type="button" class="btn btn-gradient btn-lg px-5 py-2" data-bs-toggle="modal" data-bs-target="#cash_to_bank">
-            Transfer Cash to Bank
-        </button>
+    <!-- Profile image placeholder -->
+    <div aria-label="Profile picture placeholder, square with rounded corners" class="mx-auto mt-20 w-24 h-24 rounded-lg border-2 border-[#1e2f73] bg-gray-600">
     </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="cash_to_bank" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">💼 Transfer Cash to Bank</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">💵 Transfer Amount</label>
-                            <input type="number" class="form-control" name="transfer_amount" placeholder="Enter amount" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">📅 Transfer Date</label>
-                            <input type="date" class="form-control" name="transfer_date" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">🏦 Select Bank</label>
-                            <select class="form-select" name="to_bank" required>
-                                <option value="" selected disabled>Choose a bank</option>
-                                {% for b in bank %}
-                                    <option value="{{ b.id }}">{{ b.bank_name }} - {{ b.account_number }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">✅ Confirm</button>
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">❌ Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+    <!-- Name and position -->
+    <div class="mt-6 text-center">
+     <span class="font-extrabold text-[#1e2f73] text-xl" style="font-family: 'Montserrat', sans-serif">
+      YOUR
+     </span>
+     <span class="font-extrabold text-[#7ea9d9] text-xl" style="font-family: 'Montserrat', sans-serif">
+      NAME
+     </span>
+     <div class="text-xs font-semibold text-[#1e2f73] mt-1 tracking-wide">
+      YOUR POSITION HERE
+     </div>
     </div>
-</div>
-{% endblock content %}
+    <!-- Info table -->
+    <div class="mt-8 px-12 space-y-2 text-sm text-gray-900 font-semibold">
+     <div class="flex justify-between">
+      <div>
+       ID
+      </div>
+      <div class="font-normal">
+       : RF-000000
+      </div>
+     </div>
+     <div class="flex justify-between">
+      <div>
+       Blood
+      </div>
+      <div class="font-normal">
+       : A
+      </div>
+     </div>
+     <div class="flex justify-between">
+      <div>
+       Phone
+      </div>
+      <div class="font-normal">
+       : +000-666 22 777
+      </div>
+     </div>
+     <div class="flex justify-between">
+      <div>
+       Email
+      </div>
+      <div class="font-normal">
+       : yourmail address here
+      </div>
+     </div>
+    </div>
+    <!-- Barcode -->
+    <div class="mt-8 px-12 flex justify-center">
+     <img alt="Barcode placeholder black and white rectangular barcode lines" class="border border-black" height="40" src="https://storage.googleapis.com/a1aa/image/c9a4ce70-f302-481b-a2fa-ec61db7cd6aa.jpg" width="200"/>
+    </div>
+    <!-- Bottom wave -->
+    <svg class="absolute bottom-0 left-0 w-full" fill="none" style="height: 80px" viewbox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+     <path d="M0 0H320V80C280 40 240 40 200 40C160 40 120 80 80 80C40 80 0 40 0 40V0Z" fill="#1e2f73">
+     </path>
+     <path d="M0 0H320V60C280 20 240 20 200 20C160 20 120 60 80 60C40 60 0 20 0 20V0Z" fill="#3a5dbf">
+     </path>
+     <path d="M0 0H320V40C280 0 240 0 200 0C160 0 120 40 80 40C40 40 0 0 0 0Z" fill="#7ea9d9">
+     </path>
+    </svg>
+   </div>
+   <!-- Back side -->
+   <div class="relative w-[320px] h-[440px] bg-white shadow-lg overflow-hidden rounded-md" style="font-family: 'Open Sans', sans-serif">
+    <!-- Top wave -->
+    <svg class="absolute top-0 left-0 w-full" fill="none" style="height: 80px" viewbox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+     <path d="M0 80H320V0C280 40 240 40 200 40C160 40 120 0 80 0C40 0 0 40 0 40V80Z" fill="#1e2f73">
+     </path>
+     <path d="M0 80H320V20C280 60 240 60 200 60C160 60 120 20 80 20C40 20 0 60 0 60V80Z" fill="#3a5dbf">
+     </path>
+     <path d="M0 80H320V40C280 80 240 80 200 80C160 80 120 40 80 40C40 40 0 80 0 80Z" fill="#7ea9d9">
+     </path>
+    </svg>
+    <!-- Logo top left -->
+    <div class="absolute top-6 left-6 flex items-center space-x-1">
+     <div class="text-white font-bold text-xs px-2 py-1 rounded-r-md" style="background-color: #7ea9d9; font-family: 'Montserrat', sans-serif">
+      LOGO
+     </div>
+     <div class="text-[#1e2f73] font-semibold text-xs tracking-wide">
+      HERE
+     </div>
+    </div>
+    <!-- Content container -->
+    <div class="px-10 pt-24 text-gray-700 text-sm leading-relaxed">
+     <h2 class="font-semibold text-gray-800 text-lg mb-4" style="font-family: 'Montserrat', sans-serif">
+      Terms &amp; Conditions
+     </h2>
+     <ul class="list-disc list-inside space-y-2 mb-8">
+      <li>
+       Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do
+            eiusmod tempor .
+      </li>
+      <li>
+       Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do
+            eiusmod tempor .
+      </li>
+      <li>
+       Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do
+            eiusmod tempor .
+      </li>
+     </ul>
+     <div class="text-center mb-6">
+      <div class="text-[22px] font-pacifico text-gray-900" style="font-family: 'Pacifico', cursive">
+       yourname
+      </div>
+      <div class="border-b border-gray-300 w-24 mx-auto mt-1 mb-2">
+      </div>
+      <div class="font-semibold text-gray-800">
+       Your Signature
+      </div>
+     </div>
+     <div class="mb-8 text-sm font-semibold text-gray-800">
+      <div class="flex justify-between mb-2">
+       <div>
+        Joining Date
+       </div>
+       <div class="font-normal">
+        : MM/DD/YEAR
+       </div>
+      </div>
+      <div class="flex justify-between">
+       <div>
+        Expire Date
+       </div>
+       <div class="font-normal">
+        : MM/DD/YEAR
+       </div>
+      </div>
+     </div>
+     <div class="text-center text-xs text-gray-700 font-semibold tracking-wide">
+      yoursite here
+     </div>
+    </div>
+    <!-- Bottom wave -->
+    <svg class="absolute bottom-0 left-0 w-full" fill="none" style="height: 80px" viewbox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+     <path d="M0 0H320V80C280 40 240 40 200 40C160 40 120 80 80 80C40 80 0 40 0 40V0Z" fill="#1e2f73">
+     </path>
+     <path d="M0 0H320V60C280 20 240 20 200 20C160 20 120 60 80 60C40 60 0 20 0 20V0Z" fill="#3a5dbf">
+     </path>
+     <path d="M0 0H320V40C280 0 240 0 200 0C160 0 120 40 80 40C40 40 0 0 0 0Z" fill="#7ea9d9">
+     </path>
+    </svg>
+   </div>
+  </div>
+ </body>
+</html>

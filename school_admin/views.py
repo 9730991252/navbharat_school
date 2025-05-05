@@ -70,6 +70,65 @@ def admin_account(request):
     else:
         return redirect('admin_login')
     
+def debit(request):
+    if request.session.has_key('admin_mobile'):
+        mobile = request.session['admin_mobile']
+        a = Admin_login.objects.filter(mobile=mobile).first()
+        context={
+            'expenses':Expenses.objects.filter(batch=a.batch).order_by('-date')
+        }
+        return render(request, 'debit.html', context)
+    else:
+        return redirect('admin_login')
+    
+def get_bank_credits(batch_id, bank_id):
+    bank_credits = []
+    for sb in Student_recived_Fee_Bank.objects.filter(account_id=bank_id):
+        bank_credits.append({
+            'credit_type':'Student_recived_Fee_Bank',
+            'id':sb.id,
+            'recived_amount':sb.recived_amount,
+            'recived_date':sb.paid_date,
+            'admin_verify_status':sb.admin_verify_status,
+            'verify_date':sb.verify_date,
+            'utr_number':sb.utr_number,
+            'student':sb.student,
+            'student_img':Student_Image.objects.filter(student=sb.student).first(),
+        })
+    for ctb in Cash_Transfer_To_Bank.objects.filter(to_bank_id=bank_id):
+        bank_credits.append({
+            'credit_type':'Cash_Transfer_To_Bank',
+            'id':ctb.id,
+            'recived_amount':ctb.amount,
+            'recived_date':ctb.transfer_date,
+            'from_clerk':ctb.from_clerk,
+            'from_admin':ctb.from_admin,
+            'admin_verify_status':ctb.admin_verify_status,
+            'verify_date':ctb.verify_date,
+        })
+    bank_credits = sorted(bank_credits, key=lambda k: k['recived_date'], reverse=True)
+    return bank_credits
+ 
+@csrf_exempt
+def credit(request):
+    if request.session.has_key('admin_mobile'):
+        mobile = request.session['admin_mobile']
+        a = Admin_login.objects.filter(mobile=mobile).first()
+        selected_bank = ''
+        bank_credits = []
+        if 'get_statment'in request.POST:
+            bank_id = request.POST.get('bank_id')
+            selected_bank = Bank_Account.objects.filter(id=bank_id).first()
+            bank_credits = get_bank_credits(a.batch.id, bank_id)
+        context={
+            'bank_accounts':Bank_Account.objects.all(),
+            'selected_bank':selected_bank,
+            'bank_credits':bank_credits
+        }
+        return render(request, 'credit.html', context)
+    else:
+        return redirect('admin_login')
+    
 def admin_student_approval(request):
     if request.session.has_key('admin_mobile'):
         mobile = request.session['admin_mobile']
@@ -173,9 +232,9 @@ def admin_view_students(request):
             received_cash = Student_received_Fee_Cash.objects.filter(student=i).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
             received_bank = Student_recived_Fee_Bank.objects.filter(student=i).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
             rst = int(received_cash) + int(received_bank)
-            
-            remaining_fee = total_fee - rst or 0
-            
+             
+            remaining_fee = total_fee - rst or 0 
+             
             s.append({
                 'id':i.id,
                 'name':i.name,

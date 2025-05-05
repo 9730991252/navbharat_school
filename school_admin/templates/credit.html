@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+    }
+
+
+    .menu form {
+        margin: 0;
+    }
+
+    .btn-bank {
+        background: #0D6EfD;
+        color: #fff;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .btn-bank:hover {
+        background: linear-gradient(to right, #667eea, #764ba2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+
+
+    .text-center b {
+        font-size: 1.5rem;
+        color: #4e73df;
+        margin-top: 1.5rem;
+        display: block;
+        text-align: center;
+    }
+
+    .bank_statement_box {
+        background-color: #ffffff;
+        border-radius: 12px;
+        margin: 1.5rem auto;
+        padding: 1.5rem;
+        max-width: 600px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: all 0.25s ease-in-out;
+    }
+
+    .bank_statement_box:hover {
+        transform: scale(1.015);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+
+    .statement-header,
+    .statement-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .amount {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #20c997;
+    }
+
+    .date {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .origin-badge {
+        display: inline-block;
+        background-color: #f8f9fa;
+        color: #343a40;
+        font-size: 0.8rem;
+        padding: 0.3rem 0.7rem;
+        border-radius: 10px;
+        font-weight: 500;
+        border: 1px solid #ced4da;
+        position: relative;
+        
+    }
+
+    .origin-admin {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border-color: #bee5eb;
+    }
+
+    .origin-clerk {
+        background-color: #e2e3e5;
+        color: #383d41;
+        border-color: #d6d8db;
+    }
+
+    .origin-parent {
+        background-color: #def8d7;
+        color: #2d721c;
+        border-color: #c6f5c6;
+        height: 90px;
+        overflow: hidden;
+        padding-left: 60px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        img{
+            height:100% ;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        div{
+            margin-left: 40px;
+        }
+    }
+</style>
+{% endblock head %}
+
+{% block content %}
+{% include 'admin_navbar.html' %}
+{% include 'alert.html' %}
+{% include 'admin_account_menu.html' %}
+
+<div class="menu">
+    {% for b in bank_accounts %}
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="bank_id" value="{{ b.id }}">
+        <button class="btn btn-bank" type="submit" name="get_statment">
+            {{ b.bank_name }} - {{ b.account_number }}
+        </button>
+    </form>
+    {% endfor %}
+    <form method="POST">
+        {% csrf_token %}
+        <button class="btn btn-bank btn-cash" type="submit" name="get_statment_cash">
+            Cash
+        </button>
+    </form>
+</div>
+
+{% if selected_bank %}
+<div class="text-center">
+    <b>{{ selected_bank.bank_name }} - {{ selected_bank.account_number }}</b>
+</div>
+
+<div>
+    {% for bc in bank_credits %}
+    <div class="bank_statement_box">
+        <div class="statement-header">
+            <div class="amount">Rs. {{ bc.recived_amount }}</div>
+            <div class="date">{{ bc.recived_date }}</div>
+        </div>
+        <div class="statement-footer">
+            <div class="origin-badge
+                {% if bc.from_admin == 1 %}
+                    origin-admin
+                {% elif bc.from_clerk %}
+                    origin-clerk
+                {% else %}
+                    origin-parent
+                {% endif %}
+            ">
+            {% if bc.from_admin is not None and bc.from_clerk is not None and bc.from_admin != '' and bc.from_clerk != '' %}
+            {% if bc.from_admin == 1 %}
+            From, Admin
+            {% else %}
+            From, Clerk {{bc.from_clerk.name}} - Deposited Cash
+            {% endif %}
+            {% else %}
+                <div>
+                    <img src="{% if bc.student_img %}{{bc.student_img.image.url}}{% endif %}" style="border-radius: 5px;" alt="">From, {{bc.student.name}}
+                </div>
+                <div class="date">UTR {{bc.utr_number}}</div>
+            {% endif %}
+            </div>
+        </div>
+        <div id="verify_btn_box{{bc.credit_type}}{{bc.id}}">
+            {% if bc.admin_verify_status == 0 %}
+                <button type="button" style="width: 100%;" onclick="verify('{{bc.id}}', '{{bc.credit_type}}')" class="btn btn-success">Verify</button>
+            {% else %}
+                <div class="text-success text-center fw-bold">Verifyed {{bc.verify_date}}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<script>
+    function verify(id, credit_type) {
+      $.ajax({
+          url: "{% url 'verify_bank_credit' %}",
+          method: "GET",
+          data:{
+            id:id,
+            credit_type:credit_type
+          },
+          success: function(res){
+            document.getElementById('verify_btn_box'+credit_type+id).innerHTML = '<div class="text-success text-center fw-bold">Verifyed '+res.datetime+'</div>'
+          }
+      })
+    }
+</script>
+{% endblock content %}

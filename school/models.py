@@ -161,12 +161,38 @@ class Student_recived_Fee_Bank(models.Model):
     utr_number = models.CharField(max_length=100, null=True, blank=True)
     
 class Cash_Transfer_To_Bank(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, null=True)
     from_admin = models.IntegerField(default=0)
     from_clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, blank=True)
     to_bank = models.ForeignKey(Bank_Account, on_delete=models.CASCADE, null=True, blank=True)
     amount = models.FloatField(default=0)
     transfer_date = models.DateField(null=True)
     added_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(null=True)
+    admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
+    verify_date = models.DateTimeField(null=True, blank=True)
+
+class Cash_Transfer_To_Admin(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, null=True)
+    from_clerk = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.FloatField(default=0)
+    transfer_date = models.DateField(null=True)
+    added_date = models.DateTimeField(auto_now_add=True, null=True)
+    updated_date = models.DateTimeField(null=True)
+    admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
+    verify_date = models.DateTimeField(null=True, blank=True)
+    
+class Expenses(models.Model):
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
+    amount = models.FloatField(default=0)
+    remark = models.CharField(max_length=500)
+    type = models.CharField(max_length=100)
+    added_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='added_by_clerk')
+    from_bank = models.ForeignKey(Bank_Account, on_delete=models.CASCADE, null=True, blank=True, related_name='from_bank')
+    check_number = models.CharField(max_length=100,null=True)
+    added_date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(null=True)
+    updated_by = models.ForeignKey(Clerk, on_delete=models.CASCADE, null=True, related_name='updated_by_clerk')
     updated_date = models.DateTimeField(null=True)
     admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
     verify_date = models.DateTimeField(null=True, blank=True)

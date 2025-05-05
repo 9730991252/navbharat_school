@@ -18,4 +18,6 @@ urlpatterns = [
     path('search_student_for_fees/', views.search_student_for_fees, name='search_student_for_fees'),
     path('search_student_for_fees_admin/', views.search_student_for_fees_admin, name='search_student_for_fees_admin'),
     path('verify_student_admin/', views.verify_student_admin, name='verify_student_admin'),
+    path('verify_bank_credit/', views.verify_bank_credit, name='verify_bank_credit'),
+    path('verify_expense/', views.verify_expense, name='verify_expense'),
 ]
