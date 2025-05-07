@@ -13,5 +13,6 @@ urlpatterns = [
     path('students_icard_for_teacher/', views.students_icard_for_teacher, name='students_icard_for_teacher'),
     path('teacher_notice/', views.teacher_notice, name='teacher_notice'),
     path('teacher_received_notice/', views.teacher_received_notice, name='teacher_received_notice'),
+    path('todayes_teaching/', views.todayes_teaching, name='todayes_teaching'),
     
 ]

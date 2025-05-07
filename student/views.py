@@ -27,6 +27,21 @@ def student_home(request, batch_id):
     else:
         return redirect('login')
     
+def identity_card(request, batch_id):
+    if request.session.has_key('parent_mobile'):
+        mobile = request.session['parent_mobile']
+        student = Student.objects.filter(mobile=mobile).first()
+        current_batch = Batch.objects.get(id=batch_id)        
+        context={
+            'student':student,
+            'class':Class_student.objects.filter(student=student, batch=current_batch).first(),
+            
+            'student_image':Student_Image.objects.filter(student_id=student.id).first(),
+        }
+        return render(request, 'identity_card.html', context)
+    else:
+        return redirect('login')
+    
 def teachers(request, batch_id):
     if request.session.has_key('parent_mobile'):
         mobile = request.session['parent_mobile']

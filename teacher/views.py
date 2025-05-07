@@ -31,6 +31,21 @@ def teacher_home(request):
     else:
         return redirect('school_mobile')
     
+def todayes_teaching(request):
+    if request.session.has_key('teacher_mobile'):
+        mobile = request.session['teacher_mobile']
+        class_students_count = 0
+        teacher = Teacher.objects.filter(mobile=mobile).first()
+
+        
+        context={
+            'teacher':teacher,
+            'subject_class_and_teacher':Subject_class_and_teacher.objects.filter(teacher=teacher)
+        }
+        return render(request, 'todayes_teaching.html', context)
+    else:
+        return redirect('school_mobile')
+    
 @csrf_exempt
 def profile(request):
     if request.session.has_key('teacher_mobile'):
