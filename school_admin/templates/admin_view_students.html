@@ -75,16 +75,7 @@
     <div class="name_mobile_box">
         <div class="name">{{s.name}}</div>
         <div class="mobile"><a href="tel:{{s.mobile}}" class="btn text-success"><i class="fa fa-phone" aria-hidden="true"></i></a> {{s.mobile}} <a href="https://api.whatsapp.com/send?phone={{s.mobile}}&text=Hi" class="btn text-success"><i class="fa-brands fa-whatsapp"></i></a></div>
-        <div class="adhar_number">Class. {{s.class.school_class.name}}</div>
-    </div>
-    <div><br></div>
-    <div class="fee">
-        <div>Total Fee</div>
-        <div class="text-success">Recived Fee</div>
-        <div class="text-danger">Remaining Fee</div>
-        <div>Rs.{{s.total_fee}}</div>
-        <div class="text-success">Rs.{{s.recived_fee}}</div>
-        <div class="text-danger">Rs.{{s.remaining_fee}}</div>
+        <div class="adhar_number">Class. {{s.class_name}}</div>
     </div>
 </div>
 <br>

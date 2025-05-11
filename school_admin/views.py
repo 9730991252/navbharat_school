@@ -128,43 +128,7 @@ def credit(request):
         return render(request, 'credit.html', context)
     else:
         return redirect('admin_login')
-    
-def admin_student_approval(request):
-    if request.session.has_key('admin_mobile'):
-        mobile = request.session['admin_mobile']
-        a = Admin_login.objects.filter(mobile=mobile).first()
-        batch = a.batch
-        student = Student.objects.all()
-        st = []
-        for s in student:
-            
-            stf = Student_Total_Fee.objects.filter(student=s, added_by__batch_id=batch).first()
-            payable_fee = 0
-            if stf:
-                payable_fee = int(stf.total_fee or 0) - int(stf.discount or 0)
-            if stf and stf.admin_verify_status == 0:
-                st.append({
-                    'id':s.id,
-                    'name':s.name,
-                    'mobile':s.mobile,
-                    'aadhar_number':s.aadhar_number,
-                    'secret_pin':s.secret_pin,
-                    'gender':s.gender,
-                    'img':Student_Image.objects.filter(student=s).first(),
-                    'class':Class_student.objects.filter(student=s).first(),
-                    'total_fee':stf.total_fee if stf else 0,
-                    'discount':stf.discount if stf else 0,
-                    'payable_fee':payable_fee,
-                    'admin_verify_status':stf.admin_verify_status if stf else '',
-                    'verify_date':stf.verify_date if stf else ''
-                })
-        context={
-            'batch':a.batch,
-            'student':st
-        }
-        return render(request, 'admin_student_approval.html', context)
-    else:
-        return redirect('admin_login')
+
     
 def todayes_attendence(request):
     if request.session.has_key('admin_mobile'):
@@ -222,19 +186,9 @@ def admin_view_students(request):
         mobile = request.session['admin_mobile']
         a = Admin_login.objects.filter(mobile=mobile).first()
         s = []
-        for i in Student.objects.all():
-            stf = Student_Total_Fee.objects.filter(student=i, added_by__batch=a.batch).first()
-            
-            total_fee = 0
-            if stf:
-                total_fee = int(stf.total_fee or 0) - int(stf.discount or 0)
-            
-            received_cash = Student_received_Fee_Cash.objects.filter(student=i).aggregate(Sum('received_amount'))['received_amount__sum'] or 0
-            received_bank = Student_recived_Fee_Bank.objects.filter(student=i).aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0
-            rst = int(received_cash) + int(received_bank)
+        for i in Student.objects.all().order_by('name'):
              
-            remaining_fee = total_fee - rst or 0 
-             
+            school_class = Class_student.objects.filter(student_id=i.id, added_by__batch=a.batch).first()
             s.append({
                 'id':i.id,
                 'name':i.name,
@@ -242,12 +196,9 @@ def admin_view_students(request):
                 'aadhar_number':i.aadhar_number,
                 'gender':i.gender,
                 'img':Student_Image.objects.filter(student_id=i.id).first(),
-                'class':Class_student.objects.filter(student_id=i.id, added_by__batch=a.batch).first() or '',
-                'total_fee':total_fee,  
-                'recived_fee':rst,
-                'remaining_fee':remaining_fee,
+                'class_name':school_class.school_class.name if school_class else 'Not Selected',
             })
-        s = sorted(s, key=lambda k: k['total_fee'], reverse=True)
+        s = sorted(s, key=lambda k: k['class_name'], reverse=False)
         context={
             'students':s,
             'total_students':Student.objects.all().count(),
@@ -405,7 +356,7 @@ def admin_teacher_notice(request):
         return redirect('admin_login')
     
 def admin_student_notice(request):
-    pass
+    return redirect('admin_received_notice')
     
 def admin_received_notice(request):
     if request.session.has_key('admin_mobile'):

@@ -119,54 +119,6 @@ def search_student_for_fees(request):
         t = render_to_string('search_student_for_fees.html', context)
     return JsonResponse({'t': t})
 
-def verify_student_admin(request):
-    if request.method == 'GET':
-        s_id = request.GET['s_id']
-        batch = request.GET['batch']
-        
-        Student_Total_Fee.objects.filter(student_id=s_id, added_by__batch=batch).update(admin_verify_status=1,verify_date=datetime.now())
-        
-
-    return JsonResponse({'t': 't'})
-
-def search_student_for_fees_admin(request):
-    if request.method == 'GET':
-        words = request.GET['words']
-        batch = request.GET['batch']
-        t = ''
-        if words is not '':
-            student = list(Student.objects.filter(name__icontains=words))
-            student += Student.objects.filter(mobile__icontains=words)
-            student += Student.objects.filter(aadhar_number__icontains=words)
-            st = []
-            for s in student:
-                
-                stf = Student_Total_Fee.objects.filter(student=s, added_by__batch_id=batch).first()
-                payable_fee = 0
-                if stf:
-                    payable_fee = int(stf.total_fee or 0) - int(stf.discount or 0)
-                
-                st.append({
-                    'id':s.id,
-                    'name':s.name,
-                    'mobile':s.mobile,
-                    'aadhar_number':s.aadhar_number,
-                    'secret_pin':s.secret_pin,
-                    'gender':s.gender,
-                    'img':Student_Image.objects.filter(student=s).first(),
-                    'class':Class_student.objects.filter(student=s).first(),
-                    'total_fee':stf.total_fee if stf else 0,
-                    'discount':stf.discount if stf else 0,
-                    'payable_fee':payable_fee,
-                    'admin_verify_status':stf.admin_verify_status if stf else '',
-                    'verify_date':stf.verify_date if stf else ''
-                })
-            context = {
-                'student':st
-            }
-            t = render_to_string('search_student_for_fees_admin.html', context)
-    return JsonResponse({'t': t})
-
 def save_readed_notices_student(request):
     if request.method == 'GET':
         notice_id = request.GET['notice_id']

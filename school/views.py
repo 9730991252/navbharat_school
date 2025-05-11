@@ -207,24 +207,10 @@ def student_fee_detail(request, id):
         student = get_object_or_404(Student, id=id)
         student_img = Student_Image.objects.filter(student=student).first()
         class_info = Class_student.objects.filter(student=student, batch=clerk.batch).select_related('batch', 'school_class').first()
-        total_fee = Student_Total_Fee.objects.filter(student=student, added_by__batch=clerk.batch).first()
-        remaning_fee = total_fee.total_fee if total_fee else 0
         cash_fee = Student_received_Fee_Cash.objects.filter(student=student, added_by__batch=clerk.batch)
         bank_fee = Student_recived_Fee_Bank.objects.filter(student=student, added_by__batch=clerk.batch)
         paid_fee = int(cash_fee.aggregate(Sum('received_amount'))['received_amount__sum'] or 0) + int(bank_fee.aggregate(Sum('recived_amount'))['recived_amount__sum'] or 0)
-        remaning_fee -= paid_fee
-        if 'save_total_fee' in request.POST:
-            total_amount = request.POST.get('total_amount')
-            discount_amount = request.POST.get('discount_amount')
-            # Save fee to database (if model exists)
-            Student_Total_Fee.objects.create(
-                student=student,
-                added_by=clerk,
-                total_fee=total_amount,
-                discount=discount_amount
-            )
-            messages.success(request, 'Fee Genereated successfully')
-            return redirect('student_fee_detail', id=id)
+
 
         # Save cash fee logic
         if 'save_cash_fee' in request.POST:
@@ -263,11 +249,9 @@ def student_fee_detail(request, id):
             'student': student,
             'student_img': student_img,
             'class_info': class_info,
-            'total_fee': total_fee,
             'todayes_date':date.today(),
             'cash_fee':cash_fee,
             'bank_fee':bank_fee,
-            'remaning_fee':remaning_fee,
             'paid_fee':paid_fee,
             'accounts':Bank_Account.objects.filter(status=1)
         }

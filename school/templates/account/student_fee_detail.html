@@ -220,66 +220,10 @@
         <div class="info_title">Added By</div>
         <div class="info_value">{{ student.added_by.name }}</div>
     </div>
-    <div class="info_item">
-        <div class="info_title">Fee</div>
-        <div class="info_value">
-            {% if total_fee %}
-                ₹ {{ total_fee.total_fee }}
-            {% else %}
-                <button class="custom-btn" data-bs-toggle="modal" data-bs-target="#generate_fee_modal">
-                    Generate Fee
-                </button>
-            {% endif %}
-        </div>
-    </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="generate_fee_modal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content custom-modal">
-            <div class="modal-header custom-modal-header">
-                <h5 class="modal-title">Generate Student Fee {{ class_info.school_class.name }}</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" class="custom_form" id="fee-form">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label>Total Fee</label>
-                        <input type="number" id="total_amount" min="0" oninput="payable_amount.value= this.value - discount_amount.value; discount_amount.max = this.value" required name="total_amount" step="any">
-                    </div>
-                    <div class="form-group">
-                        <label>Discount Amount</label>
-                        <input type="number" id="discount_amount" min="0" oninput="payable_amount.value= total_amount.value - this.value" required name="discount_amount" step="any">
-                    </div>
-                    <div class="form-group">
-                        <label>PayAble Amount</label>
-                        <input id="payable_amount" disabled>
-                    </div>
-                </div>
-                <div class="modal-footer custom-modal-footer">
-                    <button type="submit" class="submit-btn" name="save_total_fee">Save Fee</button>
-                    <button type="button" class="cancel-btn" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </form>
 
-            <!-- CSS Loader -->
-            <div id="form-loader">
-                <div class="spinner"></div>
-                <p>Saving fee, please wait...</p>
-            </div>
-        </div>
-    </div>
-</div>
-<script>
-    const form = document.getElementById('fee-form');
-    const loader = document.getElementById('form-loader');
 
-    form.addEventListener('submit', function () {
-        loader.style.display = 'block';
-    });
-</script>
-{% if total_fee %}
 <style>
     .fee_box {
         display: flex;
@@ -297,13 +241,7 @@
 </style>
 
 
-<div class="fee_box">
-    <div>Total Fee - ₹{{total_fee.total_fee}}</div>
-    <div>Discount - ₹{{total_fee.discount}} </div>
-    <div>Paid - ₹.{{paid_fee}} </div>
-    <div>PayAble Fee - ₹<h id="payable_fee"></h></div>
-    <div>Remaining - ₹.{{remaning_fee}} </div>
-</div>
+
 <script>
 payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.discount}}')
 </script>
@@ -476,5 +414,4 @@ payable_fee.innerText = Number('{{total_fee.total_fee}}') - Number('{{total_fee.
     </table>
 
 </div>
-{% endif %}
 {% endblock content %}

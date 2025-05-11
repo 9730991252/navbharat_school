@@ -13,7 +13,6 @@ urlpatterns = [
     path('admin_student_notice/',       views.admin_student_notice,     name='admin_student_notice'),
     path('admin_received_notice/',      views.admin_received_notice,    name='admin_received_notice'),
     path('admin_account/',              views.admin_account,            name='admin_account'),
-    path('admin_student_approval/',     views.admin_student_approval,   name='admin_student_approval'),
     path('credit/',                     views.credit,                   name='credit'),
     path('debit/',                      views.debit,                    name='debit'),
 ]
