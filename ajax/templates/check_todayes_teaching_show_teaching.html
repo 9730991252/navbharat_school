@@ -1,0 +1,14 @@
+    <h6>📜 Last Teaching {{subject.name}}</h6>
+
+    {% if todayes_teaching %}
+        <div class="notice-grid">
+            {% for todayes_teaching in todayes_teaching %}
+                <div class="notice-card">
+                    <div class="notice-date">{{ todayes_teaching.date|date:"d M Y" }}</div>
+                    <div class="notice-description">{{ todayes_teaching.description|truncatechars:150 }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-notices">No Teaching found.</div>
+    {% endif %}

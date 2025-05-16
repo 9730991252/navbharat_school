@@ -184,3 +184,4 @@ class Expenses(models.Model):
     updated_date = models.DateTimeField(null=True)
     admin_verify_status = models.IntegerField(default=0) # 0 = not verify, 1 = verify
     verify_date = models.DateTimeField(null=True, blank=True)
+

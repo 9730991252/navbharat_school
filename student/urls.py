@@ -9,5 +9,6 @@ urlpatterns = [
     path('leave_letter/<batch_id>', views.leave_letter, name='leave_letter'),
     path('teachers/<batch_id>', views.teachers, name='teachers'),
     path('identity_card/<batch_id>', views.identity_card, name='identity_card'),
+    path('exam/<batch_id>', views.exam, name='exam'),
     path('save-token/', views.save_token, name='save-token'),
 ]

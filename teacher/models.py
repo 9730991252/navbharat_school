@@ -17,3 +17,9 @@ class Student_Attendance(models.Model):
 class Teacher_used_count(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     used_count = models.IntegerField(default=0)
+    
+class Todayes_teaching(models.Model):
+    subject_class_and_teacher = models.ForeignKey(Subject_class_and_teacher, on_delete=models.CASCADE, related_name='subject_class_and_teacher')
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE, related_name='tbatch')
+    date = models.DateField(auto_now_add=True)
+    description = models.TextField(null=True)

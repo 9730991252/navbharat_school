@@ -314,7 +314,33 @@
 
 
 
+<style>
 
+    .img_div{
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        background-color: rgba(255, 255, 255, 0.705);
+        width: 100%;
+        overflow: hidden;
+        user-select: none;
+        pointer-events: none;
+    }
+    .img_div img{
+        width: 100px;
+        border-radius: 100px;
+
+    }
+</style>
+<div class="img_div" style="display: none;">
+    <img src="https://vsolarindia.com/assets/images/loading.gif" alt="">
+</div>
 
 <!-- Hidden Loader -->
 <div id="loader-overlay">
@@ -323,76 +349,50 @@
 
 <!-- Send Class Notice Form -->
 <div class="notice-container">
-    <h6>📢 Send Notice to Class</h6>
-
-    <form method="POST" id="noticeForm">
+    <form method="POST" id="noticeForm" >
         {% csrf_token %}
-
+        <h6>📢 Todayes Teaching</h6>
+ 
         <div class="mb-3">
             <label for="class" class="form-label">Select Subject Class</label>
-            <select id="class" name="class" class="form-control" required>
-                <option value="" disabled selected>Select a Class</option>
-                {% for class in classes %}
-                    <option value="{{ class.id }}">{{ class.name }}</option>
+            <select id="class" name="class" class="form-control" onchange="check_todayes_teaching(this.value)" required>
+                <option value="" disabled selected>Select Subject Class</option>
+                {% for sc in subject_class_and_teacher %}
+                    <option value="{{ sc.id }}">{{ sc.school_class.name }} - {{sc.subject.name}}</option>
                 {% endfor %}
             </select>
-        </div>
-
-
-        <div class="mb-3">
-            <label for="notice" class="form-label">Title</label>
-            <input class="form-control" id="notice" name="title" required>
         </div>
 
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
             <div class="textarea-container">
-                <textarea id="autoResize" name="description" placeholder="Type Notice..." required></textarea>
+                <textarea id="autoResize" name="description"  placeholder="Type Notice..." required></textarea>
             </div>
         </div>
 
 
-        <button type="submit" class="submit-btn">Send Notice</button>
+        <button type="submit" name="send_TEACHING" class="submit-btn">Send</button>
     </form>
 </div>
 
 
 <!-- Recent Notices Section -->
-<div class="recent-notices">
-    <h6>📜 Recent Notices</h6>
+<div class="recent-notices" id="recent-Teaching">
+    <h6>📜 Last Teaching</h6>
 
-    {% if notices %}
+    {% if todayes_teaching %}
         <div class="notice-grid">
-            {% for notice in notices %}
+            {% for todayes_teaching in todayes_teaching %}
                 <div class="notice-card">
-                    <div class="notice-number">Notice #{{ notice.notice_number }} <h class="text-warning">To {{notice.to_class.name|cut:" "}} Class</h></div>
-                    <div class="notice-title">{{ notice.title }}</div>
-                    <div class="notice-description">{{ notice.description|truncatechars:150 }}</div>
-                    <div class="notice-date">{{ notice.added_date|date:"d M Y, h:i A" }}</div>
+                    <div class="notice-number">Teaching  <h class="text-warning">{{todayes_teaching.subject_class_and_teacher.subject.name}} - {{todayes_teaching.subject_class_and_teacher.school_class.name}} Class</h></div>
+                    <div class="notice-title">{{ todayes_teaching.title }}</div>
+                    <div class="notice-description">{{ todayes_teaching.description|truncatechars:150 }}</div>
+                    <div class="notice-date">{{ todayes_teaching.date|date:"d M Y" }}</div>
                 </div>
             {% endfor %}
         </div>
-
-        <!-- Pagination -->
-        <ul class="pagination">
-            {% if notices.has_previous %}
-                <li><a href="?page={{ notices.previous_page_number }}">Previous</a></li>
-            {% endif %}
-
-            {% for num in notices.paginator.page_range %}
-                {% if notices.number == num %}
-                    <li class="active"><span>{{ num }}</span></li>
-                {% elif num > notices.number|add:'-3' and num < notices.number|add:'3' %}
-                    <li><a href="?page={{ num }}">{{ num }}</a></li>
-                {% endif %}
-            {% endfor %}
-
-            {% if notices.has_next %}
-                <li><a href="?page={{ notices.next_page_number }}">Next</a></li>
-            {% endif %}
-        </ul>
     {% else %}
-        <div class="no-notices">No notices found.</div>
+        <div class="no-notices">No Teaching found.</div>
     {% endif %}
 </div>
 
@@ -403,5 +403,24 @@
     form.addEventListener('submit', function() {
         document.getElementById('loader-overlay').style.display = 'flex';
     });
+    function check_todayes_teaching(id){
+        $.ajax({
+            url: "{% url 'check_todayes_teaching' %}",
+            method: "GET",
+            data: {
+                subject_class_and_teacher: id,
+            },
+            success: function(response) {
+                document.getElementById('recent-Teaching').innerHTML = response.t
+
+                if(response.description){
+                    document.getElementById('autoResize').innerText = response.description
+                }
+            },
+            error: function() {
+                alert('Error');
+            }
+        });
+    }
 </script>
 {% endblock content %}

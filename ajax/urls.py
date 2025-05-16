@@ -18,4 +18,5 @@ urlpatterns = [
     path('search_student_for_fees/', views.search_student_for_fees, name='search_student_for_fees'),
     path('verify_bank_credit/', views.verify_bank_credit, name='verify_bank_credit'),
     path('verify_expense/', views.verify_expense, name='verify_expense'),
+    path('check_todayes_teaching/', views.check_todayes_teaching, name='check_todayes_teaching'),
 ]

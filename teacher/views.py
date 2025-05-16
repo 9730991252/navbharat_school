@@ -36,11 +36,28 @@ def todayes_teaching(request):
         mobile = request.session['teacher_mobile']
         class_students_count = 0
         teacher = Teacher.objects.filter(mobile=mobile).first()
-
+        if 'send_TEACHING'in request.POST:
+            subject_class = request.POST.get('class')
+            description = request.POST.get('description')
+            tt = Todayes_teaching.objects.filter(date=date.today(), subject_class_and_teacher_id=subject_class).first()
+            if tt:
+                tt.description = description
+                tt.save()
+                messages.success(request, 'Teaching updated successfully')
+            else:
+                Todayes_teaching(
+                    subject_class_and_teacher_id=subject_class,
+                    batch=teacher.batch,
+                    description=description
+                ).save()
+                messages.success(request, 'Teaching added successfully')
+            time.sleep(5)
+            return redirect('todayes_teaching')
         
         context={
             'teacher':teacher,
-            'subject_class_and_teacher':Subject_class_and_teacher.objects.filter(teacher=teacher)
+            'subject_class_and_teacher':Subject_class_and_teacher.objects.filter(teacher=teacher),
+            'todayes_teaching':Todayes_teaching.objects.filter(subject_class_and_teacher__teacher=teacher, date=date.today())
         }
         return render(request, 'todayes_teaching.html', context)
     else:

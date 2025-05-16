@@ -96,6 +96,21 @@ def verify_student(request):
         id = request.GET['id']
     return JsonResponse({'t': 't'})
 
+def check_todayes_teaching(request):
+    description = ''
+    t = ''
+    if request.method == 'GET':
+        subject_class_and_teacher = request.GET['subject_class_and_teacher']
+        tt = Todayes_teaching.objects.filter(subject_class_and_teacher=subject_class_and_teacher, date=date.today()).first()
+        if tt:
+            description = tt.description
+        context = {
+            'todayes_teaching':Todayes_teaching.objects.filter(subject_class_and_teacher=subject_class_and_teacher),
+            'subject':Subject_class_and_teacher.objects.filter(id=subject_class_and_teacher).first().subject
+        }
+        t = render_to_string('check_todayes_teaching_show_teaching.html', context)
+    return JsonResponse({'description': description, 't':t})
+
 def search_student_for_fees(request):
     if request.method == 'GET':
         words = request.GET['words']
